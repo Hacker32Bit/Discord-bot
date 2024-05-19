@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import asyncio
 
+
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
 
