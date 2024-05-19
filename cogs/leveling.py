@@ -49,7 +49,6 @@ class Leveling(commands.Cog):
                 database.commit()
 
     @commands.command()
-    @commands.has_any_role("Owner", "Admin")
     async def rank(self, interaction):
         rank = 1
 
@@ -67,6 +66,7 @@ class Leveling(commands.Cog):
                        f"guild_id = {interaction.guild.id}")
         result = cursor.fetchone()
 
+        print(result)
         exp, level, last_lvl = result
 
         next_lvl_xp = ((int(level) + 1) / 0.1) ** 2
@@ -79,7 +79,11 @@ class Leveling(commands.Cog):
             next_level_xp=next_lvl_xp,
             previous_level_xp=0,
             level=int(level),
-            rank=rank
+            rank=rank,
+            circle_avatar=False,
+            # background="424549",
+            xp_color=interaction.author.color,
+            # text_shadow_color="1e2124"
         )
 
         card = await vacefron.Client().rank_card(rank_card)
