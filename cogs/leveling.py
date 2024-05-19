@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 import vacefron
 import math
@@ -25,6 +24,9 @@ class Leveling(commands.Cog):
         if message.author.bot:
             return
 
+        if message.channel.id == 1236998124179030068:
+            return
+
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
                        f"{message.author.id} and guild_id = {message.guild.id}")
         result = cursor.fetchone()
@@ -35,7 +37,7 @@ class Leveling(commands.Cog):
         else:
             user_id, guild_id, exp, level, last_lvl = result
 
-            exp_gained = random.randint(1, 20)
+            exp_gained = random.randint(1, 5)
             exp += exp_gained
             level = 0.1 * (math.sqrt(exp))
 
@@ -43,7 +45,7 @@ class Leveling(commands.Cog):
                            f"guild_id = {guild_id}")
             database.commit()
             if int(level) > last_lvl:
-                await message.channel.send(f"{message.author.mention} has leveled up to level {int(lvl)}!")
+                await message.channel.send(f"{message.author.mention} has leveled up to level {int(level)}!")
                 cursor.execute(f"UPDATE levels SET last_lvl = {int(level)} WHERE user_id = {user_id} AND "
                                f"guild_id = {guild_id}")
                 database.commit()
@@ -87,6 +89,7 @@ class Leveling(commands.Cog):
         )
 
         card = await vacefron.Client().rank_card(rank_card)
+        await interaction.message.delete()
         await interaction.send(card.url)
 
 
