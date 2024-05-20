@@ -8,13 +8,14 @@ import asyncio
 
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
+APPLICATION_ID: Final[str] = os.getenv("APPLICATION_ID")
 
 # Bot setup
 intents: discord.Intents = discord.Intents.default()
 intents.message_content = True  # NOQA
 intents.members = True  # NOQA
 
-client = commands.Bot(command_prefix='!', intents=intents)
+client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
 
 @client.event
