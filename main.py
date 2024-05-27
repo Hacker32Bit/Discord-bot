@@ -14,6 +14,7 @@ APPLICATION_ID: Final[str] = os.getenv("APPLICATION_ID")
 intents: discord.Intents = discord.Intents.default()
 intents.message_content = True  # NOQA
 intents.members = True  # NOQA
+intents.voice_states = True # NOQA
 
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 

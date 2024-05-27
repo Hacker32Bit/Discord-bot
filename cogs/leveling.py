@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Final
 import discord
 from discord import app_commands
@@ -48,7 +49,9 @@ class Leveling(commands.Cog):
         else:
             user_id, guild_id, exp, level, last_lvl = result
 
-            exp_gained = random.randint(1, 5)
+            exp_gained = await self.calculate_xp(message=str(message.content))
+
+            exp_gained = math.floor(exp_gained)
             exp += exp_gained
             level = 0.1 * (math.sqrt(exp))
 
@@ -96,6 +99,29 @@ class Leveling(commands.Cog):
 
         await self.bot.process_commands(message)
 
+    @staticmethod
+    async def calculate_xp(message: str):
+        url_pattern = re.compile(r'https?://\S+|www\.\S+')
+
+        # Use the sub() method to replace URLs with the specified replacement text
+        text_without_urls = url_pattern.sub("", message)
+
+        text_length = len(text_without_urls)
+
+        t = 20
+        b = 200
+
+        if text_length >= b:
+            return t
+
+        k = 0.5
+        d = 0.5
+        f_x = math.log(text_length / b + 1, 10)
+        f_x_1 = math.log(2 - text_length / b, 10)
+        res = (f_x ** d) / (f_x ** d + f_x_1 ** k)
+
+        return t * res
+
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def sync(self, ctx) -> None:
@@ -103,7 +129,12 @@ class Leveling(commands.Cog):
         await ctx.send(f"synced {len(fmt)} commands")
 
     @app_commands.command(name="rank", description="Show user rank card.")
-    async def rank(self, interaction: discord.Interaction, user: discord.Member = None):
+    async def rank(self, interaction: discord.Interaction):
+        await self.show_rank(interaction)
+
+    @commands.command(name="user_rank", description="Show user rank by mention")
+    @commands.has_any_role("Owner", "Admin")
+    async def user_rank(self, interaction: discord.Interaction, user: discord.Member):
         await self.show_rank(interaction, user)
 
     @staticmethod
@@ -147,7 +178,7 @@ class Leveling(commands.Cog):
         )
 
         card = await vacefron.Client().rank_card(rank_card)
-        await interaction.response.send_message(card.url)
+        await interaction.response.send_message(card.url) # NOQA
 
 
 async def setup(bot):
