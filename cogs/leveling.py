@@ -1,3 +1,4 @@
+import io
 import os
 import re
 from typing import Final
@@ -6,13 +7,14 @@ from discord import app_commands
 from discord.ext import commands
 import vacefron
 import math
-import random
 import sqlite3
 from dotenv import load_dotenv
+from PIL import Image, ImageColor
 
 load_dotenv()
-SPAM_CHANNEL_ID: Final[str] = os.getenv("SPAM_CHANNEL_ID")
-ADMIN_SPAM_CHANNEL_ID: Final[str] = os.getenv("ADMIN_SPAM_CHANNEL_ID")
+GENERAL_CHANNEL_ID: Final[str] = os.getenv("GENERAL_CHANNEL_ID")
+GENERAL_VOICE_CHANNEL_ID: Final[str] = os.getenv("GENERAL_VOICE_CHANNEL_ID")
+ASSETS_CHANNEL_ID: Final[str] = os.getenv("ASSETS_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
 database = sqlite3.connect("database.sqlite")
@@ -35,7 +37,7 @@ class Leveling(commands.Cog):
         if message.author.bot:
             return
 
-        if str(message.channel.id) in [SPAM_CHANNEL_ID, ADMIN_SPAM_CHANNEL_ID]:
+        if str(message.channel.id) not in [GENERAL_CHANNEL_ID, GENERAL_VOICE_CHANNEL_ID]:
             return
 
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
@@ -44,7 +46,7 @@ class Leveling(commands.Cog):
 
         if result is None:
             cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
-                           f"VALUES({message.author.id}, {message.guild.id}, 0, 0, 0, "")")
+                           f"VALUES({message.author.id}, {message.guild.id}, 0, 0, 0, '')")
             database.commit()
         else:
             user_id, guild_id, exp, level, last_lvl = result
@@ -77,22 +79,22 @@ class Leveling(commands.Cog):
                 elif int(level) == 15:
                     role = discord.utils.get(message.guild.roles, name="Intermediate (10 LVL)")
                     await user.remove_roles(role)
-                    role = discord.utils.get(message.guild.roles, name="Advanced (15 LVL)")
+                    role = discord.utils.get(message.guild.roles, name="Advanced (20 LVL)")
                     await user.add_roles(role)
                 elif int(level) == 25:
-                    role = discord.utils.get(message.guild.roles, name="Advanced (15 LVL)")
+                    role = discord.utils.get(message.guild.roles, name="Advanced (20 LVL)")
                     await user.remove_roles(role)
-                    role = discord.utils.get(message.guild.roles, name="Expert (25 LVL)")
+                    role = discord.utils.get(message.guild.roles, name="Expert (30 LVL)")
                     await user.add_roles(role)
                 elif int(level) == 50:
-                    role = discord.utils.get(message.guild.roles, name="Expert (25 LVL)")
+                    role = discord.utils.get(message.guild.roles, name="Expert (30 LVL)")
                     await user.remove_roles(role)
-                    role = discord.utils.get(message.guild.roles, name="Elite (50 LVL)")
+                    role = discord.utils.get(message.guild.roles, name="Elite (40 LVL)")
                     await user.add_roles(role)
                 elif int(level) == 100:
-                    role = discord.utils.get(message.guild.roles, name="Elite (50 LVL)")
+                    role = discord.utils.get(message.guild.roles, name="Elite (40 LVL)")
                     await user.remove_roles(role)
-                    role = discord.utils.get(message.guild.roles, name="Godly (100 LVL)")
+                    role = discord.utils.get(message.guild.roles, name="Godly (50 LVL)")
                     await user.add_roles(role)
 
                 await message.channel.send(f"{message.author.mention} has leveled up to level {int(level)}!")
@@ -132,7 +134,102 @@ class Leveling(commands.Cog):
     async def rank(self, interaction: discord.Interaction):
         await self.show_rank(interaction)
 
-    @commands.command(name="user_rank", description="Show user rank by mention")
+    @commands.command(name="rank_bg", description="Set rank card background.")
+    @commands.has_any_role("Owner", "Admin", "Donator")
+    async def rank_bg(self, ctx, file: discord.Attachment):
+        if file is None:
+            print("Empty")
+            return
+
+        # fetch, send image to assets channel for store, and delete old.
+        assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
+        file = await file.to_file()
+        res = await assets_channel.send(f"{ctx.message.author.mention}, {ctx.message.content}\nBackground: ", file=file)
+        await ctx.message.delete()
+
+        # print(type(res), res)
+
+        args = ctx.message.content.split(" ", 3)
+        print(args)
+
+        frame = Image.open("assets/images/ranked_card_frame.png").convert("RGBA")
+
+        # Set color on frame if user typed color in HEX
+        if len(args) > 1:
+            (r, g, b) = ImageColor.getcolor(args[1], "RGB")
+
+            pixdata = frame.load()
+            for y in range(frame.size[1]):
+                for x in range(frame.size[0]):
+                    alpha = pixdata[x, y][3]
+                    if alpha:
+                        pixdata[x, y] = (r, g, b, alpha)
+
+        # Resize and crop image to 1050x300px
+        min_width, min_height = 1050, 300
+        ratio = min_width / min_height
+        background_image = Image.open(file.fp).convert("RGBA")
+
+        width, height = background_image.size
+
+        # check ratio difference for resize by width or height
+        # By width
+        if width / height >= ratio:
+            new_height = min_height
+            new_width = round(new_height * width / height)
+            # By height
+        else:
+            new_width = min_width
+            new_height = round(new_width * height / width)
+
+        background_image_sized = background_image.resize((new_width, new_height))
+
+        width, height = background_image_sized.size
+        if width > min_width:
+            left = round((width - min_width) / 2)
+            right = left + min_width
+            top = 0
+            bottom = min_height
+        elif height > min_height:
+            left = 0
+            right = min_width
+            top = round((height - min_height) / 2)
+            bottom = top + min_height
+        else:
+            left, right, top, bottom = (0, 0, 0, 0)
+
+        background_image_sized = background_image_sized.crop((left, top, right, bottom))
+
+        # Add frame to background
+        background_image_sized.paste(frame, (0, 0), frame)
+
+        with io.BytesIO() as image_binary:
+            background_image_sized.save(image_binary, 'PNG')
+            image_binary.seek(0)
+            result = discord.File(fp=image_binary, filename='rank.png')
+            message = await assets_channel.send(f"Ranked card result: ", file=result)
+
+        background_image_sized.close()
+        frame.close()
+
+        # Save image url in database
+        cursor.execute(f"SELECT user_id, guild_id FROM levels WHERE user_id = "
+                       f"{ctx.author.id} and guild_id = {ctx.guild.id}")
+        result = cursor.fetchone()
+
+        print(result)
+        if result is None:
+            cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
+                           f"VALUES({ctx.author.id}, {ctx.guild.id}, 0, 0, 0, '')")
+            database.commit()
+
+        cursor.execute(f"UPDATE levels SET background = '{message.attachments[0].url}' WHERE user_id = {ctx.author.id} "
+                       f"AND guild_id = {ctx.guild.id}")
+        database.commit()
+
+        await assets_channel.send("Rank card image changed successfully!")
+
+    @commands.command(name="user_rank", description="Show user rank by mention.")
     @commands.has_any_role("Owner", "Admin")
     async def user_rank(self, interaction: discord.Interaction, user: discord.Member):
         await self.show_rank(interaction, user)
@@ -157,6 +254,12 @@ class Leveling(commands.Cog):
         cursor.execute(f"SELECT exp, level, last_lvl, background FROM levels WHERE user_id = {user.id} AND "
                        f"guild_id = {interaction.guild.id}")
         result = cursor.fetchone()
+
+        if result is None:
+            message = ("You dont have any XP, because you dont have activity.\nPlease type some messages in "
+                       "\"〔💬〕general \" channel or join in voice channel at least 10 minutes.")
+            await interaction.response.send_message(message) # NOQA
+            return
 
         exp, level, last_lvl, background = result
 

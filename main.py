@@ -15,6 +15,7 @@ intents: discord.Intents = discord.Intents.default()
 intents.message_content = True  # NOQA
 intents.members = True  # NOQA
 intents.voice_states = True # NOQA
+intents.guilds = True # NOQA
 
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
@@ -38,4 +39,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
