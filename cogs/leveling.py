@@ -1,7 +1,8 @@
 import io
 import os
 import re
-from typing import Final
+import time
+from typing import Final, List
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -12,8 +13,11 @@ from dotenv import load_dotenv
 from PIL import Image, ImageColor
 
 load_dotenv()
-GENERAL_CHANNEL_ID: Final[str] = os.getenv("GENERAL_CHANNEL_ID")
+GENERAL_TEXT_CHANNEL_ID: Final[str] = os.getenv("GENERAL_TEXT_CHANNEL_ID")
 GENERAL_VOICE_CHANNEL_ID: Final[str] = os.getenv("GENERAL_VOICE_CHANNEL_ID")
+STREAMS_VOICE_CHANNEL_ID: Final[str] = os.getenv("STREAMS_VOICE_CHANNEL_ID")
+MUSIC_VOICE_CHANNEL_ID: Final[str] = os.getenv("MUSIC_VOICE_CHANNEL_ID")
+AFK_VOICE_CHANNEL_ID: Final[str] = os.getenv("AFK_VOICE_CHANNEL_ID")
 ASSETS_CHANNEL_ID: Final[str] = os.getenv("ASSETS_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
@@ -27,17 +31,19 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS levels(user_id INTEGER, guild_id IN
 class Leveling(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.data = dict()
 
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Leveling\" cog is ready!")
 
+    # Message listener for give 1-20XP
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
 
-        if str(message.channel.id) not in [GENERAL_CHANNEL_ID, GENERAL_VOICE_CHANNEL_ID]:
+        if str(message.channel.id) not in [GENERAL_TEXT_CHANNEL_ID, GENERAL_VOICE_CHANNEL_ID]:
             return
 
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
@@ -46,7 +52,7 @@ class Leveling(commands.Cog):
 
         if result is None:
             cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
-                           f"VALUES({message.author.id}, {message.guild.id}, 0, 0, 0, '')")
+                           f"VALUES({message.author.id}, {message.guild.id}, 0, 0, 0, ' ')")
             database.commit()
         else:
             user_id, guild_id, exp, level, last_lvl = result
@@ -101,6 +107,79 @@ class Leveling(commands.Cog):
 
         await self.bot.process_commands(message)
 
+    # Listener for give 1XP every 10 minutes
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        if after.channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID, AFK_VOICE_CHANNEL_ID]:
+            return
+
+        cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
+                       f"{member.id} and guild_id = {member.guild.id}")
+        result = cursor.fetchone()
+
+        if not before.channel and after.channel:
+            self.data[member.id] = time.time()
+
+            print("[Inside if] Member: ", member.name, "\ndata: ", self.data)
+
+        elif before.channel and not after.channel and member.id in self.data:
+            print("[Inside elif] Member: ", member.name, "\ndata: ", self.data)
+            minutes_per_point = (time.time() - self.data[member.id]) // 600
+
+            if result is None:
+                cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
+                               f"VALUES({member.id}, {member.guild.id}, 0, 0, 0, ' ')")
+                database.commit()
+            else:
+                user_id, guild_id, exp, level, last_lvl = result
+
+                exp_gained = minutes_per_point
+                exp += exp_gained
+                level = 0.1 * (math.sqrt(exp))
+
+                cursor.execute(f"UPDATE levels SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                               f"guild_id = {guild_id}")
+                database.commit()
+
+                if int(level) > last_lvl:
+                    cursor.execute(f"UPDATE levels SET last_lvl = {int(level)} WHERE user_id = {user_id} AND "
+                                   f"guild_id = {guild_id}")
+                    database.commit()
+
+                    user = member.user
+
+                    if int(level) == 5:
+                        role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 10:
+                        role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 15:
+                        role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 25:
+                        role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 50:
+                        role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 100:
+                        role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Godly (50 LVL)")
+                        await user.add_roles(role)
+
+                    await after.channel.send(f"{member.mention} has leveled up to level {int(level)}!")
+
+    # Method for calculate XP on message
     @staticmethod
     async def calculate_xp(message: str):
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
@@ -124,113 +203,160 @@ class Leveling(commands.Cog):
 
         return t * res
 
-    @commands.command()
-    @commands.has_any_role("Owner", "Admin")
-    async def sync(self, ctx) -> None:
-        fmt = await ctx.bot.tree.sync(guild=ctx.guild)
-        await ctx.send(f"synced {len(fmt)} commands")
-
     @app_commands.command(name="rank", description="Show user rank card.")
     async def rank(self, interaction: discord.Interaction):
         await self.show_rank(interaction)
 
-    @commands.command(name="rank_bg", description="Set rank card background.")
-    @commands.has_any_role("Owner", "Admin", "Donator")
-    async def rank_bg(self, ctx, file: discord.Attachment):
-        if file is None:
-            print("Empty")
+    @app_commands.command(name="rank_card_setting", description="Set rank card background.")
+    @app_commands.choices(reset=[
+        app_commands.Choice(name='Yes', value=1),
+        app_commands.Choice(name='No', value=0)
+    ])
+    @app_commands.describe(image="Select image if you want change rank card background. [.jpg, .jpeg, .png, .bmp, "
+                                 ".gif, .webp, .tif]")
+    @app_commands.describe(color="Enter color code in HEX. Example: `fff`, `#fff`, `123abc`, or `#a1b2f9`.")
+    @app_commands.describe(reset="Select `Yes` if you want reset your rank card design!")
+    async def rank_card_setting(self, interaction: discord.Interaction, image: discord.Attachment = None,
+                                color: str = None, reset: app_commands.Choice[int] = 0):
+
+        if image is None and color is None and reset == 0:
+            await interaction.response.send_message(f"Please, provide at least one argument.") # NOQA
             return
 
-        # fetch, send image to assets channel for store, and delete old.
-        assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
-        file = await file.to_file()
-        res = await assets_channel.send(f"{ctx.message.author.mention}, {ctx.message.content}\nBackground: ", file=file)
-        await ctx.message.delete()
+        if color:
+            color = color.lstrip()
+            if color[0] != "#":
+                color = f"#{color}"
 
-        # print(type(res), res)
+            if not (len(color) == 4 or len(color) == 7):
+                await interaction.response.send_message(f"Wrong `color: ` argument length!")  # NOQA
+                return
+            else:
+                for i in range(1, len(color)):
+                    if (not (('0' <= color[i] <= '9') or ('a' <= color[i] <= 'f') or (
+                            color[i] >= 'A' or color[i] <= 'F'))):
+                        await interaction.response.send_message(f"Wrong `color: ` argument values!")  # NOQA
+                        return
 
-        args = ctx.message.content.split(" ", 3)
-        print(args)
-
-        frame = Image.open("assets/images/ranked_card_frame.png").convert("RGBA")
-
-        # Set color on frame if user typed color in HEX
-        if len(args) > 1:
-            (r, g, b) = ImageColor.getcolor(args[1], "RGB")
-
-            pixdata = frame.load()
-            for y in range(frame.size[1]):
-                for x in range(frame.size[0]):
-                    alpha = pixdata[x, y][3]
-                    if alpha:
-                        pixdata[x, y] = (r, g, b, alpha)
-
-        # Resize and crop image to 1050x300px
-        min_width, min_height = 1050, 300
-        ratio = min_width / min_height
-        background_image = Image.open(file.fp).convert("RGBA")
-
-        width, height = background_image.size
-
-        # check ratio difference for resize by width or height
-        # By width
-        if width / height >= ratio:
-            new_height = min_height
-            new_width = round(new_height * width / height)
-            # By height
-        else:
-            new_width = min_width
-            new_height = round(new_width * height / width)
-
-        background_image_sized = background_image.resize((new_width, new_height))
-
-        width, height = background_image_sized.size
-        if width > min_width:
-            left = round((width - min_width) / 2)
-            right = left + min_width
-            top = 0
-            bottom = min_height
-        elif height > min_height:
-            left = 0
-            right = min_width
-            top = round((height - min_height) / 2)
-            bottom = top + min_height
-        else:
-            left, right, top, bottom = (0, 0, 0, 0)
-
-        background_image_sized = background_image_sized.crop((left, top, right, bottom))
-
-        # Add frame to background
-        background_image_sized.paste(frame, (0, 0), frame)
-
-        with io.BytesIO() as image_binary:
-            background_image_sized.save(image_binary, 'PNG')
-            image_binary.seek(0)
-            result = discord.File(fp=image_binary, filename='rank.png')
-            message = await assets_channel.send(f"Ranked card result: ", file=result)
-
-        background_image_sized.close()
-        frame.close()
-
-        # Save image url in database
+        # Get data from db.
         cursor.execute(f"SELECT user_id, guild_id FROM levels WHERE user_id = "
-                       f"{ctx.author.id} and guild_id = {ctx.guild.id}")
+                       f"{interaction.user.id} and guild_id = {interaction.guild.id}")
         result = cursor.fetchone()
 
-        print(result)
+        # if data not exist add empty values
         if result is None:
             cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
-                           f"VALUES({ctx.author.id}, {ctx.guild.id}, 0, 0, 0, '')")
+                           f"VALUES({interaction.user.id}, {interaction.guild.id}, 0, 0, 0, '')")
             database.commit()
 
-        cursor.execute(f"UPDATE levels SET background = '{message.attachments[0].url}' WHERE user_id = {ctx.author.id} "
-                       f"AND guild_id = {ctx.guild.id}")
+        # If user need reset card to default
+        if reset and reset.value:
+            print("Reset: True")
+            cursor.execute(
+                f"UPDATE levels SET background = '' WHERE user_id = {interaction.user.id} "
+                f"AND guild_id = {interaction.guild.id}")
+            database.commit()
+            await interaction.response.send_message(f"You have reset your rank card to default!") # NOQA
+            return
+
+        if image is not None:
+            # print(image.content_type.split("/")[1])
+            if image.content_type.split("/")[1] not in ["png", "jpg", "jpeg", "bmp", "gif", "tiff", "webp"]:
+                await interaction.response.send_message("Not allowed! Please, use only images.") # NOQA
+                return
+
+            # fetch, send image to assets channel for store.
+            assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
+            image = await image.to_file()
+            await assets_channel.send(f"User: {interaction.user.mention}, Color: {color}, Reset: {reset}\n"
+                                      f"Background: ", file=image)
+
+            with Image.open("assets/images/ranked_card_frame.png").convert("RGBA") as frame:
+                # Set color on frame if user typed color in HEX
+                if color:
+                    (r, g, b) = ImageColor.getcolor(color, "RGB")
+
+                    pix_data = frame.load()
+                    for y in range(frame.size[1]):
+                        for x in range(frame.size[0]):
+                            alpha = pix_data[x, y][3]
+                            if alpha:
+                                pix_data[x, y] = (r, g, b, alpha)
+
+                # Resize and crop image to 1050x300px
+                min_width, min_height = 1050, 300
+                ratio = min_width / min_height
+
+                with Image.open(image.fp).convert("RGBA") as background_image:
+                    width, height = background_image.size
+
+                    # check ratio difference for resize by width or height
+                    # By width
+                    if width / height >= ratio:
+                        new_height = min_height
+                        new_width = round(new_height * width / height)
+                        # By height
+                    else:
+                        new_width = min_width
+                        new_height = round(new_width * height / width)
+
+                    background_image_sized = background_image.resize((new_width, new_height))
+
+                    width, height = background_image_sized.size
+                    if width > min_width:
+                        left = round((width - min_width) / 2)
+                        right = left + min_width
+                        top = 0
+                        bottom = min_height
+                    elif height > min_height:
+                        left = 0
+                        right = min_width
+                        top = round((height - min_height) / 2)
+                        bottom = top + min_height
+                    else:
+                        left, right, top, bottom = (0, 0, 0, 0)
+
+                    background_image_sized = background_image_sized.crop((left, top, right, bottom))
+
+                    # Add frame to background
+                    background_image_sized.paste(frame, (0, 0), frame)
+
+                    with io.BytesIO() as image_binary:
+                        background_image_sized.save(image_binary, format="PNG")
+                        image_binary.seek(0)
+                        result = discord.File(fp=image_binary, filename="rank_card.png")
+                        message = await assets_channel.send(f"Ranked card result: ", file=result)
+
+        elif color:
+            # fetch, send frame to assets channel for store.
+            assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
+
+            with Image.open("assets/images/ranked_card_frame.png").convert("RGBA") as frame:
+                with Image.open("assets/images/default_rank_card.png").convert("RGBA") as background_image_sized:
+                    (r, g, b) = ImageColor.getcolor(color, "RGB")
+
+                    pix_data = background_image_sized.load()
+                    for y in range(frame.size[1]):
+                        for x in range(frame.size[0]):
+                            alpha = pix_data[x, y][3]
+                            if alpha:
+                                pix_data[x, y] = (r, g, b, alpha)
+
+                    background_image_sized.paste(frame, (0, 0), frame)
+
+                    with io.BytesIO() as image_binary:
+                        background_image_sized.save(image_binary, 'PNG')
+                        image_binary.seek(0)
+                        result = discord.File(fp=image_binary, filename='rank.png')
+                        message = await assets_channel.send(f"Ranked card result: ", file=result)
+
+        cursor.execute(f"UPDATE levels SET background = '{message.attachments[0].url}' WHERE user_id = "
+                       f"{interaction.user.id} AND guild_id = {interaction.guild.id}")
         database.commit()
 
-        await assets_channel.send("Rank card image changed successfully!")
+        await interaction.response.send_message(f"You have updated your rank card design!")  # NOQA
 
-    @commands.command(name="user_rank", description="Show user rank by mention.")
-    @commands.has_any_role("Owner", "Admin")
+    @app_commands.command(name="user_rank", description="Show user rank by mention.")
     async def user_rank(self, interaction: discord.Interaction, user: discord.Member):
         await self.show_rank(interaction, user)
 
