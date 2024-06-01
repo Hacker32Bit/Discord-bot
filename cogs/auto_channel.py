@@ -9,6 +9,11 @@ from dotenv import load_dotenv
 load_dotenv()
 VOICE_CHANNELS_GROUP_ID: Final[str] = os.getenv("VOICE_CHANNELS_GROUP_ID")
 STAFF_CHANNELS_GROUP_ID: Final[str] = os.getenv("STAFF_CHANNELS_GROUP_ID")
+MEETING_VOICE_CHANNEL_ID: Final[str] = os.getenv("MEETING_VOICE_CHANNEL_ID")
+AFK_VOICE_CHANNEL_ID: Final[str] = os.getenv("AFK_VOICE_CHANNEL_ID")
+MUSIC_VOICE_CHANNEL_ID: Final[str] = os.getenv("MUSIC_VOICE_CHANNEL_ID")
+STREAMS_VOICE_CHANNEL_ID: Final[str] = os.getenv("STREAMS_VOICE_CHANNEL_ID")
+GENERAL_VOICE_CHANNEL_ID: Final[str] = os.getenv("GENERAL_VOICE_CHANNEL_ID")
 
 
 class AutoChannel(commands.Cog):
@@ -21,21 +26,76 @@ class AutoChannel(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        if before.channel is not None:
-            if str(before.channel.category_id) in [VOICE_CHANNELS_GROUP_ID, STAFF_CHANNELS_GROUP_ID]:
-                print("Leaved from(Do nothing): ", before.channel.name)
+        if before and before.channel is not None:
+            if str(before.channel.id) in [GENERAL_VOICE_CHANNEL_ID, STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
+                                          AFK_VOICE_CHANNEL_ID, MEETING_VOICE_CHANNEL_ID]:
+                # print("Leaved from(Do nothing): ", before.channel.name)
+                pass
             else:
-                print("Leaved from: ", before.channel.name)
+                # print("Leaved from: ", before.channel.name)
                 if not len(before.channel.members):
-                    print("Remove channel: ", before.channel.name)
+                    # print("Remove channel: ", before.channel.name)
                     await before.channel.delete(reason="Channel was empty")
 
-        if str(after.channel.category_id) in [VOICE_CHANNELS_GROUP_ID, STAFF_CHANNELS_GROUP_ID]:
-            print("Joined to(Do nothing): ", after.channel.name)
+        if after and after.channel and str(after.channel.category_id) in [VOICE_CHANNELS_GROUP_ID,
+                                                                          STAFF_CHANNELS_GROUP_ID]:
+            if after.channel.name == "〔🤝〕Face-to-Face":
+                # print("Joined to: ", after.channel.name)
+
+                # Get channels from category_id
+                category = discord.utils.get(member.guild.categories, id=after.channel.category_id)
+                channels = category.channels
+                # print("channels: ", channels)
+
+                # Filter channels and get channel_numbers
+                channel_numbers = []
+                channel_id = 1
+                for channel in channels:
+                    # print(channel.name.split()[0])
+                    if channel.name in ["〔💬〕chat", "〔🔊〕General", "〔📷〕Streams", "〔🎵〕Music", "〔💤〕AFK",
+                                        "〔🤝〕Face-to-Face", "〔📁〕assets", "〔📁〕logs", "〔🤖〕commands",
+                                        "〔💬〕general", "〔🦜〕spam", "〔🤝〕Meeting"]:
+                        continue
+                    elif channel.name.split()[1][1:]:
+                        channel_numbers.append(int(channel.name.split()[1][1:]))
+
+                # print(channel_numbers)
+                if channel_numbers:
+                    channel_numbers.sort(reverse=False)
+
+                    for index in range(1, channel_numbers[-1] + 2):
+                        if index not in channel_numbers:
+                            channel_id = index
+                            break
+
+                pos = after.channel.position
+                new_channel = await after.channel.clone(name="〔🤝〕Face-to-Face",
+                                                        reason=f"Created new Face-to-Face #{channel_id} channel by "
+                                                               f"{member.name}.")
+                await asyncio.sleep(1)
+
+                await after.channel.edit(name=f"〔🤝〕Face-to-Face #{channel_id}", user_limit=2)
+                embed = discord.Embed(
+                    description=f"Congrats {member.name}! You have created a new\n〔🤝〕Face-to-Face channel.",
+                    color=0x9c27b0,
+                    timestamp=datetime.datetime.now()
+                )
+                await after.channel.send(f"Welcome to〔🤝〕 Face-To-Face channel {member.mention}", embed=embed)
+
+                await asyncio.sleep(1)
+                await new_channel.edit(user_limit=0, position=pos)
+
+                embed = discord.Embed(
+                    description=f"Note!!!\nThis lobby are temporary!!!\nIf lobby will empty, it delete automatically "
+                                f"with messages!",
+                    color=0xFF9800
+                )
+                await after.channel.send(embed=embed)
+
         else:
             # Create new channel when joined on empty channel.
-            if after.channel.name == "〔🎮〕Create lobby!":
-                print("Joined to: ", after.channel.name)
+            if after and after.channel and after.channel.name == "〔🎮〕Create lobby!":
+                # print("Joined to: ", after.channel.name)
 
                 # Get channels from category_id
                 category = discord.utils.get(member.guild.categories, id=after.channel.category_id)
@@ -62,9 +122,11 @@ class AutoChannel(commands.Cog):
                             channel_id = index
                             break
 
-                await after.channel.edit(name=f"〔🎮〕Lobby #{channel_id}", user_limit=1)
                 new_channel = await after.channel.clone(name="〔🎮〕Create lobby!",
                                                         reason=f"Created new lobby #{channel_id} by {member.name}.")
+                await asyncio.sleep(1)
+
+                await after.channel.edit(name=f"〔🎮〕New #{channel_id}", user_limit=1)
 
                 embed = discord.Embed(
                     description=f"Congrats {member.name}! You have created a new lobby.",
@@ -81,11 +143,12 @@ class AutoChannel(commands.Cog):
 
                 embed = discord.Embed(
                     description="Set lobby limits for members. \nEnter a number between 2-99.\n"
-                                "If you want \"〔🎮〕Unlimited \" lobby, enter 0.",
+                                "If you want Unlimited lobby, enter 0.",
                     color=0xffc107
                 )
                 await after.channel.send(embed=embed)
 
+                await asyncio.sleep(1)
                 await new_channel.edit(user_limit=0, position=1)
 
                 def check(m):  # checking if it's the same user and channel
@@ -100,7 +163,7 @@ class AutoChannel(commands.Cog):
 
                     except asyncio.TimeoutError:
                         await after.channel.delete(reason="Timed!")
-                        print("Timeout!")  # returning after timeout
+                        # print("Timeout!")  # returning after timeout
                         return
 
                     try:
@@ -124,10 +187,10 @@ class AutoChannel(commands.Cog):
 
                 if channel_size:
                     limit = 'limited lobby by ' + str(channel_size) + ' members.'
-                    await after.channel.edit(name=f"〔🎮〕[1/{channel_size}] #{channel_id}", user_limit=channel_size)
+                    await after.channel.edit(name=f"〔🎮〕Lobby #{channel_id}", user_limit=channel_size)
                 else:
                     limit = 'unlimited lobby.'
-                    await after.channel.edit(name=f"〔🎮〕Unlimited #{channel_id}", user_limit=0)
+                    await after.channel.edit(name=f"〔🎮〕Lobby #{channel_id}", user_limit=0)
 
                 embed = discord.Embed(
                     description=f"Great!\nYou configured {limit}\nHave fun!",
@@ -141,12 +204,6 @@ class AutoChannel(commands.Cog):
                     color=0xFF9800
                 )
                 await after.channel.send(embed=embed)
-
-            else:
-                channel_first_half = after.channel.name.split("[")[0] + "["
-                channel_second_half = "/" + after.channel.name.split("/")[1]
-                channel_size = str(len(after.channel.members))
-                await after.channel.edit(name=f"{channel_first_half + channel_size + channel_second_half}")
 
 
 async def setup(client):

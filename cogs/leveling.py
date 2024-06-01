@@ -2,7 +2,7 @@ import io
 import os
 import re
 import time
-from typing import Final, List
+from typing import Final
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -31,7 +31,8 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS levels(user_id INTEGER, guild_id IN
 class Leveling(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.data = dict()
+
+    data = dict()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -110,74 +111,75 @@ class Leveling(commands.Cog):
     # Listener for give 1XP every 10 minutes
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        if after.channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID, AFK_VOICE_CHANNEL_ID]:
+        if after.channel and after.channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
+                                                  AFK_VOICE_CHANNEL_ID]:
+            # print("inside first if")
             return
 
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
                        f"{member.id} and guild_id = {member.guild.id}")
         result = cursor.fetchone()
 
+        # print(result)
+
+        if result is None:
+            cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
+                           f"VALUES({member.id}, {member.guild.id}, 0, 0, 0, ' ')")
+            database.commit()
+
         if not before.channel and after.channel:
             self.data[member.id] = time.time()
 
-            print("[Inside if] Member: ", member.name, "\ndata: ", self.data)
-
         elif before.channel and not after.channel and member.id in self.data:
-            print("[Inside elif] Member: ", member.name, "\ndata: ", self.data)
             minutes_per_point = (time.time() - self.data[member.id]) // 600
 
-            if result is None:
-                cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
-                               f"VALUES({member.id}, {member.guild.id}, 0, 0, 0, ' ')")
-                database.commit()
-            else:
-                user_id, guild_id, exp, level, last_lvl = result
+            user_id, guild_id, exp, level, last_lvl = result
 
-                exp_gained = minutes_per_point
-                exp += exp_gained
-                level = 0.1 * (math.sqrt(exp))
+            # print(minutes_per_point)
 
-                cursor.execute(f"UPDATE levels SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+            exp_gained = minutes_per_point
+            exp += exp_gained
+            level = 0.1 * (math.sqrt(exp))
+
+            cursor.execute(f"UPDATE levels SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                           f"guild_id = {guild_id}")
+            database.commit()
+
+            if int(level) > last_lvl:
+                cursor.execute(f"UPDATE levels SET last_lvl = {int(level)} WHERE user_id = {user_id} AND "
                                f"guild_id = {guild_id}")
                 database.commit()
 
-                if int(level) > last_lvl:
-                    cursor.execute(f"UPDATE levels SET last_lvl = {int(level)} WHERE user_id = {user_id} AND "
-                                   f"guild_id = {guild_id}")
-                    database.commit()
+                if int(level) == 5:
+                    role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
+                    await member.add_roles(role)
+                elif int(level) == 10:
+                    role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
+                    await member.remove_roles(role)
+                    role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
+                    await member.add_roles(role)
+                elif int(level) == 15:
+                    role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
+                    await member.remove_roles(role)
+                    role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
+                    await member.add_roles(role)
+                elif int(level) == 25:
+                    role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
+                    await member.remove_roles(role)
+                    role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
+                    await member.add_roles(role)
+                elif int(level) == 50:
+                    role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
+                    await member.remove_roles(role)
+                    role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
+                    await member.add_roles(role)
+                elif int(level) == 100:
+                    role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
+                    await member.remove_roles(role)
+                    role = discord.utils.get(member.guild.roles, name="Godly (50 LVL)")
+                    await member.add_roles(role)
 
-                    user = member.user
-
-                    if int(level) == 5:
-                        role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
-                        await user.add_roles(role)
-                    elif int(level) == 10:
-                        role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
-                        await user.remove_roles(role)
-                        role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
-                        await user.add_roles(role)
-                    elif int(level) == 15:
-                        role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
-                        await user.remove_roles(role)
-                        role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
-                        await user.add_roles(role)
-                    elif int(level) == 25:
-                        role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
-                        await user.remove_roles(role)
-                        role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
-                        await user.add_roles(role)
-                    elif int(level) == 50:
-                        role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
-                        await user.remove_roles(role)
-                        role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
-                        await user.add_roles(role)
-                    elif int(level) == 100:
-                        role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
-                        await user.remove_roles(role)
-                        role = discord.utils.get(member.guild.roles, name="Godly (50 LVL)")
-                        await user.add_roles(role)
-
-                    await after.channel.send(f"{member.mention} has leveled up to level {int(level)}!")
+                await after.channel.send(f"{member.mention} has leveled up to level {int(level)}!")
 
     # Method for calculate XP on message
     @staticmethod
@@ -218,9 +220,11 @@ class Leveling(commands.Cog):
     @app_commands.describe(reset="Select `Yes` if you want reset your rank card design!")
     async def rank_card_setting(self, interaction: discord.Interaction, image: discord.Attachment = None,
                                 color: str = None, reset: app_commands.Choice[int] = 0):
+        # Make timelimit more than 3 sec for slash commands
+        await interaction.response.defer() # NOQA
 
         if image is None and color is None and reset == 0:
-            await interaction.response.send_message(f"Please, provide at least one argument.") # NOQA
+            await interaction.followup.send(f"Please, provide at least one argument.")
             return
 
         if color:
@@ -229,13 +233,13 @@ class Leveling(commands.Cog):
                 color = f"#{color}"
 
             if not (len(color) == 4 or len(color) == 7):
-                await interaction.response.send_message(f"Wrong `color: ` argument length!")  # NOQA
+                await interaction.followup.send(f"Wrong `color: ` argument length!")
                 return
             else:
                 for i in range(1, len(color)):
                     if (not (('0' <= color[i] <= '9') or ('a' <= color[i] <= 'f') or (
                             color[i] >= 'A' or color[i] <= 'F'))):
-                        await interaction.response.send_message(f"Wrong `color: ` argument values!")  # NOQA
+                        await interaction.followup.send(f"Wrong `color: ` argument values!")
                         return
 
         # Get data from db.
@@ -251,18 +255,18 @@ class Leveling(commands.Cog):
 
         # If user need reset card to default
         if reset and reset.value:
-            print("Reset: True")
+            # print("Reset: True")
             cursor.execute(
                 f"UPDATE levels SET background = '' WHERE user_id = {interaction.user.id} "
                 f"AND guild_id = {interaction.guild.id}")
             database.commit()
-            await interaction.response.send_message(f"You have reset your rank card to default!") # NOQA
+            await interaction.followup.send(f"You have reset your rank card to default!")
             return
 
         if image is not None:
             # print(image.content_type.split("/")[1])
             if image.content_type.split("/")[1] not in ["png", "jpg", "jpeg", "bmp", "gif", "tiff", "webp"]:
-                await interaction.response.send_message("Not allowed! Please, use only images.") # NOQA
+                await interaction.followup.send("Not allowed! Please, use only images.")
                 return
 
             # fetch, send image to assets channel for store.
@@ -354,7 +358,7 @@ class Leveling(commands.Cog):
                        f"{interaction.user.id} AND guild_id = {interaction.guild.id}")
         database.commit()
 
-        await interaction.response.send_message(f"You have updated your rank card design!")  # NOQA
+        await interaction.followup.send(f"You have updated your rank card design!")
 
     @app_commands.command(name="user_rank", description="Show user rank by mention.")
     async def user_rank(self, interaction: discord.Interaction, user: discord.Member):
