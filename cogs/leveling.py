@@ -6,7 +6,7 @@ from typing import Final
 import discord
 from discord import app_commands
 from discord.ext import commands
-import vacefron
+from disrank.generator import Generator
 import math
 import sqlite3
 from dotenv import load_dotenv
@@ -287,8 +287,8 @@ class Leveling(commands.Cog):
                             if alpha:
                                 pix_data[x, y] = (r, g, b, alpha)
 
-                # Resize and crop image to 1050x300px
-                min_width, min_height = 1050, 300
+                # Resize and crop image to 900x238px
+                min_width, min_height = 900, 238
                 ratio = min_width / min_height
 
                 with Image.open(image.fp).convert("RGBA") as background_image:
@@ -396,22 +396,40 @@ class Leveling(commands.Cog):
         next_lvl_xp = ((int(level) + 1) / 0.1) ** 2
         next_lvl_xp = int(next_lvl_xp)
 
-        rank_card = vacefron.Rankcard(
-            username=user.display_name,
-            avatar_url=user.avatar.url,
-            current_xp=exp,
-            next_level_xp=next_lvl_xp,
-            previous_level_xp=0,
-            level=int(level),
-            rank=rank,
-            circle_avatar=False,
-            background=background,
-            xp_color=str(user.color),
-            text_shadow_color="000000",
-        )
+        # rank_card = vacefron.Rankcard(
+        #     username=user.display_name,
+        #     avatar_url=user.avatar.url,
+        #     current_xp=exp,
+        #     next_level_xp=next_lvl_xp,
+        #     previous_level_xp=0,
+        #     level=int(level),
+        #     rank=rank,
+        #     circle_avatar=False,
+        #     background=background,
+        #     xp_color=str(user.color),
+        #     text_shadow_color="000000",
+        # )
 
-        card = await vacefron.Client().rank_card(rank_card)
-        await interaction.response.send_message(card.url) # NOQA
+        # card = await vacefron.Client().rank_card(rank_card)
+        user_status = interaction.guild.get_member(user.id).status
+
+        args = {
+            'bg_image': background,  # Background image link
+            'profile_image': user.avatar.url,  # User profile picture link
+            'level': int(level),  # User current level
+            'current_xp': int(level)**2 * 100,  # Current level minimum xp
+            'user_xp': exp,  # User current xp
+            'next_xp': next_lvl_xp,  # xp required for next level
+            'user_position': rank,  # User position in leaderboard
+            'user_name': user.display_name,  # user name with descriminator
+            'user_status': user_status.__str__(),  # User status eg. online, offline, idle, streaming, dnd
+            'xp_color': user.color.__str__(),
+        }
+
+        image = Generator().generate_profile(**args)
+        file = discord.File(fp=image, filename='image.png')
+
+        await interaction.response.send_message(file=file) # card.url # NOQA
 
 
 async def setup(bot):
