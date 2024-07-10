@@ -6,9 +6,9 @@ from typing import Final
 from dotenv import load_dotenv
 import os
 import logging
-from datetime import datetime
+from time import gmtime, strftime
 
-handler = logging.FileHandler(filename=f"./logs/{datetime.today().strftime('%Y-%m-%d')}.log", encoding='utf-8', mode="a")
+handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d--%H-%M-%S')}.log", encoding='utf-8', mode="a")
 
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
