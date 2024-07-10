@@ -1,11 +1,14 @@
+import datetime
+
 import discord
 from discord.ext import commands
 from typing import Final
 from dotenv import load_dotenv
 import os
 import logging
+from datetime import datetime
 
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode="a")
+handler = logging.FileHandler(filename=f"./logs/{datetime.today().strftime('%Y-%m-%d')}.log", encoding='utf-8', mode="a")
 
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
