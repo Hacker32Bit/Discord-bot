@@ -11,10 +11,10 @@ async def get_response(user_input: str) -> str:
         for i in tell_to_bot:
             lowered = lowered.replace(i, "")
 
-        result = subprocess.check_output(["python", "chatGPT.py", "--text", lowered], encoding='UTF-8', shell=True)
+        result = subprocess.check_output(["python", "chatGPT.py", "--text", lowered], shell=True)
 
         if result:
-            return result
+            return result.decode("utf-8")
 
         return "I don't know what happen with me :("
     elif lowered == "":
