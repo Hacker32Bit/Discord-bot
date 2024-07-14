@@ -1,7 +1,5 @@
 from random import randint
-import g4f
-import asyncio
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+import subprocess
 
 async def get_response(user_input: str) -> str:
     lowered: str = user_input.lower()
@@ -10,23 +8,15 @@ async def get_response(user_input: str) -> str:
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
                    "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!",]
     if any(map(lowered.__contains__, tell_to_bot)):
-        print("content:", lowered)
-
         for i in tell_to_bot:
             lowered = lowered.replace(i, "")
 
-        print("content:", lowered)
+        result = subprocess.check_output(["python", "chatGPT.py", "--text", lowered], encoding='UTF-8', shell=True)
 
-        completion = g4f.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": lowered}],
-            stream=True,
-        )
-        result = ""
-        for message in completion:
-            result += message
+        if result:
+            return result
 
-        return result
+        return "I don't know what happen with me :("
     elif lowered == "":
         return "Well you\'re awfully silent..."
     elif "hello" in lowered:
