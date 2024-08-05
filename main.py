@@ -1,4 +1,4 @@
-import datetime
+#!/home/gektor/projects/Discord-bot/bin/python
 
 import discord
 from discord.ext import commands
@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 import logging
 from time import strftime
-import aiocron
+
 
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
@@ -39,8 +39,7 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-@aiocron.crontab('0 13 * * *')
-async def main():
+if __name__ == "__main__":
     try:
         handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d--%H-%M-%S')}.log", encoding='utf-8',
                                       mode="a")
