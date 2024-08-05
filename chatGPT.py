@@ -1,5 +1,3 @@
-#!/home/gektor/projects/Discord-bot/bin/python
-
 from g4f.client import Client
 import asyncio
 import sys

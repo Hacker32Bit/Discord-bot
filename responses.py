@@ -11,7 +11,8 @@ async def get_response(user_input: str) -> str:
         for i in tell_to_bot:
             lowered = lowered.replace(i, "")
 
-        result = subprocess.check_output(["python", "chatGPT.py", "--text", lowered])
+        result = subprocess.check_output(["/home/gektor/projects/Discord-bot/bin/python", "chatGPT.py", "--text",
+                                          lowered])
 
         if result:
             return result.decode("utf-8")
