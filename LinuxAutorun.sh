@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python /home/gsb/socialbot.py
+python /home/gektor/projects/Discord-bot/main.py
