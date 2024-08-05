@@ -6,9 +6,8 @@ from typing import Final
 from dotenv import load_dotenv
 import os
 import logging
-from time import gmtime, strftime
-
-handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d--%H-%M-%S')}.log", encoding='utf-8', mode="a")
+from time import strftime
+import aiocron
 
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
@@ -40,8 +39,11 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-if __name__ == "__main__":
+@aiocron.crontab('0 13 * * *')
+async def main():
     try:
+        handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d--%H-%M-%S')}.log", encoding='utf-8',
+                                      mode="a")
         client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
     except discord.HTTPException as e:
         if e.status == 429:
