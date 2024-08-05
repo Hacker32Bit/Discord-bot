@@ -1,13 +1,14 @@
-#!/home/gektor/projects/Discord-bot/bin/python
-
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from typing import Final
 from dotenv import load_dotenv
 import os
 import logging
 from time import strftime
+import datetime
 
+utc = datetime.timezone.utc
+time = datetime.time(hour=8, minute=30, tzinfo=utc)
 
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
@@ -38,6 +39,10 @@ async def on_ready():
     await load_cogs()
     print('We have logged in as {0.user}'.format(client))
 
+
+@tasks.loop(time=time)
+async def my_task(self):
+    print("My task is running!")
 
 if __name__ == "__main__":
     try:
