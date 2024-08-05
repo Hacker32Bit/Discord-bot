@@ -1,5 +1,3 @@
-#!/home/gektor/projects/Discord-bot/bin/python
-
 import discord
 from discord.ext import commands, tasks
 from typing import Final
