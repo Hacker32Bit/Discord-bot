@@ -3,8 +3,8 @@ import asyncio
 import sys
 import argparse
 
-if sys.platform:
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+# if sys.platform:
+#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Define the parser
 parser = argparse.ArgumentParser(description='Short sample app')
