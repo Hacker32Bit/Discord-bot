@@ -1,3 +1,5 @@
+#!/home/gektor/projects/Discord-bot/bin/python
+
 import discord
 from discord.ext import commands, tasks
 from typing import Final
@@ -46,7 +48,7 @@ async def my_task(self):
 
 if __name__ == "__main__":
     try:
-        handler = logging.FileHandler(filename=f"./{strftime('%Y-%m-%d--%H-%M-%S')}.log", encoding='utf-8',
+        handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d--%H-%M-%S')}.log", encoding='utf-8',
                                       mode="a")
         client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
     except discord.HTTPException as e:
