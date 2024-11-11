@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python /home/gektor/projects/Discord-bot/main.py
+$HOME/Discord-bot/.venv/bin/python $HOME/Discord-bot/main.py
