@@ -39,7 +39,7 @@ async def on_ready():
 
 if __name__ == "__main__":
     try:
-        handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d--%H-%M-%S')}.log", encoding='utf-8',
+        handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H-%M-%S')}.log", encoding='utf-8',
                                       mode="a")
         client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
 

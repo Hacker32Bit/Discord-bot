@@ -162,4 +162,5 @@ cython_debug/
 database.sqlite
 WindowsAutorun.bat
 discord.log
+terminal_logs/
 logs/
