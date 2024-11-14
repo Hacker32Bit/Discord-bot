@@ -8,3 +8,4 @@ Bot for discord server "The lair of Hacker32Bit"
 5. Move database.sqlite and .env file to your folder(If exist)
 6. Move from files\_to\_copy to disrank module folder: generator.py, assets/card.png
 7. Run
+8. Configure crontab for run LinuxAutorun.sh with @reboot time(run every boot system)
