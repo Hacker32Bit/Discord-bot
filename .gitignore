@@ -164,3 +164,5 @@ WindowsAutorun.bat
 discord.log
 terminal_logs/
 logs/
+backups/
+

@@ -34,6 +34,7 @@ echo "========================================================================="
 
 # Run python script using python venv
 echo "Creating process and running python script..."
+cd $WORK_DIR
 timeout -s SIGINT $sleep_seconds $PYTHON_PATH $SCRIPT_PATH
 echo "Stopped process! Ready for creating backup..."
 
@@ -77,4 +78,3 @@ echo "========================================================================="
 # Restarting system for clear memory
 
 echo "Rebooting..."
-reboot
