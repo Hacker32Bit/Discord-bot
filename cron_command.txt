@@ -1,0 +1,3 @@
+HOME=/home/gektor
+PATH=/usr/bin
+@reboot /usr/bin/bash /home/gektor/Discord-bot/LinuxAutorun.sh > /home/gektor/Discord-bot/terminal_logs/"$(date '+\%Y-\%m-\%d \%H:\%M:\%S').log"; sleep 300; reboot
