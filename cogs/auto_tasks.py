@@ -17,7 +17,8 @@ class MyCog(commands.Cog):
 
     @tasks.loop(time=time)
     async def my_task(self):
-        print("Need close server!")
+        pass
+        # print("Need close server!")
 
 
 async def setup(client):
