@@ -77,4 +77,4 @@ echo "========================================================================="
 
 # Restarting system for clear memory
 
-echo "Rebooting..."
+echo "Need reboot..."
