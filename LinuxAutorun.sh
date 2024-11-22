@@ -47,9 +47,7 @@ echo "Checking gdrive availability and access..."
 if test -d $GDRIVE_PATH; then
   echo "gdrive mounted and available!"
 else
-  echo "Enabling rclone in systemctl..."
-  systemctl --user enable rclone@gdrive
-  echo "Starting..."
+  echo "Starting rclone in systemctl..."
   systemctl --user start rclone@gdrive
   echo "Adding loginctl..."
   loginctl enable-linger $USER
