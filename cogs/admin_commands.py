@@ -20,6 +20,12 @@ class AdminCommands(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Admin commands\" cog is ready!")
 
+    # Command for shutdown bot (restart bot)
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def shutdown(self, ctx):
+        await ctx.bot.logout()
+
     # Command for synchronize client slash commands with server commands
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
