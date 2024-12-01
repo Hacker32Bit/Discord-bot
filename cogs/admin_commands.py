@@ -25,7 +25,7 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def shutdown(self, ctx):
         print("[INFO] logging out...")
-        await self.client.logout()
+        await self.client.close()
 
     # Command for synchronize client slash commands with server commands
     @commands.command()
