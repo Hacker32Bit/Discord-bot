@@ -28,8 +28,8 @@ class MemberUpdate(commands.Cog):
 
         # Called when member status switch from online to offline
         if before.status is discord.Status.online and after.status is discord.Status.offline:
-            # print('was offline then online')
-            channel = self.client.get_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
+            # print(f'{after.name} is now {after.status}')
+            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             await channel.send(f'{after.name} is now {after.status}')
 
         # Change nickname alert
