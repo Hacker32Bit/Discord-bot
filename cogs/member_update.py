@@ -21,6 +21,7 @@ class MemberUpdate(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        print("Called on_member_update")
         # Give role when joined
         if before.pending and not after.pending:
             role = discord.utils.get(before.guild.roles, name="Member")
