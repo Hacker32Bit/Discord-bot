@@ -29,9 +29,7 @@ class MemberUpdate(commands.Cog):
         # Called when member status switch from online to offline
         if before.status != after.status:
             print(before.status, type(before.status))
-            print(discord.Status.online, type(discord.Status.online))
             print(after.status, type(after.status))
-            print(discord.Status.offline, type(discord.Status.offline))
             print(f'{before.name} is now {after.status}')
             channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             description = (
