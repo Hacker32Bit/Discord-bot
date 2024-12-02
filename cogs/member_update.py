@@ -27,14 +27,22 @@ class MemberUpdate(commands.Cog):
             await after.add_roles(role)
 
         # Called when member status switch from online to offline
-        print(before.status, type(before.status))
-        print(discord.Status.online, type(discord.Status.online))
-        print(after.status, type(after.status))
-        print(discord.Status.offline, type(discord.Status.offline))
-        if before.status is discord.Status.online and after.status is discord.Status.offline:
-            print(f'{after.name} is now {after.status}')
+        if before.status != after.status:
+            print(before.status, type(before.status))
+            print(discord.Status.online, type(discord.Status.online))
+            print(after.status, type(after.status))
+            print(discord.Status.offline, type(discord.Status.offline))
+            print(f'{before.name} is now {after.status}')
             channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
-            await channel.send(f'{after.name} is now {after.status}')
+            description = (
+                f"<:pepecringe:1240238403270737951> **{before.mention}** has changed status:"
+                f"From **{before.status}** to **{after.status}**!")
+            embed = discord.Embed(
+                description=description,
+                color=0xcddc39,
+                timestamp=datetime.datetime.now()
+            )
+            await channel.send(embed=embed)
 
         # Change nickname alert
         if before.nick != after.nick:
