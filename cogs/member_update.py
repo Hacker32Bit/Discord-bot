@@ -19,29 +19,13 @@ class MemberUpdate(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Member update\" cog is ready!")
 
+    # Called when member update
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        print("Called on_member_update")
         # Give role when joined
         if before.pending and not after.pending:
             role = discord.utils.get(before.guild.roles, name="Member")
             await after.add_roles(role)
-
-        # Called when member status switch from online to offline
-        if before.status != after.status:
-            print(before.status, type(before.status))
-            print(after.status, type(after.status))
-            print(f'{before.name} is now {after.status}')
-            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
-            description = (
-                f"<:pepecringe:1240238403270737951> **{before.mention}** has changed status:"
-                f"From **{before.status}** to **{after.status}**!")
-            embed = discord.Embed(
-                description=description,
-                color=0xcddc39,
-                timestamp=datetime.datetime.now()
-            )
-            await channel.send(embed=embed)
 
         # Change nickname alert
         if before.nick != after.nick:
@@ -62,6 +46,26 @@ class MemberUpdate(commands.Cog):
                 timestamp=datetime.datetime.now()
             )
             await channel.send(embed=embed)
+
+    # Called when member presence update
+    @commands.Cog.listener()
+    async def on_presence_update(self, before, after):
+
+        if before.status != after.status:  # logging your member's status
+            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
+            description = (
+                f"<:pepecringe:1240238403270737951> **{before.mention}** has changed status:"
+                f"From **{before.status}** to **{after.status}**!")
+            embed = discord.Embed(
+                description=description,
+                color=0xcddc39,
+                timestamp=datetime.datetime.now()
+            )
+            await channel.send(embed=embed)
+
+        if before.activity != after.activity:  # logging you member's activities
+            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
+            await channel.send(f"""{after}'s activity changed from {before.activity} to {after.activity}""")
 
 
 async def setup(client):
