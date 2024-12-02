@@ -54,18 +54,26 @@ class MemberUpdate(commands.Cog):
         if before.status != after.status:  # logging your member's status
             channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             description = (
-                f"<:pepecringe:1240238403270737951> **{before.mention}** has changed status:"
+                f"**{before.mention}**'s activity changed!\n"
                 f"From **{before.status}** to **{after.status}**!")
             embed = discord.Embed(
                 description=description,
-                color=0xcddc39,
+                color=0xcddc39 if after.status == "online" else 0xff9800,
                 timestamp=datetime.datetime.now()
             )
             await channel.send(embed=embed)
 
         if before.activity != after.activity:  # logging you member's activities
             channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
-            await channel.send(f"""{after}'s activity changed from {before.activity} to {after.activity}""")
+            description = (
+                f"**{before.mention}**'s activity changed!\n"
+                f"From **{before.activity}** to **{after.activity}**!")
+            embed = discord.Embed(
+                description=description,
+                color=0xcddc39,
+                timestamp=datetime.datetime.now()
+            )
+            await channel.send(embed=embed)
 
 
 async def setup(client):
