@@ -57,10 +57,10 @@ echo "Stopped process! Ready for creating backup..."
 
 echo "====== Before start backups ============================================="
 
-echo "Checking internet availability and waiting for access to network..."
+echo "Checking internet(Google Drive service) availability and waiting for access to network..."
 
-while ! ping -c 1 -W 1 google.com; do
-    echo "Waiting for google.com - network interface might be down..."
+while ! ping -c 1 -W 1 drive.google.com; do
+    echo "Waiting for drive.google.com - network interface might be down..."
     sleep 30
 done
 echo "Connected!"
