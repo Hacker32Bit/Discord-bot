@@ -95,7 +95,7 @@ while True:
     if GPIO.input(4) == GPIO.HIGH:
         output_result += "Power Adapter Unplug" + "\n"
 
-    output_result += "---------------------------------------" + "\n"
+    output_result += "----------------------------------------" + "\n"
 
     time.sleep(60)
 

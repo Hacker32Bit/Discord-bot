@@ -15,7 +15,6 @@ echo() {
 }
 
 
-
 echo "====== Script started! =================================================="
 
 echo "Calculating time..."
@@ -43,6 +42,10 @@ while ! ping -c 1 -W 1 google.com; do
 done
 echo "Connected!"
 
+echo "-------------------------------------------------------------------------"
+
+echo "Updating project from GitHub..."
+git pull
 
 
 echo "====== Starting discord.py script ======================================="
