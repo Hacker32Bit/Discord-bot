@@ -44,8 +44,8 @@ QuickStart(bus)
 
 output_result = ""
 
-output_result += "  "
-output_result += "Initialize the CW2015 ......"
+output_result += "  " + "\n"
+output_result += "Initialize the CW2015 ......" + "\n"
 
 GET_THROTTLED_CMD = 'vcgencmd get_throttled'
 MESSAGES = {
@@ -62,36 +62,36 @@ MESSAGES = {
 throttled_output = check_output(GET_THROTTLED_CMD, shell=True)
 throttled_binary = bin(int(str(throttled_output).split('=')[1].split('\\n')[0], 0))
 
-output_result += "+" + str(datetime.datetime.now()) + "++++++++"
-output_result += str(throttled_output)
+output_result += "+" + str(datetime.datetime.now()) + "++++++++" + "\n"
+output_result += str(throttled_output) + "\n"
 
 warnings = 0
 for position, message in MESSAGES.items():
     # Check for the binary digits to be "on" for each warning message
     if len(throttled_binary) > position and throttled_binary[0 - position - 1] == '1':
-        output_result += message
+        output_result += message + "\n"
         warnings += 1
 if warnings == 0:
-    output_result += "Looking good!"
+    output_result += "Looking good!" + "\n"
 else:
-    output_result += "Houston, we may have a problem!"
+    output_result += "Houston, we may have a problem!" + "\n"
 
-output_result += "Voltage:%5.2fV" % readVoltage(bus)
-output_result += "Battery:%5i%%" % readCapacity(bus)
+output_result += "Voltage:%5.2fV" % readVoltage(bus) + "\n"
+output_result += "Battery:%5i%%" % readCapacity(bus) + "\n"
 
 if readCapacity(bus) == 100:
-    output_result += "Battery FULL"
+    output_result += "Battery FULL" + "\n"
 if readCapacity(bus) < 5:
-    output_result += "Battery LOW"
+    output_result += "Battery LOW" + "\n"
     call("sudo shutdown -h now", shell=True)
 
 #The following is the power plug detection judgment program of V1.2 version. GPIO is low when power is plugged in
 if (GPIO.input(4) == GPIO.LOW):
-    output_result += "Power Adapter Plug In"
+    output_result += "Power Adapter Plug In" + "\n"
 if (GPIO.input(4) == GPIO.HIGH):
-    output_result += "Power Adapter Unplug"
+    output_result += "Power Adapter Unplug" + "\n"
     # ----------------------------------------
 
-    output_result += "-------------------------------------"
+    output_result += "-------------------------------------" + "\n"
 
 print(output_result)
