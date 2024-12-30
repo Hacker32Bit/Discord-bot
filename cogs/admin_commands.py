@@ -35,7 +35,7 @@ class AdminCommands(commands.Cog):
         result = subprocess.check_output(["python", "server_state.py"], shell=True)
 
         if result:
-            await ctx.send(result.decode("utf-8"))
+            await ctx.send(result)
         else:
             await ctx.send("I got errors (")
 
