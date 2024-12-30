@@ -42,7 +42,7 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def temp_status(self, ctx):
         try:
-            result = check_output(["source", "scripts/my_pi_temp.sh"]).strip().decode("utf-8")
+            result = check_output(["/usr/bin/bash", "scripts/my_pi_temp.sh"]).strip().decode("utf-8")
             await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
