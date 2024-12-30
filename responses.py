@@ -1,6 +1,11 @@
 from random import randint
 import subprocess
+from dotenv import load_dotenv
+from typing import Final
+import os
 
+load_dotenv()
+PROJECT_PATH: Final[str] = os.getenv("PROJECT_PATH")
 
 async def get_response(user_input: str) -> str:
     lowered: str = user_input.lower()
@@ -12,7 +17,7 @@ async def get_response(user_input: str) -> str:
         for i in tell_to_bot:
             lowered = lowered.replace(i, "")
 
-        result = subprocess.check_output(["/home/gektor/Discord-bot/.venv/bin/python", "scripts/chatGPT.py", "--text",
+        result = subprocess.check_output([PROJECT_PATH + "/.venv/bin/python", "scripts/chatGPT.py", "--text",
                                           lowered])
 
         if result:
