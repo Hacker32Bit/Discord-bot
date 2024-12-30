@@ -7,7 +7,7 @@ import datetime
 from dotenv import load_dotenv
 from typing import Final
 import os
-import subprocess
+from subprocess import check_output
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
@@ -31,11 +31,20 @@ class AdminCommands(commands.Cog):
     # Command for get server state
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def battery_state(self, ctx):
+    async def battery_status(self, ctx):
         try:
             f = open("/tmp/battery_state.txt", "r")
             await ctx.send(f.read())
         except FileNotFoundError as e:
+            await ctx.send(e)
+
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def temp_status(self, ctx):
+        try:
+            result = check_output("./scripts/my_pi_temp.sh").strip().decode("utf-8")
+            await ctx.send(result)
+        except Exception as e:
             await ctx.send(e)
 
     # Command for synchronize client slash commands with server commands
