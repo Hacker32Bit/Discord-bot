@@ -32,7 +32,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def server_state(self, ctx):
-        result = subprocess.check_output(["/usr/bin/python", "server_state.py"], shell=True)
+        result = subprocess.check_output(["python", "../server_state.py"])
 
         if result:
             await ctx.send(result)

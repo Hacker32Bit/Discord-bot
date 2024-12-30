@@ -94,4 +94,4 @@ if (GPIO.input(4) == GPIO.HIGH):
 
     output_result += "-------------------------------------" + "\n"
 
-print(output_result)
+print(output_result, flush=True, end="")
