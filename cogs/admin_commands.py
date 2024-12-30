@@ -7,6 +7,7 @@ import datetime
 from dotenv import load_dotenv
 from typing import Final
 import os
+import subprocess
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
@@ -26,6 +27,17 @@ class AdminCommands(commands.Cog):
     async def shutdown(self, ctx):
         print("[INFO] logging out...")
         await self.client.close()
+
+    # Command for get server state
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def server_state(self, ctx):
+        result = subprocess.check_output(["python", "server_state.py"])
+
+        if result:
+            await ctx.send(result.decode("utf-8"))
+        else:
+            await ctx.send("I got errors (")
 
     # Command for synchronize client slash commands with server commands
     @commands.command()
