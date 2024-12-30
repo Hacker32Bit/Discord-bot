@@ -1,12 +1,13 @@
 from random import randint
 import subprocess
 
+
 async def get_response(user_input: str) -> str:
     lowered: str = user_input.lower()
 
     tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
-                   "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!",]
+                   "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!", ]
     if any(map(lowered.__contains__, tell_to_bot)):
         for i in tell_to_bot:
             lowered = lowered.replace(i, "")
