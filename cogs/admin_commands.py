@@ -31,13 +31,13 @@ class AdminCommands(commands.Cog):
     # Command for get server state
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def server_state(self, ctx):
-        result = subprocess.check_output(["python", "server_state.py"])
+    async def battary_state(self, ctx):
+        f = open("/tmp/battary_state.txt", "r")
 
-        if result:
-            await ctx.send(result.decode("utf-8"))
+        if f:
+            await ctx.send(f.read())
         else:
-            await ctx.send("I got errors (")
+            await ctx.send("I cant read battary_state.txt file.")
 
     # Command for synchronize client slash commands with server commands
     @commands.command()
