@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 import struct
 import smbus
-import sys
 import time
 import RPi.GPIO as GPIO
 from subprocess import check_output, call
 import datetime
-import os
 
 CW2015_ADDRESS = 0X62
 CW2015_REG_MODE = 0X0A
@@ -89,6 +87,7 @@ while True:
         output_result += "Battery FULL" + "\n"
     if read_capacity(bus) < 5:
         output_result += "Battery LOW" + "\n"
+        call("sudo shutdown -h now", shell=True)
 
     # The following is the power plug detection judgment program of V1.2 version. GPIO is low when power is plugged in
     if GPIO.input(4) == GPIO.LOW:
@@ -96,9 +95,9 @@ while True:
     if GPIO.input(4) == GPIO.HIGH:
         output_result += "Power Adapter Unplug" + "\n"
 
-    output_result += "-------------------------------------" + "\n"
+    output_result += "---------------------------------------" + "\n"
 
-    time.sleep(3)
+    time.sleep(60)
 
     f = open("/tmp/battery_state.txt", "w")
     f.write(output_result)
