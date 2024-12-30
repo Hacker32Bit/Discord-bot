@@ -11,7 +11,7 @@ async def get_response(user_input: str) -> str:
         for i in tell_to_bot:
             lowered = lowered.replace(i, "")
 
-        result = subprocess.check_output(["/home/gektor/Discord-bot/.venv/bin/python", "chatGPT.py", "--text",
+        result = subprocess.check_output(["/home/gektor/Discord-bot/.venv/bin/python", "scripts/chatGPT.py", "--text",
                                           lowered])
 
         if result:

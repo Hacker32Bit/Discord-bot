@@ -31,13 +31,12 @@ class AdminCommands(commands.Cog):
     # Command for get server state
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def battary_state(self, ctx):
-        f = open("/tmp/battary_state.txt", "r")
-
-        if f:
+    async def battery_state(self, ctx):
+        try:
+            f = open("/tmp/battery_state.txt", "r")
             await ctx.send(f.read())
-        else:
-            await ctx.send("I cant read battary_state.txt file.")
+        except FileNotFoundError as e:
+            await ctx.send(e)
 
     # Command for synchronize client slash commands with server commands
     @commands.command()
