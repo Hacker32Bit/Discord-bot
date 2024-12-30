@@ -63,7 +63,7 @@ throttled_output = check_output(GET_THROTTLED_CMD, shell=True)
 throttled_binary = bin(int(str(throttled_output).split('=')[1].split('\\n')[0], 0))
 
 output_result += "+" + str(datetime.datetime.now()) + "++++++++"
-output_result += throttled_output
+output_result += str(throttled_output)
 
 warnings = 0
 for position, message in MESSAGES.items():
