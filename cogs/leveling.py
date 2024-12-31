@@ -396,21 +396,6 @@ class Leveling(commands.Cog):
         next_lvl_xp = ((int(level) + 1) / 0.1) ** 2
         next_lvl_xp = int(next_lvl_xp)
 
-        # rank_card = vacefron.Rankcard(
-        #     username=user.display_name,
-        #     avatar_url=user.avatar.url,
-        #     current_xp=exp,
-        #     next_level_xp=next_lvl_xp,
-        #     previous_level_xp=0,
-        #     level=int(level),
-        #     rank=rank,
-        #     circle_avatar=False,
-        #     background=background,
-        #     xp_color=str(user.color),
-        #     text_shadow_color="000000",
-        # )
-
-        # card = await vacefron.Client().rank_card(rank_card)
         user_status = interaction.guild.get_member(user.id).status
 
         args = {
@@ -421,7 +406,7 @@ class Leveling(commands.Cog):
             'user_xp': exp,  # User current xp
             'next_xp': next_lvl_xp,  # xp required for next level
             'user_position': rank,  # User position in leaderboard
-            'user_name': user.display_name,  # user name with descriminator
+            'user_name': user.display_name,  # username with descriminator
             'user_status': user_status.__str__(),  # User status eg. online, offline, idle, streaming, dnd
             'xp_color': user.color.__str__(),
         }

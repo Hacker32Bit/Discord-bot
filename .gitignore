@@ -166,3 +166,5 @@ terminal_logs/
 logs/
 backups/
 
+assets/images/rank_cards/*
+!assets/images/rank_cards/.gitkeep
