@@ -33,7 +33,7 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def battery_status(self, ctx):
         try:
-            f = open("/tmp/battery_status.txt", "r")
+            f = open("/tmp/battery_status", "r")
             await ctx.send(f.read())
         except FileNotFoundError as e:
             await ctx.send(e)

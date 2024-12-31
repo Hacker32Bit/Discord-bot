@@ -57,7 +57,7 @@ MESSAGES = {
     19: 'Soft temperature limit has occurred'
 }
 
-f = open("/tmp/battery_state.txt", "w")
+f = open("/tmp/battery_status", "w")
 f.write(output_result)
 f.close()
 
@@ -102,6 +102,6 @@ while True:
 
     time.sleep(60)
 
-    f = open("/tmp/battery_state.txt", "w")
+    f = open("/tmp/battery_status", "w")
     f.write(output_result)
     f.close()
