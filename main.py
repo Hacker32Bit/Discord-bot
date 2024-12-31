@@ -10,8 +10,6 @@ from time import strftime
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
 APPLICATION_ID: Final[str] = os.getenv("APPLICATION_ID")
-GUILD_ID: Final[int] = int(os.getenv("GUILD_ID"))
-
 
 # Bot setup
 intents: discord.Intents = discord.Intents.default()
@@ -36,12 +34,6 @@ async def load_cogs():
 @client.event
 async def on_ready():
     await load_cogs()
-    try:
-        synced = await client.tree.sync()
-        print(f"Synced {len(synced)} command(s)")
-    except Exception as err:
-        print(err)
-
     print('We have logged in as {0.user}'.format(client))
 
 

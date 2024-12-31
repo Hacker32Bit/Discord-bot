@@ -47,12 +47,12 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-    # # Command for synchronize client slash commands with server commands
-    # @commands.command()
-    # @commands.has_any_role("Owner", "Admin")
-    # async def sync(self, ctx) -> None:
-    #     fmt = await ctx.bot.tree.sync(guild=ctx.guild)
-    #     await ctx.send(f"synced {len(fmt)} commands")
+    # Command for synchronize client slash commands with server commands
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def sync(self, ctx) -> None:
+        fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+        await ctx.send(f"synced {len(fmt)} commands")
 
     # Command for add manually join user log in log channel
     @commands.command()
