@@ -414,7 +414,7 @@ class Leveling(commands.Cog):
             'user_xp': exp,  # User current xp
             'next_xp': next_lvl_xp,  # xp required for next level
             'user_position': rank,  # User position in leaderboard
-            'user_name': user.display_name.encode(encoding='utf-8').decode(encoding='cp1251', errors='strict'),
+            'user_name': user.display_name.encode(encoding='cp1251').decode(encoding='utf-8'),
             # username with descriminator
             'user_status': user_status.__str__(),  # User status eg. online, offline, idle, streaming, dnd
             'xp_color': user.color.__str__(),
@@ -423,7 +423,9 @@ class Leveling(commands.Cog):
         image = Generator().generate_profile(**args)
         file = discord.File(fp=image, filename='image.png')
 
-        await interaction.response.send_message(file=file) # card.url # NOQA
+        print(user.display_name)
+
+        await interaction.response.send_message(file=file) # NOQA
 
 
 async def setup(bot):
