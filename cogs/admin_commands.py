@@ -51,7 +51,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def sync(self, ctx) -> None:
-        fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+        fmt = await ctx.bot.tree.sync()
         await ctx.send(f"synced {len(fmt)} commands")
 
     # Command for add manually join user log in log channel

@@ -206,7 +206,6 @@ class Leveling(commands.Cog):
         return t * res
 
     @app_commands.command(name="rank", description="Show user rank card.")
-    @app_commands.guilds(int(GUILD_ID))
     async def rank(self, interaction: discord.Interaction):
         await self.show_rank(interaction)
 
