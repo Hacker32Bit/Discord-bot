@@ -87,13 +87,16 @@ while True:
         output_result += "Battery FULL" + "\n"
     if read_capacity(bus) < 70:
         output_result += "Battery LOW" + "\n"
-        call("sudo shutdown -h now", shell=True)
 
     # The following is the power plug detection judgment program of V1.2 version. GPIO is low when power is plugged in
     if GPIO.input(4) == GPIO.LOW:
         output_result += "Power Adapter Plug In" + "\n"
+        if read_capacity(bus) < 5:
+            call("sudo shutdown -h now", shell=True)
     if GPIO.input(4) == GPIO.HIGH:
         output_result += "Power Adapter Unplug" + "\n"
+        if read_capacity(bus) < 10:
+            call("sudo shutdown -h now", shell=True)
 
     output_result += "----------------------------------------" + "\n"
 
