@@ -275,7 +275,7 @@ class Leveling(commands.Cog):
             await assets_channel.send(f"User: {interaction.user.mention}, Color: {color}, Reset: {reset}\n"
                                       f"Background: ", file=image)
 
-            with Image.open("assets/images/ranked_card_frame.png").convert("RGBA") as frame:
+            with Image.open("assets/images/ranked_card_frame.png") as frame:
                 # Set color on frame if user typed color in HEX
                 if color:
                     (r, g, b) = ImageColor.getcolor(color, "RGB")
@@ -291,7 +291,7 @@ class Leveling(commands.Cog):
                 min_width, min_height = 900, 238
                 ratio = min_width / min_height
 
-                with Image.open(image.fp).convert("RGBA") as background_image:
+                with Image.open(image.fp) as background_image:
                     width, height = background_image.size
 
                     # check ratio difference for resize by width or height
@@ -323,7 +323,7 @@ class Leveling(commands.Cog):
                     background_image_sized = background_image_sized.crop((left, top, right, bottom))
 
                     # Add frame to background
-                    background_image_sized.paste(frame, (0, 0), Image.open(background_image_sized))
+                    background_image_sized.paste(frame, (0, 0), frame.convert('RGBA'))
 
                     with io.BytesIO() as image_binary:
                         background_image_sized.save(image_binary, format="PNG")
