@@ -336,19 +336,18 @@ class Leveling(commands.Cog):
             # fetch, send frame to assets channel for store.
             assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
 
-            with Image.open("assets/images/ranked_card_frame.png").convert("RGBA") as frame:
+            with Image.open("assets/images/ranked_card_frame.png") as frame:
                 with Image.open("assets/images/default_rank_card.png") as background_image_sized:
                     (r, g, b) = ImageColor.getcolor(color, "RGB")
 
                     pix_data = background_image_sized.load()
-                    for y in range(frame.size[1]):
-                        for x in range(frame.size[0]):
+                    for y in range(background_image_sized.size[1]):
+                        for x in range(background_image_sized.size[0]):
                             alpha = pix_data[x, y][3]
                             if alpha:
                                 pix_data[x, y] = (r, g, b, alpha)
 
-                    #background_image_sized.paste(frame, (0, 0), frame.convert('RGBA'))
-                    background_image_sized = Image.composite(frame, background_image_sized, frame)
+                    background_image_sized.paste(frame, (0, 0), frame.convert('RGBA'))
 
                     with io.BytesIO() as image_binary:
                         background_image_sized.save(image_binary, 'PNG')
