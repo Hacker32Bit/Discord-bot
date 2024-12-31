@@ -285,7 +285,7 @@ class Leveling(commands.Cog):
                         for x in range(frame.size[0]):
                             alpha = pix_data[x, y][3]
                             if alpha:
-                                pix_data[x, y] = (r, g, b, alpha)
+                                pix_data[x, y] = (r, g, b)
 
                 # Resize and crop image to 900x238px
                 min_width, min_height = 900, 238
@@ -345,7 +345,7 @@ class Leveling(commands.Cog):
                         for x in range(frame.size[0]):
                             alpha = pix_data[x, y][3]
                             if alpha:
-                                pix_data[x, y] = (r, g, b, alpha)
+                                pix_data[x, y] = (r, g, b)
 
                     background_image_sized.paste(frame, (0, 0), frame)
 
