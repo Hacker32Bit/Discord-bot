@@ -25,7 +25,7 @@ database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS levels(user_id INTEGER, guild_id INTEGER, exp INTEGER, level INTEGER, 
-                last_lvl INTEGER, background TEXT)""")
+                last_lvl INTEGER, background INTEGER)""")
 
 
 class Leveling(commands.Cog):
@@ -53,7 +53,7 @@ class Leveling(commands.Cog):
 
         if result is None:
             cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
-                           f"VALUES({message.author.id}, {message.guild.id}, 0, 0, 0, ' ')")
+                           f"VALUES({message.author.id}, {message.guild.id}, 0, 0, 0, 0)")
             database.commit()
         else:
             user_id, guild_id, exp, level, last_lvl = result
@@ -124,7 +124,7 @@ class Leveling(commands.Cog):
 
         if result is None:
             cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
-                           f"VALUES({member.id}, {member.guild.id}, 0, 0, 0, ' ')")
+                           f"VALUES({member.id}, {member.guild.id}, 0, 0, 0, 0)")
             database.commit()
 
         if not before.channel and after.channel:
@@ -330,7 +330,7 @@ class Leveling(commands.Cog):
                         background_image_sized.save(f"assets/images/rank_cards/{interaction.user.id}.png", format="PNG")
                         image_binary.seek(0)
                         result = discord.File(fp=image_binary, filename="rank_card.png")
-                        message = await assets_channel.send(f"Ranked card result: ", file=result)
+                        await assets_channel.send(f"Ranked card result: ", file=result)
 
         elif color:
             # fetch, send frame to assets channel for store.
@@ -354,7 +354,7 @@ class Leveling(commands.Cog):
                         background_image_sized.save(f"assets/images/rank_cards/{interaction.user.id}.png", format="PNG")
                         image_binary.seek(0)
                         result = discord.File(fp=image_binary, filename='rank.png')
-                        message = await assets_channel.send(f"Ranked card result: ", file=result)
+                        await assets_channel.send(f"Ranked card result: ", file=result)
 
         cursor.execute(f"UPDATE levels SET background = 1 WHERE user_id = "
                        f"{interaction.user.id} AND guild_id = {interaction.guild.id}")
