@@ -37,7 +37,7 @@ async def load_cogs():
 async def on_ready():
     await load_cogs()
     try:
-        synced = await client.tree.sync(guild=discord.Object(id=GUILD_ID))
+        synced = await client.tree.sync()
         print(f"Synced {len(synced)} command(s)")
     except Exception as err:
         print(err)
