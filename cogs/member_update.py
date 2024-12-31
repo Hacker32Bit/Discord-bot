@@ -51,7 +51,7 @@ class MemberUpdate(commands.Cog):
     @commands.Cog.listener()
     async def on_presence_update(self, before, after):
 
-        if before.status != after.status:  # logging your member's status
+        if before and after and before.status != after.status:  # logging your member's status
             channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             description = (
                 f"**{before.mention}**'s status changed!\n"
@@ -63,7 +63,7 @@ class MemberUpdate(commands.Cog):
             )
             await channel.send(embed=embed)
 
-        if before.activity != after.activity:  # logging you member's activities
+        if before and after and before.activity != after.activity:  # logging you member's activities
             channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             description = (
                 f"**{before.mention}**'s activity changed!\n"
