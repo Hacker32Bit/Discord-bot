@@ -337,7 +337,7 @@ class Leveling(commands.Cog):
             assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
 
             with Image.open("assets/images/ranked_card_frame.png") as frame:
-                with Image.open("assets/images/default_rank_card.png") as background_image_sized:
+                with Image.open("assets/images/blank_rank_card.png") as background_image_sized:
                     (r, g, b) = ImageColor.getcolor(color, "RGB")
 
                     pix_data = frame.load()
