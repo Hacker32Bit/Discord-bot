@@ -7,6 +7,7 @@ DISCORD_LOGS_PATH=$WORK_DIR/logs
 PYTHON_PATH=$WORK_DIR/.venv/bin/python
 SCRIPT_PATH=$WORK_DIR/main.py
 GDRIVE_PATH=$HOME/mnt/gdrive/Discord-bot
+RANK_CARDS=$WORK_DIR/assets/images/rank_cards
 END_TIME="06:00:00" # Set time when system should be reboot
 
 cd $WORK_DIR
@@ -111,6 +112,8 @@ echo "Copying Discord logs to gdrive..."
 cp -r -u -v $DISCORD_LOGS_PATH/. $GDRIVE_PATH/backups/logs/
 echo "Copying database.sqlite to gdrive..."
 cp -v $WORK_DIR/database.sqlite $GDRIVE_PATH/backups/databases/"$current_timestamp.sqlite"
+echo "Copying assets folder to gdrive..."
+cp -r -u -v $RANK_CARDS/. $GDRIVE_PATH/backups/assets/images/rank_cards/
 echo "Completed!"
 
 
