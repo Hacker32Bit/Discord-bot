@@ -404,6 +404,8 @@ class Leveling(commands.Cog):
                                        f'{interaction.user.id}.png') if background \
             else os.path.join(os.path.dirname(__file__), 'assets', 'images', 'default_rank_card.png')
 
+        print(background_link)
+
         args = {
             'bg_image': background_link,  # Background image link
             'profile_image': user.avatar.url,  # User profile picture link
