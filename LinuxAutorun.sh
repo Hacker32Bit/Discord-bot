@@ -77,8 +77,6 @@ echo "-------------------------------------------------------------------------"
 echo "Updating from gdrive '.env', 'database.sqlite', and 'assets/' if they are different..."
 gdrive_check
 
-echo "Checking and updating database.sqlite from gdrive..."
-rsync -c -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
 echo "Checking and updating .env from gdrive..."
 rsync -c -v $GDRIVE_PATH/.env $WORK_DIR/.env
 echo "Checking and updating assets directory from gdrive..."
