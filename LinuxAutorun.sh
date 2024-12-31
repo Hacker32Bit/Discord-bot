@@ -77,9 +77,9 @@ echo "Updating from gdrive '.env', 'database.sqlite', and 'assets/' if they are 
 gdrive_check()
 
 echo "Checking and updating database.sqlite from gdrive..."
-cp -r -u -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
+cp -u -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
 echo "Checking and updating .env from gdrive..."
-cp -r -u -v $GDRIVE_PATH/.env $WORK_DIR/.env
+cp -u -v $GDRIVE_PATH/.env $WORK_DIR/.env
 echo "Checking and updating assets directory from gdrive..."
 cp -r -u -v $GDRIVE_PATH/backups/assets/. $WORK_DIR/assets/
 echo "Completed!"
