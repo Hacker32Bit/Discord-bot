@@ -78,11 +78,11 @@ echo "Updating from gdrive '.env', 'database.sqlite', and 'assets/' if they are 
 gdrive_check
 
 echo "Checking and updating database.sqlite from gdrive..."
-cp -u -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
+rsync -c -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
 echo "Checking and updating .env from gdrive..."
-cp -u -v $GDRIVE_PATH/.env $WORK_DIR/.env
+rsync -c -v $GDRIVE_PATH/.env $WORK_DIR/.env
 echo "Checking and updating assets directory from gdrive..."
-cp -r -u -v $GDRIVE_PATH/backups/assets/* $WORK_DIR/assets/
+rsync -r -c -v $GDRIVE_PATH/backups/assets/ $WORK_DIR/assets/
 echo "Completed!"
 
 
@@ -107,13 +107,13 @@ gdrive_check
 
 current_timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 echo "Copying previous terminal logs to gdrive..."
-cp -r -u -v $TERMINAL_LOGS_PATH/* $GDRIVE_PATH/backups/terminal_logs/
+rsync -r -c -v $TERMINAL_LOGS_PATH/ $GDRIVE_PATH/backups/terminal_logs/
 echo "Copying Discord logs to gdrive..."
-cp -r -u -v $DISCORD_LOGS_PATH/* $GDRIVE_PATH/backups/logs/
+rsync -r -c -v $DISCORD_LOGS_PATH/ $GDRIVE_PATH/backups/logs/
 echo "Copying database.sqlite to gdrive..."
-cp -v $WORK_DIR/database.sqlite $GDRIVE_PATH/backups/databases/"$current_timestamp.sqlite"
+rsync -v $WORK_DIR/database.sqlite $GDRIVE_PATH/backups/databases/"$current_timestamp.sqlite"
 echo "Copying assets folder to gdrive..."
-cp -r -u -v $RANK_CARDS/* $GDRIVE_PATH/backups/assets/images/rank_cards/
+rsync -r -c -v $RANK_CARDS/ $GDRIVE_PATH/backups/assets/images/rank_cards/
 echo "Completed!"
 
 
