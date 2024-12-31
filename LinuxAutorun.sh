@@ -9,6 +9,9 @@ SCRIPT_PATH=$WORK_DIR/main.py
 GDRIVE_PATH=$HOME/mnt/gdrive/Discord-bot
 END_TIME="06:00:00" # Set time when system should be reboot
 
+cd $WORK_DIR
+
+
 echo() {
   command echo $(date '+%Y-%m-%d %H:%M:%S') "$@"
 }
@@ -42,9 +45,6 @@ connection_check() {
   done
   echo "Connected!"
 }
-
-
-cd $WORK_DIR
 
 echo "====== Script started! =================================================="
 
