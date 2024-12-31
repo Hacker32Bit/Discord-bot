@@ -323,7 +323,7 @@ class Leveling(commands.Cog):
                     background_image_sized = background_image_sized.crop((left, top, right, bottom))
 
                     # Add frame to background
-                    background_image_sized.paste(frame, (0, 0), background_image_sized)
+                    background_image_sized.paste(frame, (0, 0), Image.open(background_image_sized))
 
                     with io.BytesIO() as image_binary:
                         background_image_sized.save(image_binary, format="PNG")
