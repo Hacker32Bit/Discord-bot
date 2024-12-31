@@ -85,7 +85,7 @@ while True:
 
     if read_capacity(bus) == 100:
         output_result += "Battery FULL" + "\n"
-    if read_capacity(bus) < 5:
+    if read_capacity(bus) < 75:
         output_result += "Battery LOW" + "\n"
         call("sudo shutdown -h now", shell=True)
 
