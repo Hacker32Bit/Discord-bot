@@ -285,7 +285,7 @@ class Leveling(commands.Cog):
                         for x in range(frame.size[0]):
                             alpha = pix_data[x, y][3]
                             if alpha:
-                                pix_data[x, y] = (r, g, b)
+                                pix_data[x, y] = (r, g, b, alpha)
 
                 # Resize and crop image to 900x238px
                 min_width, min_height = 900, 238
@@ -323,7 +323,7 @@ class Leveling(commands.Cog):
                     background_image_sized = background_image_sized.crop((left, top, right, bottom))
 
                     # Add frame to background
-                    background_image_sized.paste(frame, (0, 0), frame)
+                    background_image_sized.paste(frame, (0, 0), background_image_sized)
 
                     with io.BytesIO() as image_binary:
                         background_image_sized.save(image_binary, format="PNG")
@@ -345,7 +345,7 @@ class Leveling(commands.Cog):
                         for x in range(frame.size[0]):
                             alpha = pix_data[x, y][3]
                             if alpha:
-                                pix_data[x, y] = (r, g, b)
+                                pix_data[x, y] = (r, g, b, alpha)
 
                     background_image_sized.paste(frame, (0, 0), frame)
 
