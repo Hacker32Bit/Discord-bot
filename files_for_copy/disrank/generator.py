@@ -69,9 +69,9 @@ class Generator:
         # Editing stuff here
 
         # ======== Fonts to use =============
-        font_normal = ImageFont.truetype(self.font1, 36)
-        font_small = ImageFont.truetype(self.font1, 20)
-        font_signa = ImageFont.truetype(self.font2, 25)
+        font_normal = ImageFont.truetype(self.font1, 36, encoding="utf-8")
+        font_small = ImageFont.truetype(self.font1, 20, encoding="utf-8")
+        font_signa = ImageFont.truetype(self.font2, 25, encoding="utf-8")
 
         # ======== Colors ========================
 
