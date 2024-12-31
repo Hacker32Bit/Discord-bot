@@ -340,9 +340,9 @@ class Leveling(commands.Cog):
                 with Image.open("assets/images/default_rank_card.png") as background_image_sized:
                     (r, g, b) = ImageColor.getcolor(color, "RGB")
 
-                    pix_data = background_image_sized.load()
-                    for y in range(background_image_sized.size[1]):
-                        for x in range(background_image_sized.size[0]):
+                    pix_data = frame.load()
+                    for y in range(frame.size[1]):
+                        for x in range(frame.size[0]):
                             alpha = pix_data[x, y][3]
                             if alpha:
                                 pix_data[x, y] = (r, g, b, alpha)
