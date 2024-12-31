@@ -250,14 +250,14 @@ class Leveling(commands.Cog):
         # if data not exist add empty values
         if result is None:
             cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
-                           f"VALUES({interaction.user.id}, {interaction.guild.id}, 0, 0, 0, '')")
+                           f"VALUES({interaction.user.id}, {interaction.guild.id}, 0, 0, 0, 0)")
             database.commit()
 
         # If user need reset card to default
         if reset and reset.value:
             # print("Reset: True")
             cursor.execute(
-                f"UPDATE levels SET background = '' WHERE user_id = {interaction.user.id} "
+                f"UPDATE levels SET background = 0 WHERE user_id = {interaction.user.id} "
                 f"AND guild_id = {interaction.guild.id}")
             database.commit()
             await interaction.followup.send(f"You have reset your rank card to default!")
@@ -327,6 +327,7 @@ class Leveling(commands.Cog):
 
                     with io.BytesIO() as image_binary:
                         background_image_sized.save(image_binary, format="PNG")
+                        background_image_sized.save(f"assets/images/rank_cards/{interaction.user.id}.png", format="PNG")
                         image_binary.seek(0)
                         result = discord.File(fp=image_binary, filename="rank_card.png")
                         message = await assets_channel.send(f"Ranked card result: ", file=result)
@@ -350,11 +351,12 @@ class Leveling(commands.Cog):
 
                     with io.BytesIO() as image_binary:
                         background_image_sized.save(image_binary, 'PNG')
+                        background_image_sized.save(f"assets/images/rank_cards/{interaction.user.id}.png", format="PNG")
                         image_binary.seek(0)
                         result = discord.File(fp=image_binary, filename='rank.png')
                         message = await assets_channel.send(f"Ranked card result: ", file=result)
 
-        cursor.execute(f"UPDATE levels SET background = '{message.attachments[0].url}' WHERE user_id = "
+        cursor.execute(f"UPDATE levels SET background = 1 WHERE user_id = "
                        f"{interaction.user.id} AND guild_id = {interaction.guild.id}")
         database.commit()
 
@@ -398,8 +400,12 @@ class Leveling(commands.Cog):
 
         user_status = interaction.guild.get_member(user.id).status
 
+        background_link = os.path.join(os.path.dirname(__file__), 'assets', 'images', 'rank_cards',
+                                       f'{interaction.user.id}.png') if background \
+            else os.path.join(os.path.dirname(__file__), 'assets', 'images', 'default_rank_card.png')
+
         args = {
-            'bg_image': background,  # Background image link
+            'bg_image': background_link,  # Background image link
             'profile_image': user.avatar.url,  # User profile picture link
             'level': int(level),  # User current level
             'current_xp': int(level)**2 * 100,  # Current level minimum xp

@@ -19,8 +19,8 @@ class Generator:
         if not bg_image:
             card = Image.open(self.default_bg).convert("RGBA")
         else:
-            bg_bytes = BytesIO(requests.get(bg_image).content)
-            card = Image.open(bg_bytes).convert("RGBA")
+            # bg_bytes = BytesIO(requests.get(bg_image).content)
+            card = Image.open(bg_image).convert("RGBA")
 
             width, height = card.size
             if width == 900 and height == 238:
