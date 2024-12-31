@@ -82,7 +82,7 @@ cp -u -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
 echo "Checking and updating .env from gdrive..."
 cp -u -v $GDRIVE_PATH/.env $WORK_DIR/.env
 echo "Checking and updating assets directory from gdrive..."
-cp -r -u -v $GDRIVE_PATH/backups/assets/. $WORK_DIR/assets/
+cp -r -u -v $GDRIVE_PATH/backups/assets/* $WORK_DIR/assets/
 echo "Completed!"
 
 
@@ -107,13 +107,13 @@ gdrive_check
 
 current_timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 echo "Copying previous terminal logs to gdrive..."
-cp -r -u -v $TERMINAL_LOGS_PATH/. $GDRIVE_PATH/backups/terminal_logs/
+cp -r -u -v $TERMINAL_LOGS_PATH/* $GDRIVE_PATH/backups/terminal_logs/
 echo "Copying Discord logs to gdrive..."
-cp -r -u -v $DISCORD_LOGS_PATH/. $GDRIVE_PATH/backups/logs/
+cp -r -u -v $DISCORD_LOGS_PATH/* $GDRIVE_PATH/backups/logs/
 echo "Copying database.sqlite to gdrive..."
 cp -v $WORK_DIR/database.sqlite $GDRIVE_PATH/backups/databases/"$current_timestamp.sqlite"
 echo "Copying assets folder to gdrive..."
-cp -r -u -v $RANK_CARDS/. $GDRIVE_PATH/backups/assets/images/rank_cards/
+cp -r -u -v $RANK_CARDS/* $GDRIVE_PATH/backups/assets/images/rank_cards/
 echo "Completed!"
 
 
