@@ -221,7 +221,7 @@ class Leveling(commands.Cog):
     async def rank_card_setting(self, interaction: discord.Interaction, image: discord.Attachment = None,
                                 color: str = None, reset: app_commands.Choice[int] = 0):
         # Make timelimit more than 3 sec for slash commands
-        await interaction.response.defer()  # NOQA
+        await interaction.response.defer() # NOQA
 
         if image is None and color is None and reset == 0:
             await interaction.followup.send(f"Please, provide at least one argument.")
@@ -390,7 +390,7 @@ class Leveling(commands.Cog):
         if result is None:
             message = ("You dont have any XP, because you dont have activity.\nPlease type some messages in "
                        "\"〔💬〕general \" channel or join in voice channel at least 10 minutes.")
-            await interaction.response.send_message(message)  # NOQA
+            await interaction.response.send_message(message) # NOQA
             return
 
         exp, level, last_lvl, background = result
@@ -410,11 +410,12 @@ class Leveling(commands.Cog):
             'bg_image': background_link,  # Background image link
             'profile_image': user.avatar.url,  # User profile picture link
             'level': int(level),  # User current level
-            'current_xp': int(level) ** 2 * 100,  # Current level minimum xp
+            'current_xp': int(level)**2 * 100,  # Current level minimum xp
             'user_xp': exp,  # User current xp
             'next_xp': next_lvl_xp,  # xp required for next level
             'user_position': rank,  # User position in leaderboard
-            'user_name': user.display_name,  # username with descriminator
+            'user_name': user.display_name.encode(encoding='utf-8').decode(encoding='cp1251'),
+            # username with descriminator
             'user_status': user_status.__str__(),  # User status eg. online, offline, idle, streaming, dnd
             'xp_color': user.color.__str__(),
         }
@@ -422,9 +423,10 @@ class Leveling(commands.Cog):
         image = Generator().generate_profile(**args)
         file = discord.File(fp=image, filename='image.png')
 
-        print(user.display_name)
+        print(user.display_name, user.display_name.encode(encoding='utf-8'),
+              user.display_name.encode(encoding='utf-8').decode(encoding='cp1251'), sep=" | ")
 
-        await interaction.response.send_message(file=file)  # NOQA
+        await interaction.response.send_message(file=file) # NOQA
 
 
 async def setup(bot):
