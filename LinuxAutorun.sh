@@ -64,7 +64,7 @@ echo "Completed! The script will stopped after $sleep_seconds seconds!"
 
 echo "====== Before start discord.py =========================================="
 
-connection_check()
+connection_check
 
 echo "-------------------------------------------------------------------------"
 
@@ -74,7 +74,7 @@ git pull
 echo "-------------------------------------------------------------------------"
 
 echo "Updating from gdrive '.env', 'database.sqlite', and 'assets/' if they are different..."
-gdrive_check()
+gdrive_check
 
 echo "Checking and updating database.sqlite from gdrive..."
 cp -u -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
@@ -96,13 +96,13 @@ echo "Stopped process! Ready for creating backup..."
 
 echo "====== Before start backups ============================================="
 
-connection_check()
+connection_check
 
 
 echo "====== Starting backups ================================================="
 # Creating backup on gdrive (logs and db)
 
-gdrive_check()
+gdrive_check
 
 current_timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 echo "Copying previous terminal logs to gdrive..."
