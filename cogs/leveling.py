@@ -400,11 +400,11 @@ class Leveling(commands.Cog):
 
         user_status = interaction.guild.get_member(user.id).status
 
-        background_link = os.path.join(os.path.dirname(__path__), os.path.pardir, 'assets', 'images', 'rank_cards',
+        background_link = os.path.join(os.path.dirname(__file__), os.path.pardir, 'assets', 'images', 'rank_cards',
                                        f'{interaction.user.id}.png') if background \
-            else os.path.join(os.path.dirname(__path__), os.path.pardir, 'assets', 'images', 'default_rank_card.png')
+            else os.path.join(os.path.dirname(__file__), os.path.pardir, 'assets', 'images', 'default_rank_card.png')
 
-        print(background_link, __path__, __file__, )
+        print(background_link)
 
         args = {
             'bg_image': background_link,  # Background image link
