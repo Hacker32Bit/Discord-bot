@@ -78,9 +78,9 @@ echo "Updating from gdrive '.env', 'database.sqlite', and 'assets/' if they are 
 gdrive_check
 
 echo "Checking and updating .env from gdrive..."
-rsync -c -v $GDRIVE_PATH/.env $WORK_DIR/.env
+rsync -cv $GDRIVE_PATH/.env $WORK_DIR/.env
 echo "Checking and updating assets directory from gdrive..."
-rsync -r -c -v $GDRIVE_PATH/backups/assets/ $WORK_DIR/assets/
+rsync -rcv $GDRIVE_PATH/backups/assets/ $WORK_DIR/assets/
 echo "Completed!"
 
 
@@ -105,13 +105,13 @@ gdrive_check
 
 current_timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 echo "Copying previous terminal logs to gdrive..."
-rsync -r -c -v $TERMINAL_LOGS_PATH/ $GDRIVE_PATH/backups/terminal_logs/
+rsync -rcv $TERMINAL_LOGS_PATH/ $GDRIVE_PATH/backups/terminal_logs/
 echo "Copying Discord logs to gdrive..."
-rsync -r -c -v $DISCORD_LOGS_PATH/ $GDRIVE_PATH/backups/logs/
+rsync -rcv $DISCORD_LOGS_PATH/ $GDRIVE_PATH/backups/logs/
 echo "Copying database.sqlite to gdrive..."
 rsync -v $WORK_DIR/database.sqlite $GDRIVE_PATH/backups/databases/"$current_timestamp.sqlite"
 echo "Copying assets folder to gdrive..."
-rsync -r -c -v $RANK_CARDS/ $GDRIVE_PATH/backups/assets/images/rank_cards/
+rsync -rcv $RANK_CARDS/ $GDRIVE_PATH/backups/assets/images/rank_cards/
 echo "Completed!"
 
 

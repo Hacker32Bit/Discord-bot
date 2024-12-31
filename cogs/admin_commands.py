@@ -11,6 +11,7 @@ from subprocess import check_output
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
+GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
 
 class AdminCommands(commands.Cog):
@@ -51,7 +52,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def sync(self, ctx) -> None:
-        fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+        fmt = await ctx.bot.tree.sync(guild=discord.Object(GUILD_ID))
         await ctx.send(f"synced {len(fmt)} commands")
 
     # Command for add manually join user log in log channel
