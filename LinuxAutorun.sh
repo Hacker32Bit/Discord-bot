@@ -8,6 +8,7 @@ PYTHON_PATH=$WORK_DIR/.venv/bin/python
 SCRIPT_PATH=$WORK_DIR/main.py
 GDRIVE_PATH=$HOME/mnt/gdrive/Discord-bot
 END_TIME="06:00:00" # Set time when system should be reboot
+cd $WORK_DIR
 
 
 echo() {
@@ -52,7 +53,6 @@ echo "====== Starting discord.py script ======================================="
 
 # Run python script using python venv
 echo "Creating process and running python script..."
-cd $WORK_DIR
 timeout -s SIGINT $sleep_seconds $PYTHON_PATH $SCRIPT_PATH
 echo "Stopped process! Ready for creating backup..."
 
