@@ -77,7 +77,7 @@ class MembersData(commands.Cog):
             print(type(result), result)
 
             if result is None:
-                cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}"
+                cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) "
                                f"VALUES({interaction.user.id}, {interaction.guild.id}, {keys_values[:-2]})")
                 database.commit()
 
