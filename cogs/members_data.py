@@ -54,17 +54,17 @@ class MembersData(commands.Cog):
             except ValueError as err:
                 err_messages += str(err)
 
-        data = {"name": name, "surname": surname, "date": date, "gender": gender}
+        data = {"name": name, "surname": surname, "date": date, "gender": gender.value}
         exist_keys = ""
         keys_values = ""
         for key in data.keys():
             if data[key]:
                 exist_keys += f"{str(key)}, "
-                keys_values += f"{str(data[key])}, "
+                keys_values += f"'{str(data[key])}', "
 
         print(type(data), data)
-        print(exist_keys)
-        print(keys_values)
+        print(f"|{exist_keys}|")
+        print(f"|{keys_values}|")
 
         if len(err_messages):
             await interaction.response.send_message(err_messages)  # NOQA
