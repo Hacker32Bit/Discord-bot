@@ -47,14 +47,24 @@ class MembersData(commands.Cog):
         if surname and len(surname) > 35:
             err_messages += "Too long surname. Surname should be contains [1, 35] letters.\n"
 
-        birthday = ""
+        date = ""
         if birthday:
             try:
                 date = datetime.strptime(birthday, '%d-%m-%Y').date()
             except ValueError as err:
                 err_messages += str(err)
 
-        print(name, surname, birthday, gender)
+        data = {name: name, surname: surname, date: date, gender: gender}
+        exist_keys = ""
+        keys_values = ""
+        for key in data.keys():
+            if data[key]:
+                exist_keys += key
+                keys_values += data[key]
+
+        print(type(data), data)
+        print(exist_keys)
+        print(keys_values)
 
         if len(err_messages):
             await interaction.response.send_message(err_messages)  # NOQA
@@ -66,7 +76,13 @@ class MembersData(commands.Cog):
 
             print(type(result), result)
 
-            await interaction.response.send_message("Thanks for sharing information, about you!") # NOQA
+            # if result is None:
+            #     cursor.execute(f"INSERT INTO members(user_id, guild_id, name, surname, gender, birthday, region,"
+            #                    f"languages, info) "
+            #                    f"VALUES({interaction.user.id}, {interaction.guild.id}, {}, 0, 0, 0)")
+            #     database.commit()
+
+            await interaction.response.send_message("Thanks for sharing information, about you!")  # NOQA
 
 
 async def setup(bot):
