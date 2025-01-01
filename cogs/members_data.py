@@ -54,7 +54,7 @@ class MembersData(commands.Cog):
             except ValueError as err:
                 err_messages += str(err)
 
-        data = {"name": name, "surname": surname, "date": date, "gender": gender.value}
+        data = {"name": name, "surname": surname, "birthday": date, "gender": gender.value}
         exist_keys = ""
         keys_values = ""
         for key in data.keys():
