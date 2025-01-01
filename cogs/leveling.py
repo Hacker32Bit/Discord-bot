@@ -418,9 +418,6 @@ class Leveling(commands.Cog):
         image = Generator().generate_profile(**args)
         file = discord.File(fp=image, filename='image.png')
 
-        print(user.display_name, user.display_name.encode(encoding='utf-8'),
-              user.display_name.encode(encoding='utf-8').decode(encoding='utf-8'), sep=" | ")
-
         await interaction.response.send_message(file=file) # NOQA
 
 
