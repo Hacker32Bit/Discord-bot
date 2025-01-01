@@ -50,7 +50,7 @@ class MembersData(commands.Cog):
             try:
                 date = datetime.strptime(birthday, '%d-%m-%Y').date()
             except ValueError as err:
-                err_messages += err
+                err_messages += str(err)
 
         print(name, surname, date, gender)
         if len(err_messages):
