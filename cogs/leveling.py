@@ -401,10 +401,9 @@ class Leveling(commands.Cog):
         user_status = interaction.guild.get_member(user.id).status
 
         background_link = os.path.join(os.path.dirname(__file__), os.path.pardir, 'assets', 'images', 'rank_cards',
-                                       f'{interaction.user.id}.png') if background else None
-
+                                       f'{interaction.user.id}.png')
         args = {
-            'bg_image': background_link,  # Background image link
+            'bg_image': background_link if int(background) else None,  # Background image link
             'profile_image': user.avatar.url,  # User profile picture link
             'level': int(level),  # User current level
             'current_xp': int(level)**2 * 100,  # Current level minimum xp

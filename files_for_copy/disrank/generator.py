@@ -4,18 +4,21 @@ import requests
 import math
 import os
 
+
 class Generator:
     def __init__(self):
         self.default_bg = os.path.join(os.path.dirname(__file__), 'assets', 'card.png')
-        self.online     = os.path.join(os.path.dirname(__file__), 'assets', 'online.png')
-        self.offline    = os.path.join(os.path.dirname(__file__), 'assets', 'offline.png')
-        self.idle       = os.path.join(os.path.dirname(__file__), 'assets', 'idle.png')
-        self.dnd        = os.path.join(os.path.dirname(__file__), 'assets', 'dnd.png')
-        self.streaming  = os.path.join(os.path.dirname(__file__), 'assets', 'streaming.png')
-        self.font1      = os.path.join(os.path.dirname(__file__), 'assets', 'font.ttf')
-        self.font2      = os.path.join(os.path.dirname(__file__), 'assets', 'font2.ttf')
+        self.online = os.path.join(os.path.dirname(__file__), 'assets', 'online.png')
+        self.offline = os.path.join(os.path.dirname(__file__), 'assets', 'offline.png')
+        self.idle = os.path.join(os.path.dirname(__file__), 'assets', 'idle.png')
+        self.dnd = os.path.join(os.path.dirname(__file__), 'assets', 'dnd.png')
+        self.streaming = os.path.join(os.path.dirname(__file__), 'assets', 'streaming.png')
+        self.font1 = os.path.join(os.path.dirname(__file__), 'assets', 'font.ttf')
+        self.font2 = os.path.join(os.path.dirname(__file__), 'assets', 'font2.ttf')
 
-    def generate_profile(self, bg_image:str=None, profile_image:str=None, level:int=1, current_xp:int=0, user_xp:int=20, next_xp:int=100, user_position:int=1, user_name:str='Shahriyar#9770', user_status:str='online',xp_color:str="#ffffff"):
+    def generate_profile(self, bg_image: str = None, profile_image: str = None, level: int = 1, current_xp: int = 0,
+                         user_xp: int = 20, next_xp: int = 100, user_position: int = 1,
+                         user_name: str = 'Hacker32Bit#5259', user_status: str = 'online', xp_color: str = "#b0bec5"):
         if not bg_image:
             card = Image.open(self.default_bg).convert("RGBA")
         else:
@@ -53,7 +56,7 @@ class Generator:
         if user_status == 'dnd':
             status = Image.open(self.dnd)
 
-        status = status.convert("RGBA").resize((40,40))
+        status = status.convert("RGBA").resize((40, 40))
 
         profile_pic_holder = Image.new(
             "RGBA", card.size, (255, 255, 255, 0)
