@@ -13,8 +13,8 @@ class Generator:
         self.idle = os.path.join(os.path.dirname(__file__), 'assets', 'idle.png')
         self.dnd = os.path.join(os.path.dirname(__file__), 'assets', 'dnd.png')
         self.streaming = os.path.join(os.path.dirname(__file__), 'assets', 'streaming.png')
-        self.ggsans_medium = os.path.join(os.path.dirname(__file__), 'assets', 'ggsans-Medium.ttf')
-        self.ggsans_semibold = os.path.join(os.path.dirname(__file__), 'assets', 'ggsans-Semibold.ttf')
+        self.notosans_bold = os.path.join(os.path.dirname(__file__), 'assets', 'NotoSans-Bold.ttf')
+        self.notosans_regular = os.path.join(os.path.dirname(__file__), 'assets', 'NotoSans-Regular.ttf')
         self.rockybilly = os.path.join(os.path.dirname(__file__), 'assets', 'Rockybilly.ttf')
         # self.font2 = os.path.join(os.path.dirname(__file__), 'assets', 'font2.ttf')
         # self.font1 = os.path.join(os.path.dirname(__file__), 'assets', 'font.ttf')
@@ -75,8 +75,8 @@ class Generator:
         # Editing stuff here
 
         # ======== Fonts to use =============
-        font_normal = ImageFont.truetype(self.ggsans_semibold, 36, encoding='UTF-8')
-        font_small = ImageFont.truetype(self.ggsans_medium, 20, encoding='UTF-8')
+        font_normal = ImageFont.truetype(self.notosans_bold, 36, encoding='UTF-8')
+        font_small = ImageFont.truetype(self.notosans_regular, 20, encoding='UTF-8')
         font_signa = ImageFont.truetype(self.rockybilly, 25, encoding='UTF-8')
 
         # ======== Colors ========================
