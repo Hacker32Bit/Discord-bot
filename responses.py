@@ -13,6 +13,9 @@ async def get_response(user_input: str, selected_chat) -> str:
     tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
                    "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!", ]
+
+    print(type(selected_chat), selected_chat)
+
     if any(map(lowered.__contains__, tell_to_bot)):
         async with selected_chat.typing():
             for i in tell_to_bot:
