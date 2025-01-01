@@ -50,7 +50,7 @@ class MembersData(commands.Cog):
         date = ""
         if birthday:
             try:
-                date = datetime.strptime(birthday, '%d-%m-%Y').date()
+                date = str(datetime.strptime(birthday, '%d-%m-%Y').date())
             except ValueError as err:
                 err_messages += str(err)
 
