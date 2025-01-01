@@ -16,7 +16,7 @@ async def get_response(user_input: str, selected_chat) -> str:
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
                    "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!", ]
 
-    print(type(selected_chat), selected_chat.channel, selected_chat.channel == discord.DMChannel)
+    print(type(selected_chat), selected_chat.ChannelType, selected_chat.ChannelType == discord.DMChannel)
 
     if any(map(lowered.__contains__, tell_to_bot)):
         async with selected_chat.typing():
