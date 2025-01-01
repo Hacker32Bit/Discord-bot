@@ -13,8 +13,8 @@ GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS members(user_id INTEGER, guild_id INTEGER, name TEXT, surname TEXT, 
-                gender INTEGER, birthday TEXT, region TEXT, languages TEXT, info TEXT, invites TEXT, invited_from TEXT)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS members(user_id INTEGER, guild_id INTEGER, name TEXT, surname TEXT, gender 
+                INTEGER, birthday TEXT, region TEXT, languages TEXT, info TEXT, invites TEXT, invited_from TEXT)""")
 
 
 class MembersData(commands.Cog):
@@ -25,6 +25,7 @@ class MembersData(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Members Data\" cog is ready!")
 
+    # Add info about Member
     @app_commands.command(name="about_me", description="Tell me about you :)")
     @app_commands.choices(gender=[
         app_commands.Choice(name='Male', value=1),
@@ -46,17 +47,25 @@ class MembersData(commands.Cog):
         if surname and len(surname) > 35:
             err_messages += "Too long surname. Surname should be contains [1, 35] letters.\n"
 
-        date = ""
+        birthday = ""
         if birthday:
             try:
                 date = datetime.strptime(birthday, '%d-%m-%Y').date()
             except ValueError as err:
                 err_messages += str(err)
 
-        print(name, surname, date, gender)
+        print(name, surname, birthday, gender)
+
         if len(err_messages):
             await interaction.response.send_message(err_messages)  # NOQA
         else:
+
+            cursor.execute(f"SELECT * FROM members WHERE user_id = {interaction.user.id} AND "
+                           f"guild_id = {interaction.guild.id}")
+            result = cursor.fetchone()
+
+            print(type(result), result)
+
             await interaction.response.send_message("Thanks for sharing information, about you!") # NOQA
 
 
