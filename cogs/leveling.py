@@ -401,10 +401,7 @@ class Leveling(commands.Cog):
         user_status = interaction.guild.get_member(user.id).status
 
         background_link = os.path.join(os.path.dirname(__file__), os.path.pardir, 'assets', 'images', 'rank_cards',
-                                       f'{interaction.user.id}.png') if background \
-            else os.path.join(os.path.dirname(__file__), os.path.pardir, 'assets', 'images', 'default_rank_card.png')
-
-        print(background_link)
+                                       f'{interaction.user.id}.png') if background else None
 
         args = {
             'bg_image': background_link,  # Background image link
@@ -414,8 +411,7 @@ class Leveling(commands.Cog):
             'user_xp': exp,  # User current xp
             'next_xp': next_lvl_xp,  # xp required for next level
             'user_position': rank,  # User position in leaderboard
-            'user_name': user.display_name,
-            # username with descriminator
+            'user_name': user.display_name,  # username with descriminator
             'user_status': user_status.__str__(),  # User status eg. online, offline, idle, streaming, dnd
             'xp_color': user.color.__str__(),
         }

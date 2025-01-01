@@ -5,6 +5,7 @@ WORK_DIR=$HOME/Discord-bot
 TERMINAL_LOGS_PATH=$WORK_DIR/terminal_logs
 DISCORD_LOGS_PATH=$WORK_DIR/logs
 PYTHON_PATH=$WORK_DIR/.venv/bin/python
+PYTHON_PACKAGES_PATH=$WORK_DIR/.venv/lib/python3.*/site-packages
 SCRIPT_PATH=$WORK_DIR/main.py
 GDRIVE_PATH=$HOME/mnt/gdrive/Discord-bot
 RANK_CARDS=$WORK_DIR/assets/images/rank_cards
@@ -74,9 +75,16 @@ git pull
 
 echo "-------------------------------------------------------------------------"
 
+echo "Updating customized python modules from files_for_copy..."
+rsync -rcv $WORK_DIR/files_to_copy/ $PYTHON_PACKAGES_PATH/
+
+echo "-------------------------------------------------------------------------"
+
 echo "Updating from gdrive '.env', 'database.sqlite', and 'assets/' if they are different..."
 gdrive_check
 
+echo "Checking and updating database.sqlite from gdrive..."
+mv -v $GDRIVE_PATH/database.sqlite $WORK_DIR/database.sqlite
 echo "Checking and updating .env from gdrive..."
 rsync -cv $GDRIVE_PATH/.env $WORK_DIR/.env
 echo "Checking and updating assets directory from gdrive..."

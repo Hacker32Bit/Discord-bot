@@ -40,7 +40,7 @@ class Generator:
 
         profile_bytes = BytesIO(requests.get(profile_image).content)
         profile = Image.open(profile_bytes)
-        profile = profile.convert('RGBA').resize((180, 180))
+        profile = profile.convert('RGBA').resize((181, 181))
 
         if user_status == 'online':
             status = Image.open(self.online)
@@ -69,9 +69,9 @@ class Generator:
         # Editing stuff here
 
         # ======== Fonts to use =============
-        font_normal = ImageFont.truetype(self.font1, 36, encoding="utf-8")
-        font_small = ImageFont.truetype(self.font1, 20, encoding="utf-8")
-        font_signa = ImageFont.truetype(self.font2, 25, encoding="utf-8")
+        font_normal = ImageFont.truetype(self.font1, 36)
+        font_small = ImageFont.truetype(self.font1, 20)
+        font_signa = ImageFont.truetype(self.font2, 25)
 
         # ======== Colors ========================
 
