@@ -25,6 +25,10 @@ class MemberUpdate(commands.Cog):
         # Give role when joined
         if before.pending and not after.pending:
             role = discord.utils.get(before.guild.roles, name="Member")
+
+            print(type(before), before)
+            print(type(before.pending), before.pending)
+
             await after.add_roles(role)
 
         # Change nickname alert

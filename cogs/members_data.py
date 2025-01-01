@@ -13,7 +13,7 @@ database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS members(user_id INTEGER, guild_id INTEGER, name TEXT, surname TEXT, 
-                gender INTEGER, birthday TEXT, info TEXT, invites TEXT)""")
+                gender INTEGER, birthday TEXT, info TEXT, invites TEXT, invited_from TEXT)""")
 
 
 class MembersData(commands.Cog):
