@@ -17,9 +17,9 @@ async def get_response(user_input: str, selected_chat: discord.TextChannel, is_p
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
                    "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!", ]
 
-    print(type(selected_chat), selected_chat)
+    print(type(selected_chat), selected_chat, isinstance(selected_chat, discord.channel.DMChannel))
 
-    if any(map(lowered.__contains__, tell_to_bot)) or is_private:
+    if any(map(lowered.__contains__, tell_to_bot)) or isinstance(selected_chat, discord.channel.DMChannel) or is_private:
         async with selected_chat.typing():
             for i in tell_to_bot:
                 lowered = lowered.replace(i, "")
