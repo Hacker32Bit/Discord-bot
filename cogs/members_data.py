@@ -28,7 +28,8 @@ class MembersData(commands.Cog):
     @app_commands.command(name="about_me", description="Tell me about you :)")
     @app_commands.choices(gender=[
         app_commands.Choice(name='Male', value=1),
-        app_commands.Choice(name='Female', value=0),
+        app_commands.Choice(name='Female', value=2),
+        app_commands.Choice(name='Other', value=-1),
     ])
     @app_commands.describe(name="What is your name?")
     @app_commands.describe(surname="What is your surname?")
