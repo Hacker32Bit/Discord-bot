@@ -37,7 +37,7 @@ class MembersData(commands.Cog):
     async def about_me(self, interaction: discord.Interaction, name: str = None, surname: str = None,
                        birthday: str = None, gender: app_commands.Choice[int] = 0):
 
-        err_messages = ""
+        err_messages: str = ""
 
         if name and len(name) > 35:
             err_messages += "Too long name. Name should be contains [1, 35] letters.\n"
@@ -50,11 +50,11 @@ class MembersData(commands.Cog):
             try:
                 date = datetime.strptime(birthday, '%d-%m-%Y').date()
             except ValueError as err:
-                err_messages += str(err)
+                err_messages += err
 
         print(name, surname, date, gender)
         if len(err_messages):
-            interaction.response.send_message(f"{err_messages}")  # NOQA
+            await interaction.response.send_message(err_messages)  # NOQA
         else:
             await interaction.response.send_message("Thanks for sharing information, about you!") # NOQA
 
