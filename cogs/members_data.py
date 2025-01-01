@@ -74,7 +74,12 @@ class MembersData(commands.Cog):
                            f"guild_id = {interaction.guild.id}")
             result = cursor.fetchone()
 
+            (user_id, guild_id, old_name, old_surname, old_gender,
+             old_birthday, old_region, old_languages, old_info) = result
+
             print(type(result), result)
+            print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_region, old_languages,
+                  old_info)
 
             if result is None:
                 cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) "
