@@ -122,7 +122,7 @@ class Generator:
         blank_draw.rectangle((248, 188, length_of_bar, 202), fill=DARK)
         # blank_draw.ellipse((20, 20, 218, 218), fill=(255, 255, 255, 0), outline=DARK)
 
-        profile_pic_holder.paste(profile, (29, 29, 209, 209))
+        profile_pic_holder.paste(profile, (29, 29, 210, 210))
 
         pre = Image.composite(profile_pic_holder, card, mask)
         pre = Image.alpha_composite(pre, blank)
