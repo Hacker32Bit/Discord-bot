@@ -53,7 +53,9 @@ class MembersData(commands.Cog):
                 err_messages += err
 
         print(name, surname, date, gender)
-        await interaction.response.send_message("Thanks for sharing information, about you!" if len(err_messages) else err_messages)  # NOQA
+        await interaction.followup.send("Thanks for sharing information, about you!"
+                                        if len(err_messages)
+                                        else err_messages)
 
 
 async def setup(bot):
