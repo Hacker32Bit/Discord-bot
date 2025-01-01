@@ -75,9 +75,9 @@ class Generator:
         # Editing stuff here
 
         # ======== Fonts to use =============
-        font_normal = ImageFont.truetype(self.ggsans_semibold, 36, encoding='lat1')
-        font_small = ImageFont.truetype(self.ggsans_medium, 20, encoding='lat1')
-        font_signa = ImageFont.truetype(self.rockybilly, 25, encoding='lat1')
+        font_normal = ImageFont.truetype(self.ggsans_semibold, 36, encoding='UTF-8')
+        font_small = ImageFont.truetype(self.ggsans_medium, 20, encoding='UTF-8')
+        font_signa = ImageFont.truetype(self.rockybilly, 25, encoding='UTF-8')
 
         # ======== Colors ========================
 
