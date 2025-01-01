@@ -10,16 +10,14 @@ load_dotenv()
 PROJECT_PATH: Final[str] = os.getenv("PROJECT_PATH")
 
 
-async def get_response(user_input: str, selected_chat: discord.TextChannel) -> str:
+async def get_response(user_input: str, selected_chat: discord.TextChannel, is_private: bool = False) -> str:
     lowered: str = user_input.lower()
 
     tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
                    "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!", ]
 
-    print(type(selected_chat), selected_chat.type, selected_chat.type == discord.DMChannel)
-
-    if any(map(lowered.__contains__, tell_to_bot)):
+    if any(map(lowered.__contains__, tell_to_bot)) or is_private:
         async with selected_chat.typing():
             for i in tell_to_bot:
                 lowered = lowered.replace(i, "")
