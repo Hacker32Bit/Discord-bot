@@ -76,11 +76,10 @@ class MembersData(commands.Cog):
 
             print(type(result), result)
 
-            # if result is None:
-            #     cursor.execute(f"INSERT INTO members(user_id, guild_id, name, surname, gender, birthday, region,"
-            #                    f"languages, info) "
-            #                    f"VALUES({interaction.user.id}, {interaction.guild.id}, {}, 0, 0, 0)")
-            #     database.commit()
+            if result is None:
+                cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}"
+                               f"VALUES({interaction.user.id}, {interaction.guild.id}, {keys_values[:-2]})")
+                database.commit()
 
             await interaction.response.send_message("Thanks for sharing information, about you!")  # NOQA
 
