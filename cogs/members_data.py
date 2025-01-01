@@ -50,7 +50,7 @@ class MembersData(commands.Cog):
         date = ""
         if birthday:
             try:
-                date = str(datetime.strptime(birthday, '%d-%m-%Y').date())
+                date = datetime.strptime(birthday, '%d-%m-%Y').date()
             except ValueError as err:
                 err_messages += str(err)
 
@@ -59,8 +59,8 @@ class MembersData(commands.Cog):
         keys_values = ""
         for key in data.keys():
             if data[key]:
-                exist_keys += key
-                keys_values += data[key]
+                exist_keys += f"{str(key)}, "
+                keys_values += f"{str(data[key])}, "
 
         print(type(data), data)
         print(exist_keys)
