@@ -13,8 +13,11 @@ class Generator:
         self.idle = os.path.join(os.path.dirname(__file__), 'assets', 'idle.png')
         self.dnd = os.path.join(os.path.dirname(__file__), 'assets', 'dnd.png')
         self.streaming = os.path.join(os.path.dirname(__file__), 'assets', 'streaming.png')
-        self.font1 = os.path.join(os.path.dirname(__file__), 'assets', 'font.ttf')
-        self.font2 = os.path.join(os.path.dirname(__file__), 'assets', 'font2.ttf')
+        self.ggsans_medium = os.path.join(os.path.dirname(__file__), 'assets', 'ggsans-Medium.ttf')
+        self.ggsans_semibold = os.path.join(os.path.dirname(__file__), 'assets', 'ggsans-Semibold.ttf')
+        self.rockybilly = os.path.join(os.path.dirname(__file__), 'assets', 'Rockybilly.ttf')
+        # self.font2 = os.path.join(os.path.dirname(__file__), 'assets', 'font2.ttf')
+        # self.font1 = os.path.join(os.path.dirname(__file__), 'assets', 'font.ttf')
 
     def generate_profile(self, bg_image: str = None, profile_image: str = None, level: int = 1, current_xp: int = 0,
                          user_xp: int = 20, next_xp: int = 100, user_position: int = 1,
@@ -72,9 +75,9 @@ class Generator:
         # Editing stuff here
 
         # ======== Fonts to use =============
-        font_normal = ImageFont.truetype(self.font1, 36)
-        font_small = ImageFont.truetype(self.font1, 20)
-        font_signa = ImageFont.truetype(self.font2, 25)
+        font_normal = ImageFont.truetype(self.ggsans_semibold, 36)
+        font_small = ImageFont.truetype(self.ggsans_medium, 20)
+        font_signa = ImageFont.truetype(self.rockybilly, 25)
 
         # ======== Colors ========================
 
