@@ -76,7 +76,7 @@ git pull
 echo "-------------------------------------------------------------------------"
 
 echo "Updating customized python modules from files_for_copy..."
-rsync -rcv $WORK_DIR/files_to_copy/ $PYTHON_PACKAGES_PATH/
+rsync -rcv $WORK_DIR/files_for_copy/ $PYTHON_PACKAGES_PATH/
 
 echo "-------------------------------------------------------------------------"
 
