@@ -45,15 +45,14 @@ class MembersData(commands.Cog):
     @app_commands.describe(surname="What is your surname?")
     @app_commands.describe(gender="Select your gender")
     @app_commands.describe(birthday="[Private] Date of Birth. Type in this order: date, month, year.")
-    # @app_commands.describe(region="Enter your region name")
-    # @app_commands.describe(languages="Enter yours languages list")
-    # @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
-    # @app_commands.describe(phone="[Private] Enter your phone")
-    # @app_commands.describe(email="[Private] Enter your email")
+    @app_commands.describe(region="Enter your region name")
+    @app_commands.describe(languages="Enter yours languages list")
+    @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
+    @app_commands.describe(phone="[Private] Enter your phone")
+    @app_commands.describe(email="[Private] Enter your email")
     async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
-                           gender: app_commands.Choice[int] = 0, birthday: str = None):
-                           # region: str = None,
-                           # languages: str = None, info: str = None, phone: str = None, email: str = None):
+                           gender: app_commands.Choice[int] = 0, birthday: str = None, region: str = None,
+                           languages: str = None, info: str = None, phone: str = None, email: str = None):
 
         err_messages: str = ""
 

@@ -4,3 +4,4 @@ disrank
 python-dotenv
 g4f
 curl_cffi
+python-dateutil
