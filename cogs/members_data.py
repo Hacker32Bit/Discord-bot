@@ -146,24 +146,25 @@ class MembersData(commands.Cog):
             # If first time. Insert
             if result is None:
                 exist_keys = ""
-                keys_values = ""
+                keys_values = []
                 for key in data.keys():
                     if data[key]:
                         exist_keys += f"{str(key)}, "
-                        keys_values += f"'{str(data[key])}', "
+                        keys_values.append(str(data[key]))
 
                 print(type(data), data)
 
                 if exist_keys:
-                    print(f"|{exist_keys}|")
-                    print(f"|{keys_values}|")
+                    print(exist_keys)
+                    print(keys_values)
 
                     cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
                                    f"VALUES({interaction.user.id}, {interaction.guild.id})")
                     database.commit()
 
-                    cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) "
-                                   f"VALUES({interaction.user.id}, {interaction.guild.id}, {keys_values[:-2]})")
+                    cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) VALUES( "
+                                   f"{interaction.user.id}, {interaction.guild.id}, {'?, '* len(keys_values)[:-2]})",
+                                   tuple(keys_values))
                     database.commit()
             else:
                 (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
@@ -186,15 +187,18 @@ class MembersData(commands.Cog):
                 if old_gender and not is_admin:
                     data["gender"] = None
 
-                query = ""
+                exist_keys = ""
+                keys_values = []
                 for key in data.keys():
                     if data[key]:
-                        query += f"{str(key)} = '{str(data[key])}', "
+                        exist_keys += f"{str(key)} = ?, "
+                        keys_values.append(str(data[key]))
 
-                if query:
-                    print(f"|{query[:-2]}|")
-                    cursor.execute(f"UPDATE members SET {query[:-2]} WHERE user_id = {interaction.user.id} "
-                                   f"AND guild_id = {interaction.guild.id}")
+                if len(keys_values):
+                    print(exist_keys)
+                    print(keys_values)
+                    cursor.execute(f"UPDATE members SET {exist_keys[:-2]} WHERE user_id = {interaction.user.id} "
+                                   f"AND guild_id = {interaction.guild.id}", tuple(keys_values))
                     database.commit()
 
             await interaction.response.send_message("Thanks for sharing information about you!")  # NOQA
