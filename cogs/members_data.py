@@ -78,7 +78,7 @@ class MembersData(commands.Cog):
 
         # country validation from countries_list.json
         if country:
-            with open('../assets/jsons/countries_list.json', 'r') as file:
+            with open('assets/jsons/countries_list.json', 'r') as file:
                 countries_dict = json.load(file)
                 if country not in countries_dict:
                     err_messages += f"Country '{country}' does not exist in ISO 3166-1 codes list.\n"
@@ -86,7 +86,7 @@ class MembersData(commands.Cog):
 
         # languages validation from languages_dict.json
         if languages:
-            with open('../assets/jsons/languages_list.json', 'r') as file:
+            with open('assets/jsons/languages_list.json', 'r') as file:
                 languages_dict = json.load(file)
                 languages_list = languages.strip().split(",")
                 languages = ""
