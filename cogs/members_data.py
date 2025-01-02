@@ -88,7 +88,7 @@ class MembersData(commands.Cog):
         if languages:
             with open('assets/jsons/languages_list.json', 'r') as file:
                 languages_dict = json.load(file)
-                languages_list = languages.strip().lower().split(",")
+                languages_list = languages.replace(" ", "").lower().split(",")
                 languages = ""
                 if len(languages_list):
                     lang_err = ""
