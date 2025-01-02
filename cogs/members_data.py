@@ -93,8 +93,9 @@ class MembersData(commands.Cog):
             # Data for only exist keys and values for db query
             data = {"country": country, "languages": languages, "info": info, "phone": phone, "email": email}
 
+            role = discord.utils.get(interaction.guild.roles, name="Admin")  # Get the role
             # is_admin for access edit everything
-            is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
+            is_admin = True if role in interaction.user.roles else False
 
             # Unchangeable variables
             if (name and not old_name) or is_admin:
