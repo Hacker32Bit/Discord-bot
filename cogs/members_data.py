@@ -44,46 +44,40 @@ class MembersData(commands.Cog):
     @app_commands.describe(surname="What is your surname?")
     @app_commands.describe(gender="Select your gender")
     @app_commands.describe(birthday="[Private] Date of Birth. Type in this order: date, month, year.")
-    @app_commands.describe(region="Enter your region name")
-    @app_commands.describe(languages="Enter yours languages list")
+    @app_commands.describe(country="Enter your country name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW)")
+    @app_commands.describe(languages="Enter yours languages list in ISO 639-1 code. (ad, ae, ..., )")
     @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
     @app_commands.describe(phone="[Private] Enter your phone")
     @app_commands.describe(email="[Private] Enter your email")
     async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
                            gender: app_commands.Choice[int] = 0, birthday: str = None, region: str = None,
                            languages: str = None, info: str = None, phone: str = None, email: str = None):
-
+        # Collect errors messages on validate state
         err_messages: str = ""
 
+        # name validation [1, 35] symbols
         if name and len(name) > 35:
             err_messages += "Too long name. Name should be contains [1, 35] letters.\n"
 
+        # surname validation valid [1, 35] symbols
         if surname and len(surname) > 35:
             err_messages += "Too long surname. Surname should be contains [1, 35] letters.\n"
 
+        # birthday validation. Parser can parse a lot of variants from str
         date = ""
         if birthday:
             try:
-                date = parse(birthday, fuzzy=False)
+                date = parse(birthday, fuzzy=False).date()
             except ValueError as err:
                 err_messages += str(err)
 
-        data = {"name": name, "surname": surname, "birthday": date, "gender": gender.value}
-        exist_keys = ""
-        keys_values = ""
-        for key in data.keys():
-            if data[key]:
-                exist_keys += f"{str(key)}, "
-                keys_values += f"'{str(data[key])}', "
-
-        print(type(data), data)
-        print(f"|{exist_keys}|")
-        print(f"|{keys_values}|")
-
+        # Return when have incorrect inputs. Else continues.
         if len(err_messages):
             await interaction.response.send_message(err_messages)  # NOQA
         else:
+            # Everything good.
 
+            # Fetch member data from db.
             cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday, region, languages, info, "
                            f"phone, email FROM members "
                            f"WHERE user_id = {interaction.user.id} AND guild_id = {interaction.guild.id}")
@@ -96,7 +90,35 @@ class MembersData(commands.Cog):
             print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_region, old_languages,
                   old_info, old_phone, old_email)
 
+            # Data for only exist keys and values for db query
+            data = {"region": region, "languages": languages, "info": info, "phone": phone, "email": email}
+
+            # is_admin for access edit everything
+            is_admin = interaction.user.roles in discord.utils.get(interaction.guild.roles, name="Admin")
+
+            # Unchangeable variables
+            if (name and not old_name) or is_admin:
+                data["name"] = name
+            if (surname and not old_surname) or is_admin:
+                data["surname"] = surname
+            if (birthday and not old_birthday) or is_admin:
+                data["birthday"] = birthday
+            if (gender and not old_gender) or is_admin:
+                data["gender"] = gender
+
+            # If first time. Insert
             if result is None:
+                exist_keys = ""
+                keys_values = ""
+                for key in data.keys():
+                    if data[key]:
+                        exist_keys += f"{str(key)}, "
+                        keys_values += f"'{str(data[key])}', "
+
+                print(type(data), data)
+                print(f"|{exist_keys}|")
+                print(f"|{keys_values}|")
+
                 cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
                                f"VALUES({interaction.user.id}, {interaction.guild.id})")
                 database.commit()
@@ -104,6 +126,16 @@ class MembersData(commands.Cog):
                 cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) "
                                f"VALUES({interaction.user.id}, {interaction.guild.id}, {keys_values[:-2]})")
                 database.commit()
+            else:
+                query = ""
+                for key in data.keys():
+                    if data[key]:
+                        query += f"{str(key)} = '{str(data[key])}', "
+
+                print(f"|{query[:-2]}|")
+                # cursor.execute(f"UPDATE members SET {query[:-2]} WHERE user_id = {interaction.user.id} "
+                #                f"AND guild_id = {interaction.guild.id}")
+                # database.commit()
 
             await interaction.response.send_message("Thanks for sharing information, about you!")  # NOQA
 
