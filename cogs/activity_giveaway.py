@@ -19,8 +19,8 @@ GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS activity_giveaway(user_id INTEGER, guild_id INTEGER, exp INTEGER, 
-                level INTEGER, last_lvl INTEGER)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS activity_giveaway(user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, 
+exp INTEGER, level INTEGER, last_lvl INTEGER, PRIMARY KEY("user_id"));""")
 
 
 class ActivityGiveaway(commands.Cog):

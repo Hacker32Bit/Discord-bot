@@ -16,12 +16,13 @@ cursor = database.cursor()
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS members (user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, name TEXT, 
 surname TEXT, gender INTEGER, birthday TEXT, country TEXT, languages TEXT, info TEXT, phone TEXT, email TEXT, 
-invites TEXT, invited_from TEXT, admin_info TEXT);""")
+invites TEXT, invited_from TEXT, admin_info TEXT, PRIMARY KEY("user_id"));""")
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS members_privacy (user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, 
 name INTEGER NOT NULL DEFAULT 1, surname INTEGER NOT NULL DEFAULT 1, gender INTEGER NOT NULL DEFAULT 1, 
 birthday INTEGER NOT NULL DEFAULT 0, country INTEGER NOT NULL DEFAULT 1, languages INTEGER NOT NULL DEFAULT 1, 
-info INTEGER NOT NULL DEFAULT 1, phone INTEGER NOT NULL DEFAULT 0, email INTEGER NOT NULL DEFAULT 0);""")
+info INTEGER NOT NULL DEFAULT 1, phone INTEGER NOT NULL DEFAULT 0, email INTEGER NOT NULL DEFAULT 0, 
+PRIMARY KEY("user_id"));""")
 
 
 class MembersData(commands.Cog):

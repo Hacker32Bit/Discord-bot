@@ -24,8 +24,8 @@ GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS levels(user_id INTEGER, guild_id INTEGER, exp INTEGER, level INTEGER, 
-                last_lvl INTEGER, background INTEGER)""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS levels(user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, exp INTEGER, 
+level INTEGER, last_lvl INTEGER, background INTEGER, PRIMARY KEY("user_id"));""")
 
 
 class Leveling(commands.Cog):
