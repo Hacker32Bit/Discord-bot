@@ -78,34 +78,14 @@ class MembersData(commands.Cog):
             # Everything good.
 
             # Fetch member data from db.
-            cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday,country, languages, info, "
+            cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday, country, languages, info, "
                            f"phone, email FROM members "
                            f"WHERE user_id = {interaction.user.id} AND guild_id = {interaction.guild.id}")
             result = cursor.fetchone()
 
-            (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages, old_info,
-             old_phone, old_email) = result
-
-            print(type(result), result)
-            print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
-                  old_info, old_phone, old_email)
-
             # Data for only exist keys and values for db query
-            data = {"country": country, "languages": languages, "info": info, "phone": phone, "email": email}
-
-            role = discord.utils.get(interaction.guild.roles, name="Admin")  # Get the role
-            # is_admin for access edit everything
-            is_admin = True if role in interaction.user.roles else False
-
-            # Unchangeable variables
-            if (name and not old_name) or is_admin:
-                data["name"] = name
-            if (surname and not old_surname) or is_admin:
-                data["surname"] = surname
-            if (birthday and not old_birthday) or is_admin:
-                data["birthday"] = birthday
-            if (gender and not old_gender) or is_admin:
-                data["gender"] = gender
+            data = {"name": name, "surname": surname, "gender": gender, "birthday": date, "country": country,
+                    "languages": languages, "info": info, "phone": phone, "email": email}
 
             # If first time. Insert
             if result is None:
@@ -128,6 +108,27 @@ class MembersData(commands.Cog):
                                f"VALUES({interaction.user.id}, {interaction.guild.id}, {keys_values[:-2]})")
                 database.commit()
             else:
+                (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
+                 old_info,
+                 old_phone, old_email) = result
+
+                print(type(result), result)
+                print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
+                      old_info, old_phone, old_email)
+
+                # is_admin for access edit everything
+                is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
+
+                # Unchangeable variables when not admin and already exist
+                if old_name and not is_admin:
+                    data["name"] = None
+                if old_surname and not is_admin:
+                    data["surname"] = None
+                if old_birthday and not is_admin:
+                    data["birthday"] = None
+                if old_gender and not is_admin:
+                    data["gender"] = None
+
                 query = ""
                 for key in data.keys():
                     if data[key]:
