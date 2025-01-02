@@ -84,7 +84,7 @@ class MembersData(commands.Cog):
             result = cursor.fetchone()
 
             # Data for only exist keys and values for db query
-            data = {"name": name, "surname": surname, "gender": gender, "birthday": date, "country": country,
+            data = {"name": name, "surname": surname, "gender": gender.value, "birthday": date, "country": country,
                     "languages": languages, "info": info, "phone": phone, "email": email}
 
             # If first time. Insert
