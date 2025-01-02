@@ -50,7 +50,7 @@ class MembersData(commands.Cog):
     @app_commands.describe(phone="[Private] Enter your phone")
     @app_commands.describe(email="[Private] Enter your email")
     async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
-                           gender: app_commands.Choice[int] = 0, birthday: str = None,country: str = None,
+                           gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
                            languages: str = None, info: str = None, phone: str = None, email: str = None):
         # Collect errors messages on validate state
         err_messages: str = ""
@@ -94,7 +94,8 @@ class MembersData(commands.Cog):
             data = {"country": country, "languages": languages, "info": info, "phone": phone, "email": email}
 
             # is_admin for access edit everything
-            is_admin = interaction.user.roles in discord.utils.get(interaction.guild.roles, name="Admin")
+            is_admin = True if interaction.user.roles in discord.utils.get(interaction.guild.roles,
+                                                                           name="Admin") else False
 
             # Unchangeable variables
             if (name and not old_name) or is_admin:
