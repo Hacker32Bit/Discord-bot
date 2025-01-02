@@ -10,7 +10,6 @@ from dateutil.parser import parse
 import phonenumbers
 from email_validator import validate_email, EmailNotValidError
 
-
 load_dotenv()
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
@@ -154,20 +153,21 @@ class MembersData(commands.Cog):
                         keys_values += f"'{str(data[key])}', "
 
                 print(type(data), data)
-                print(f"|{exist_keys}|")
-                print(f"|{keys_values}|")
 
-                cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
-                               f"VALUES({interaction.user.id}, {interaction.guild.id})")
-                database.commit()
+                if exist_keys:
+                    print(f"|{exist_keys}|")
+                    print(f"|{keys_values}|")
 
-                cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) "
-                               f"VALUES({interaction.user.id}, {interaction.guild.id}, {keys_values[:-2]})")
-                database.commit()
+                    cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
+                                   f"VALUES({interaction.user.id}, {interaction.guild.id})")
+                    database.commit()
+
+                    cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) "
+                                   f"VALUES({interaction.user.id}, {interaction.guild.id}, {keys_values[:-2]})")
+                    database.commit()
             else:
                 (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
-                 old_info,
-                 old_phone, old_email) = result
+                 old_info, old_phone, old_email) = result
 
                 print(type(result), result)
                 print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
@@ -191,10 +191,11 @@ class MembersData(commands.Cog):
                     if data[key]:
                         query += f"{str(key)} = '{str(data[key])}', "
 
-                print(f"|{query[:-2]}|")
-                cursor.execute(f"UPDATE members SET {query[:-2]} WHERE user_id = {interaction.user.id} "
-                               f"AND guild_id = {interaction.guild.id}")
-                database.commit()
+                if query:
+                    print(f"|{query[:-2]}|")
+                    cursor.execute(f"UPDATE members SET {query[:-2]} WHERE user_id = {interaction.user.id} "
+                                   f"AND guild_id = {interaction.guild.id}")
+                    database.commit()
 
             await interaction.response.send_message("Thanks for sharing information about you!")  # NOQA
 
