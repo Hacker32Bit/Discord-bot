@@ -98,7 +98,7 @@ class MembersData(commands.Cog):
                         else:
                             lang_err += f"{lang}, "
                     if lang_err:
-                        err_messages += f"Language(s) '{lang[:-2]}' does not exist in ISO 639-1 codes list.\n"
+                        err_messages += f"Language(s) '{lang_err[:-2]}' does not exist in ISO 639-1 codes list.\n"
                 if not languages:
                     err_messages += f"From '{languages}' not found at least 1 languages in ISO 639-1 code.\n"
                     languages = None
