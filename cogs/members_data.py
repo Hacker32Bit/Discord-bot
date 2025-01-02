@@ -15,12 +15,12 @@ database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS members (user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, name TEXT, 
-surname TEXT, gender INTEGER, birthday TEXT, region TEXT, languages TEXT, info TEXT, phone TEXT, email TEXT, 
+surname TEXT, gender INTEGER, birthday TEXT, country TEXT, languages TEXT, info TEXT, phone TEXT, email TEXT, 
 invites TEXT, invited_from TEXT, admin_info TEXT);""")
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS members_privacy (user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, 
 name INTEGER NOT NULL DEFAULT 1, surname INTEGER NOT NULL DEFAULT 1, gender INTEGER NOT NULL DEFAULT 1, 
-birthday INTEGER NOT NULL DEFAULT 0, region INTEGER NOT NULL DEFAULT 1, languages INTEGER NOT NULL DEFAULT 1, 
+birthday INTEGER NOT NULL DEFAULT 0, country INTEGER NOT NULL DEFAULT 1, languages INTEGER NOT NULL DEFAULT 1, 
 info INTEGER NOT NULL DEFAULT 1, phone INTEGER NOT NULL DEFAULT 0, email INTEGER NOT NULL DEFAULT 0);""")
 
 
@@ -44,13 +44,13 @@ class MembersData(commands.Cog):
     @app_commands.describe(surname="What is your surname?")
     @app_commands.describe(gender="Select your gender")
     @app_commands.describe(birthday="[Private] Date of Birth. Type in this order: date, month, year.")
-    @app_commands.describe(country="Enter your country name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW)")
+    @app_commands.describe(country="Enter yourcountry name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW)")
     @app_commands.describe(languages="Enter yours languages list in ISO 639-1 code. (ad, ae, ..., )")
     @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
     @app_commands.describe(phone="[Private] Enter your phone")
     @app_commands.describe(email="[Private] Enter your email")
     async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
-                           gender: app_commands.Choice[int] = 0, birthday: str = None, region: str = None,
+                           gender: app_commands.Choice[int] = 0, birthday: str = None,country: str = None,
                            languages: str = None, info: str = None, phone: str = None, email: str = None):
         # Collect errors messages on validate state
         err_messages: str = ""
@@ -78,20 +78,20 @@ class MembersData(commands.Cog):
             # Everything good.
 
             # Fetch member data from db.
-            cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday, region, languages, info, "
+            cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday,country, languages, info, "
                            f"phone, email FROM members "
                            f"WHERE user_id = {interaction.user.id} AND guild_id = {interaction.guild.id}")
             result = cursor.fetchone()
 
-            (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_region, old_languages, old_info,
+            (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages, old_info,
              old_phone, old_email) = result
 
             print(type(result), result)
-            print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_region, old_languages,
+            print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
                   old_info, old_phone, old_email)
 
             # Data for only exist keys and values for db query
-            data = {"region": region, "languages": languages, "info": info, "phone": phone, "email": email}
+            data = {"country": country, "languages": languages, "info": info, "phone": phone, "email": email}
 
             # is_admin for access edit everything
             is_admin = interaction.user.roles in discord.utils.get(interaction.guild.roles, name="Admin")
