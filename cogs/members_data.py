@@ -1,5 +1,5 @@
+import json
 import os
-from datetime import datetime
 from typing import Final
 import discord
 from discord import app_commands
@@ -7,6 +7,9 @@ from discord.ext import commands
 import sqlite3
 from dotenv import load_dotenv
 from dateutil.parser import parse
+import phonenumbers
+from email_validator import validate_email, EmailNotValidError
+
 
 load_dotenv()
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
@@ -45,8 +48,9 @@ class MembersData(commands.Cog):
     @app_commands.describe(surname="What is your surname?")
     @app_commands.describe(gender="Select your gender")
     @app_commands.describe(birthday="[Private] Date of Birth. Type in this order: date, month, year.")
-    @app_commands.describe(country="Enter yourcountry name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW)")
-    @app_commands.describe(languages="Enter yours languages list in ISO 639-1 code. (ad, ae, ..., )")
+    @app_commands.describe(country="Enter ONE your country name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW) Example: DE")
+    @app_commands.describe(
+        languages="Enter yours languages list in ISO 639-1 code. (ad, ae, ..., zh, zu) Example: en, en-US, ru, zh")
     @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
     @app_commands.describe(phone="[Private] Enter your phone")
     @app_commands.describe(email="[Private] Enter your email")
@@ -71,6 +75,55 @@ class MembersData(commands.Cog):
                 date = parse(birthday, fuzzy=False).date()
             except ValueError as err:
                 err_messages += str(err)
+
+        # country validation from countries_list.json
+        if country:
+            with open('../assets/jsons/countries_list.json', 'r') as file:
+                countries_dict = json.load(file)
+                if country not in countries_dict:
+                    err_messages += f"Country '{country}' does not exist in ISO 3166-1 codes list.\n"
+                    country = None
+
+        # languages validation from languages_dict.json
+        if languages:
+            with open('../assets/jsons/languages_list.json', 'r') as file:
+                languages_dict = json.load(file)
+                languages_list = languages.strip().split(",")
+                languages = ""
+                if len(languages_list):
+                    for lang in languages_list:
+                        if lang in languages_dict:
+                            languages += f"{lang}, "
+                        else:
+                            err_messages += f"Language '{lang}' does not exist in ISO 639-1 codes list."
+                if not languages:
+                    err_messages += f"From '{languages}' not found at least 1 languages in ISO 639-1 code.\n"
+                    languages = None
+                else:
+                    languages = languages[:-2]
+
+        # phone validation
+        if phone:
+            phone_number = phonenumbers.parse(phone)
+            valid = phonenumbers.is_valid_number(phone_number)
+            print(phone_number, valid)
+
+        # email validation
+        if email:
+            try:
+                # Check that the email address is valid. Turn on check_deliverability
+                # for first-time validations like on account creation pages (but not
+                # login pages).
+                email_info = validate_email(email, check_deliverability=True)
+
+                # After this point, use only the normalized form of the email address,
+                # especially before going to a database query.
+                email = email_info.normalized
+                print(email_info, email)
+            except EmailNotValidError as e:
+                # The exception message is human-readable explanation of why it's
+                # not a valid (or deliverable) email address.
+                print(str(e))
 
         # Return when have incorrect inputs. Else continues.
         if len(err_messages):
@@ -140,7 +193,7 @@ class MembersData(commands.Cog):
                                f"AND guild_id = {interaction.guild.id}")
                 database.commit()
 
-            await interaction.response.send_message("Thanks for sharing information, about you!")  # NOQA
+            await interaction.response.send_message("Thanks for sharing information about you!")  # NOQA
 
 
 async def setup(bot):
