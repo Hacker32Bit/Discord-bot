@@ -94,8 +94,7 @@ class MembersData(commands.Cog):
             data = {"country": country, "languages": languages, "info": info, "phone": phone, "email": email}
 
             # is_admin for access edit everything
-            is_admin = True if interaction.user.roles in discord.utils.get(interaction.guild.roles,
-                                                                           name="Admin") else False
+            is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
 
             # Unchangeable variables
             if (name and not old_name) or is_admin:
