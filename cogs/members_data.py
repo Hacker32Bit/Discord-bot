@@ -135,9 +135,9 @@ class MembersData(commands.Cog):
                         query += f"{str(key)} = '{str(data[key])}', "
 
                 print(f"|{query[:-2]}|")
-                # cursor.execute(f"UPDATE members SET {query[:-2]} WHERE user_id = {interaction.user.id} "
-                #                f"AND guild_id = {interaction.guild.id}")
-                # database.commit()
+                cursor.execute(f"UPDATE members SET {query[:-2]} WHERE user_id = {interaction.user.id} "
+                               f"AND guild_id = {interaction.guild.id}")
+                database.commit()
 
             await interaction.response.send_message("Thanks for sharing information, about you!")  # NOQA
 
