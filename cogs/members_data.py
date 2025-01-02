@@ -91,11 +91,14 @@ class MembersData(commands.Cog):
                 languages_list = languages.strip().lower().split(",")
                 languages = ""
                 if len(languages_list):
+                    lang_err = ""
                     for lang in languages_list:
                         if lang in languages_dict:
                             languages += f"{lang}, "
                         else:
-                            err_messages += f"Language '{lang}' does not exist in ISO 639-1 codes list."
+                            lang_err += f"{lang}, "
+                    if lang_err:
+                        err_messages += f"Language(s) '{lang[:-2]}' does not exist in ISO 639-1 codes list.\n"
                 if not languages:
                     err_messages += f"From '{languages}' not found at least 1 languages in ISO 639-1 code.\n"
                     languages = None
