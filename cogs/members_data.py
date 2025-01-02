@@ -35,7 +35,7 @@ class MembersData(commands.Cog):
     # Add info about Member
     @app_commands.command(name="about_update",
                           description="Add/Update information about you. [Private] fields are private by default for "
-                                      "first input. You can change your privacy with '/about_privacy' command")
+                                      "first input.")
     @app_commands.choices(gender=[
         app_commands.Choice(name='Male', value=1),
         app_commands.Choice(name='Female', value=2),
