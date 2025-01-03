@@ -134,91 +134,91 @@ class MembersData(commands.Cog):
                 email = None
                 err_messages += f"{str(err)}\n"
 
-        # Return when have incorrect inputs. Else continues.
-        if len(err_messages):
-            await interaction.response.send_message(err_messages)  # NOQA
+        # Everything good.
+
+        # Fetch member data from db.
+        cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday, country, languages, info, "
+                       f"phone, email FROM members "
+                       f"WHERE user_id = {interaction.user.id} AND guild_id = {interaction.guild.id}")
+        result = cursor.fetchone()
+
+        # Data for only exist keys and values for db query
+        data = {"name": name, "surname": surname, "gender": gender.value if gender else None, "birthday": date,
+                "country": country, "languages": languages, "info": info, "phone": phone, "email": email}
+
+        print("Initial data: ", data)
+
+        # If first time. Insert
+        if result is None:
+            exist_keys = ""
+            keys_values = []
+            for key in data.keys():
+                if data[key]:
+                    exist_keys += f"{str(key)}, "
+                    keys_values.append(str(data[key]))
+
+            print("result is None")
+            print("exist_keys: ", exist_keys)
+            print("keys_values: ", keys_values)
+
+            if exist_keys:
+                cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
+                               f"VALUES({interaction.user.id}, {interaction.guild.id})")
+                database.commit()
+
+                cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) VALUES( "
+                               f"{interaction.user.id}, {interaction.guild.id}, {'?, '* len(keys_values)[:-2]})",
+                               tuple(keys_values))
+                database.commit()
         else:
-            # Everything good.
+            (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
+             old_info, old_phone, old_email) = result
 
-            # Fetch member data from db.
-            cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday, country, languages, info, "
-                           f"phone, email FROM members "
-                           f"WHERE user_id = {interaction.user.id} AND guild_id = {interaction.guild.id}")
-            result = cursor.fetchone()
+            print("result", result)
 
-            # Data for only exist keys and values for db query
-            data = {"name": name, "surname": surname, "gender": gender.value if gender else None, "birthday": date,
-                    "country": country, "languages": languages, "info": info, "phone": phone, "email": email}
+            # is_admin for access edit everything
+            is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
 
-            print("Initial data: ", data)
+            # Unchangeable variables when not admin and already exist
+            if old_name and not is_admin:
+                data["name"] = None
+            if old_surname and not is_admin:
+                data["surname"] = None
+            if old_birthday and not is_admin:
+                data["birthday"] = None
+            if old_gender and not is_admin:
+                data["gender"] = None
 
-            # If first time. Insert
-            if result is None:
-                exist_keys = ""
-                keys_values = []
-                for key in data.keys():
-                    if data[key]:
-                        exist_keys += f"{str(key)}, "
-                        keys_values.append(str(data[key]))
+            print("data after changes: ", data)
 
-                print("result is None")
-                print("exist_keys: ", exist_keys)
-                print("keys_values: ", keys_values)
+            exist_keys = ""
+            keys_values = []
+            for key in data.keys():
+                if data[key]:
+                    exist_keys += f"{str(key)} = ?, "
+                    keys_values.append(str(data[key]))
 
-                if exist_keys:
-                    cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
-                                   f"VALUES({interaction.user.id}, {interaction.guild.id})")
-                    database.commit()
+            print("Result is exist")
+            print("exist_keys: ", exist_keys)
+            print("keys_values: ", keys_values)
 
-                    cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) VALUES( "
-                                   f"{interaction.user.id}, {interaction.guild.id}, {'?, '* len(keys_values)[:-2]})",
-                                   tuple(keys_values))
-                    database.commit()
-            else:
-                (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
-                 old_info, old_phone, old_email) = result
+            if len(keys_values):
+                cursor.execute(f"UPDATE members SET {exist_keys[:-2]} WHERE user_id = {interaction.user.id} "
+                               f"AND guild_id = {interaction.guild.id}", tuple(keys_values))
+                database.commit()
 
-                print("result", result)
+        response_message = "Thanks for sharing information about you!"
+        if len(err_messages):
+            response_message += f" But I was ignored this errors:\n\n{err_messages}"
 
-                # is_admin for access edit everything
-                is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
-
-                # Unchangeable variables when not admin and already exist
-                if old_name and not is_admin:
-                    data["name"] = None
-                if old_surname and not is_admin:
-                    data["surname"] = None
-                if old_birthday and not is_admin:
-                    data["birthday"] = None
-                if old_gender and not is_admin:
-                    data["gender"] = None
-
-                print("data after changes: ", data)
-
-                exist_keys = ""
-                keys_values = []
-                for key in data.keys():
-                    if data[key]:
-                        exist_keys += f"{str(key)} = ?, "
-                        keys_values.append(str(data[key]))
-
-                print("Result is exist")
-                print("exist_keys: ", exist_keys)
-                print("keys_values: ", keys_values)
-
-                if len(keys_values):
-                    cursor.execute(f"UPDATE members SET {exist_keys[:-2]} WHERE user_id = {interaction.user.id} "
-                                   f"AND guild_id = {interaction.guild.id}", tuple(keys_values))
-                    database.commit()
-
-            await interaction.response.send_message("Thanks for sharing information about you!")  # NOQA
+        await interaction.response.send_message(response_message)  # NOQA
 
     @app_commands.command(name="info", description="Show information about Member.")
     @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
-    async def info(self, interaction: discord.Interaction, mention: discord.Member):
-        print(type(interaction), interaction)
+    async def info(self, interaction: discord.Interaction, mention: discord.Member = None):
+        print(type(interaction.user), interaction.user)
         print(type(mention), mention)
-
+        await interaction.response.send_message("Completed")  # NOQA
 
 async def setup(bot):
     await bot.add_cog(MembersData(bot), guilds=[discord.Object(id=GUILD_ID)])
