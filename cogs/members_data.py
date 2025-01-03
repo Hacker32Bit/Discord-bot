@@ -258,22 +258,30 @@ class MembersData(commands.Cog):
 
     @staticmethod
     async def show_info(interaction: discord.Interaction, mention: discord.Member = None,
-                        with_private: bool = False) -> None:
+                        show_private: bool = False, force_private: bool = False) -> None:
+
         print(type(interaction.user), interaction.user)
         print(type(mention), mention)
-        print(type(with_private), with_private)
+        print(type(show_private), show_private)
+        print(type(force_private), force_private)
         await interaction.response.send_message("Completed")  # NOQA
 
     @app_commands.command(name="info", description="Show information about Member.")
+    @app_commands.choices(show_private=[
+        app_commands.Choice(name='No', value=False),
+        app_commands.Choice(name='Yes', value=True),
+    ])
     @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
-    async def info(self, interaction: discord.Interaction, mention: discord.Member = None):
-        await self.show_info(interaction, mention, False)
+    @app_commands.describe(show_private="Type Member name. Example: @Hacker32Bit")
+    async def info(self, interaction: discord.Interaction, mention: discord.Member = None,
+                   show_private: app_commands.Choice[bool] = False):
+        await self.show_info(interaction, mention, show_private.value if show_private else False)
 
     @app_commands.checks.has_permissions(administrator=True)
     @app_commands.command(name="private_info", description="[ADMIN] Show information about Member with private fields.")
     @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
     async def private_info(self, interaction: discord.Interaction, mention: discord.Member = None):
-        await self.show_info(interaction, mention, True)
+        await self.show_info(interaction, mention, True, True)
 
 
 async def setup(bot):
