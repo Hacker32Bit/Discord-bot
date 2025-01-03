@@ -70,12 +70,11 @@ class MembersData(commands.Cog):
             err_messages += "Too long surname. Surname should be contains [1, 35] letters.\n"
 
         # birthday validation. Parser can parse a lot of variants from str
-        date = ""
+        date = None
         if birthday:
             try:
-                date = parse(birthday, fuzzy=False).date()
+                date = str(parse(birthday, fuzzy=False).date())
             except ValueError as err:
-                date = None
                 err_messages += f"{str(err)}\n"
 
         # country validation from countries_list.json
