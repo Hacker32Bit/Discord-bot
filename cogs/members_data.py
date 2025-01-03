@@ -213,6 +213,12 @@ class MembersData(commands.Cog):
 
             await interaction.response.send_message("Thanks for sharing information about you!")  # NOQA
 
+    @app_commands.command(name="info", description="Show information about Member.")
+    @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
+    async def info(self, interaction: discord.Interaction, mention: discord.Member):
+        print(type(interaction), interaction)
+        print(type(mention), mention)
+
 
 async def setup(bot):
     await bot.add_cog(MembersData(bot), guilds=[discord.Object(id=GUILD_ID)])
