@@ -61,10 +61,12 @@ class MembersData(commands.Cog):
 
         # name validation [1, 35] symbols
         if name and len(name) > 35:
+            name = None
             err_messages += "Too long name. Name should be contains [1, 35] letters.\n"
 
         # surname validation valid [1, 35] symbols
         if surname and len(surname) > 35:
+            surname = None
             err_messages += "Too long surname. Surname should be contains [1, 35] letters.\n"
 
         # birthday validation. Parser can parse a lot of variants from str
@@ -73,6 +75,7 @@ class MembersData(commands.Cog):
             try:
                 date = parse(birthday, fuzzy=False).date()
             except ValueError as err:
+                date = None
                 err_messages += str(err)
 
         # country validation from countries_list.json
@@ -99,8 +102,8 @@ class MembersData(commands.Cog):
                     if lang_err:
                         err_messages += f"Language(s) '{lang_err[:-2]}' does not exist in ISO 639-1 codes list.\n"
                 if not languages:
-                    err_messages += f"From '{languages}' not found at least 1 languages in ISO 639-1 code.\n"
                     languages = None
+                    err_messages += f"From '{languages}' not found at least 1 languages in ISO 639-1 code.\n"
                 else:
                     languages = languages[:-2]
 
@@ -111,7 +114,8 @@ class MembersData(commands.Cog):
                 valid = phonenumbers.is_valid_number(phone_number)
                 print(phone_number, valid)
             except phonenumbers.NumberParseException as err:
-                print(str(err))
+                phone = None
+                err_messages += str(err)
 
         # email validation
         if email:
@@ -128,7 +132,8 @@ class MembersData(commands.Cog):
             except EmailNotValidError as err:
                 # The exception message is human-readable explanation of why it's
                 # not a valid (or deliverable) email address.
-                print(str(err))
+                email = None
+                err_messages += str(err)
 
         # Return when have incorrect inputs. Else continues.
         if len(err_messages):
