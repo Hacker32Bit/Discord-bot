@@ -274,8 +274,8 @@ class MembersData(commands.Cog):
     @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
     @app_commands.describe(show_private="Type Member name. Example: @Hacker32Bit")
     async def info(self, interaction: discord.Interaction, mention: discord.Member = None,
-                   show_private: app_commands.Choice[bool] = False):
-        await self.show_info(interaction, mention, show_private.value if show_private else False)
+                   show_private: app_commands.Choice[int] = 0):
+        await self.show_info(interaction, mention, True if show_private and show_private.value else False)
 
     @app_commands.checks.has_permissions(administrator=True)
     @app_commands.command(name="private_info", description="[ADMIN] Show information about Member with private fields.")
