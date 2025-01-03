@@ -6,4 +6,4 @@ g4f
 curl_cffi
 python-dateutil
 phonenumbers
-email-validator
+email_validator

@@ -143,6 +143,8 @@ class MembersData(commands.Cog):
             data = {"name": name, "surname": surname, "gender": gender.value, "birthday": date, "country": country,
                     "languages": languages, "info": info, "phone": phone, "email": email}
 
+            print("Initial data: ", data)
+
             # If first time. Insert
             if result is None:
                 exist_keys = ""
@@ -152,12 +154,11 @@ class MembersData(commands.Cog):
                         exist_keys += f"{str(key)}, "
                         keys_values.append(str(data[key]))
 
-                print(type(data), data)
+                print("result is None")
+                print("exist_keys: ", exist_keys)
+                print("keys_values: ", keys_values)
 
                 if exist_keys:
-                    print(exist_keys)
-                    print(keys_values)
-
                     cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
                                    f"VALUES({interaction.user.id}, {interaction.guild.id})")
                     database.commit()
@@ -170,9 +171,7 @@ class MembersData(commands.Cog):
                 (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
                  old_info, old_phone, old_email) = result
 
-                print(type(result), result)
-                print(user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
-                      old_info, old_phone, old_email)
+                print("result", result)
 
                 # is_admin for access edit everything
                 is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
@@ -187,6 +186,8 @@ class MembersData(commands.Cog):
                 if old_gender and not is_admin:
                     data["gender"] = None
 
+                print("data after changes: ", data)
+
                 exist_keys = ""
                 keys_values = []
                 for key in data.keys():
@@ -194,9 +195,11 @@ class MembersData(commands.Cog):
                         exist_keys += f"{str(key)} = ?, "
                         keys_values.append(str(data[key]))
 
+                print("Result is exist")
+                print("exist_keys: ", exist_keys)
+                print("keys_values: ", keys_values)
+
                 if len(keys_values):
-                    print(exist_keys)
-                    print(keys_values)
                     cursor.execute(f"UPDATE members SET {exist_keys[:-2]} WHERE user_id = {interaction.user.id} "
                                    f"AND guild_id = {interaction.guild.id}", tuple(keys_values))
                     database.commit()
