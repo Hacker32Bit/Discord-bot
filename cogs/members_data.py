@@ -36,26 +36,16 @@ class MembersData(commands.Cog):
         print("[INFO] \"Members Data\" cog is ready!")
 
     # Add info about Member
-    @app_commands.command(name="about_update", description="Add/Update information about you. [Private] fields are "
-                                                           "private by default for first input.")
-    @app_commands.choices(gender=[
-        app_commands.Choice(name='Male', value=1),
-        app_commands.Choice(name='Female', value=2),
-        app_commands.Choice(name='Other', value=-1),
-    ])
-    @app_commands.describe(name="What is your name?")
-    @app_commands.describe(surname="What is your surname?")
-    @app_commands.describe(gender="Select your gender")
-    @app_commands.describe(birthday="[Private] Date of Birth. Type in this order: date, month, year.")
-    @app_commands.describe(country="Enter ONE your country name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW) Example: DE")
-    @app_commands.describe(
-        languages="Enter yours languages list in ISO 639-1 code. (ad, ae, ..., zh, zu) Example: en, en-US, ru, zh")
-    @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
-    @app_commands.describe(phone="[Private] Enter your phone in E.164 format. Example: +14155552671")
-    @app_commands.describe(email="[Private] Enter your email in RFC 6530 standard. Example: local-part@domain.com")
-    async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
-                           gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
-                           languages: str = None, info: str = None, phone: str = None, email: str = None):
+    @staticmethod
+    async def about_update_function(interaction: discord.Interaction, name: str = None, surname: str = None,
+                                    gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
+                                    languages: str = None, info: str = None, phone: str = None, email: str = None,
+                                    is_admin: bool = False, mention: discord.Member = None):
+        # Set user_id from Interaction or from mention(If admin)
+        user_id = interaction.user.id
+        if mention:
+            user_id = mention.id
+
         # Collect errors messages on validate state
         err_messages: str = ""
 
@@ -106,6 +96,11 @@ class MembersData(commands.Cog):
                 else:
                     languages = languages[:-2]
 
+        # info validation
+        if info and len(info) > 4000:
+            info = info[:4000]
+            err_messages += f"Your info is too long. It was automatically shortened to 4,000 characters"
+
         # phone validation
         if phone:
             try:
@@ -139,7 +134,7 @@ class MembersData(commands.Cog):
         # Fetch member data from db.
         cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday, country, languages, info, "
                        f"phone, email FROM members "
-                       f"WHERE user_id = {interaction.user.id} AND guild_id = {interaction.guild.id}")
+                       f"WHERE user_id = {user_id} AND guild_id = {interaction.guild.id}")
         result = cursor.fetchone()
 
         # Data for only exist keys and values for db query
@@ -163,11 +158,11 @@ class MembersData(commands.Cog):
 
             if exist_keys:
                 cursor.execute(f"INSERT INTO members_privacy(user_id, guild_id) "
-                               f"VALUES({interaction.user.id}, {interaction.guild.id})")
+                               f"VALUES({user_id}, {interaction.guild.id})")
                 database.commit()
 
                 cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) VALUES( "
-                               f"{interaction.user.id}, {interaction.guild.id}, {'?, ' * len(keys_values)[:-2]})",
+                               f"{user_id}, {interaction.guild.id}, {'?, ' * len(keys_values)[:-2]})",
                                tuple(keys_values))
                 database.commit()
         else:
@@ -175,9 +170,6 @@ class MembersData(commands.Cog):
              old_info, old_phone, old_email) = result
 
             print("result", result)
-
-            # is_admin for access edit everything
-            is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
 
             # Unchangeable variables when not admin and already exist
             if old_name and not is_admin:
@@ -203,7 +195,7 @@ class MembersData(commands.Cog):
             print("keys_values: ", keys_values)
 
             if len(keys_values):
-                cursor.execute(f"UPDATE members SET {exist_keys[:-2]} WHERE user_id = {interaction.user.id} "
+                cursor.execute(f"UPDATE members SET {exist_keys[:-2]} WHERE user_id = {user_id} "
                                f"AND guild_id = {interaction.guild.id}", tuple(keys_values))
                 database.commit()
 
@@ -213,8 +205,60 @@ class MembersData(commands.Cog):
 
         await interaction.response.send_message(response_message)  # NOQA
 
+    @app_commands.command(name="about_update", description="Add/Update information about you. [Private] fields are "
+                                                           "private by default for first input.")
+    @app_commands.choices(gender=[
+        app_commands.Choice(name='Male', value=1),
+        app_commands.Choice(name='Female', value=2),
+        app_commands.Choice(name='Other', value=-1),
+    ])
+    @app_commands.describe(name="What is your name?")
+    @app_commands.describe(surname="What is your surname?")
+    @app_commands.describe(gender="Select your gender")
+    @app_commands.describe(birthday="[Private] date of birth. Type in this order: date, month, year.")
+    @app_commands.describe(country="Enter ONE your country name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW) Example: DE")
+    @app_commands.describe(
+        languages="Enter yours languages list in ISO 639-1 code. (ad, ae, ..., zh, zu) Example: en, en-US, ru, zh")
+    @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
+    @app_commands.describe(phone="[Private] Enter your phone in E.164 format. Example: +14155552671")
+    @app_commands.describe(email="[Private] Enter your email in RFC 6530 standard. Example: local-part@domain.com")
+    async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
+                           gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
+                           languages: str = None, info: str = None, phone: str = None, email: str = None):
+        # is_admin for access edit everything
+        is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
+        await self.about_update_function(interaction, name, surname, gender, birthday, country, languages, info, phone,
+                                         email, is_admin)
+
+    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.command(name="about_update_mention", description="[ADMIN] Add/Update information about member.")
+    @app_commands.choices(gender=[
+        app_commands.Choice(name='Male', value=1),
+        app_commands.Choice(name='Female', value=2),
+        app_commands.Choice(name='Other', value=-1),
+    ])
+    @app_commands.describe(mention="Member mention. Example: @Hacker32Bit")
+    @app_commands.describe(name="Member name")
+    @app_commands.describe(surname="Member surname")
+    @app_commands.describe(gender="Member gender")
+    @app_commands.describe(birthday="Member date of birth. Type in this order: date, month, year.")
+    @app_commands.describe(
+        country="Enter member ONE country name in ISO 3166-1 code. (AD, AE, ..., ZM, ZW) Example: DE")
+    @app_commands.describe(
+        languages="Enter member languages list in ISO 639-1 code. (ad, ae, ..., zh, zu) Example: en, en-US, ru, zh")
+    @app_commands.describe(info="Enter member small info (MAX 4000 symbols)")
+    @app_commands.describe(phone="Enter member phone in E.164 format. Example: +14155552671")
+    @app_commands.describe(email="Enter member email in RFC 6530 standard. Example: local-part@domain.com")
+    async def about_update_mention(self, interaction: discord.Interaction, mention: discord.Member, name: str = None,
+                                   surname: str = None,
+                                   gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
+                                   languages: str = None, info: str = None, phone: str = None, email: str = None):
+        await self.about_update_function(interaction, name, surname, gender, birthday, country, languages, info, phone,
+                                         email, True, mention)
+
     @staticmethod
-    async def show_info(interaction: discord.Interaction, mention: discord.Member = None, with_private: bool = False) -> None:
+    async def show_info(interaction: discord.Interaction, mention: discord.Member = None,
+                        with_private: bool = False) -> None:
         print(type(interaction.user), interaction.user)
         print(type(mention), mention)
         print(type(with_private), with_private)
@@ -225,8 +269,8 @@ class MembersData(commands.Cog):
     async def info(self, interaction: discord.Interaction, mention: discord.Member = None):
         await self.show_info(interaction, mention, False)
 
-    @app_commands.command(name="private_info", description="[Admin] Show information about Member with private fields.")
     @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.command(name="private_info", description="[ADMIN] Show information about Member with private fields.")
     @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
     async def private_info(self, interaction: discord.Interaction, mention: discord.Member = None):
         await self.show_info(interaction, mention, True)
