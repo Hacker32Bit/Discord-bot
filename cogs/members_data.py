@@ -106,9 +106,12 @@ class MembersData(commands.Cog):
 
         # phone validation
         if phone:
-            phone_number = phonenumbers.parse(phone)
-            valid = phonenumbers.is_valid_number(phone_number)
-            print(phone_number, valid)
+            try:
+                phone_number = phonenumbers.parse(phone)
+                valid = phonenumbers.is_valid_number(phone_number)
+                print(phone_number, valid)
+            except phonenumbers.NumberParseException as err:
+                print(str(err))
 
         # email validation
         if email:
@@ -122,10 +125,10 @@ class MembersData(commands.Cog):
                 # especially before going to a database query.
                 email = email_info.normalized
                 print(email_info, email)
-            except EmailNotValidError as e:
+            except EmailNotValidError as err:
                 # The exception message is human-readable explanation of why it's
                 # not a valid (or deliverable) email address.
-                print(str(e))
+                print(str(err))
 
         # Return when have incorrect inputs. Else continues.
         if len(err_messages):
