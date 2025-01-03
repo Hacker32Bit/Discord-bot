@@ -167,7 +167,7 @@ class MembersData(commands.Cog):
                 database.commit()
 
                 cursor.execute(f"INSERT INTO members(user_id, guild_id, {exist_keys[:-2]}) VALUES( "
-                               f"{interaction.user.id}, {interaction.guild.id}, {'?, '* len(keys_values)[:-2]})",
+                               f"{interaction.user.id}, {interaction.guild.id}, {'?, ' * len(keys_values)[:-2]})",
                                tuple(keys_values))
                 database.commit()
         else:
@@ -209,16 +209,18 @@ class MembersData(commands.Cog):
 
         response_message = "Thanks for sharing information about you!"
         if len(err_messages):
-            response_message += f" But I was ignored this errors:\n\n{err_messages}"
+            response_message += f" But I was ignored this errors:\n{err_messages}"
 
         await interaction.response.send_message(response_message)  # NOQA
 
     @app_commands.command(name="info", description="Show information about Member.")
     @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
-    async def info(self, interaction: discord.Interaction, mention: discord.Member = None):
+    async def info(self, interaction: discord.Interaction, mention: discord.Member = None,
+                   private_fields: bool = False):
         print(type(interaction.user), interaction.user)
         print(type(mention), mention)
         await interaction.response.send_message("Completed")  # NOQA
+
 
 async def setup(bot):
     await bot.add_cog(MembersData(bot), guilds=[discord.Object(id=GUILD_ID)])
