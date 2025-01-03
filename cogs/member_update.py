@@ -56,7 +56,6 @@ class MemberUpdate(commands.Cog):
     async def on_presence_update(self, before, after):
 
         if before and after and before.status != after.status:  # logging your member's status
-            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             description = (
                 f"**{before.mention}**'s status changed!\n"
                 f"From **{before.status}** to **{after.status}**!")
@@ -65,10 +64,10 @@ class MemberUpdate(commands.Cog):
                 color=0xcddc39 if after.status == "online" else 0xff9800,
                 timestamp=datetime.datetime.now()
             )
+            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             await channel.send(embed=embed)
 
         if before and after and before.activity != after.activity:  # logging you member's activities
-            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             description = (
                 f"**{before.mention}**'s activity changed!\n"
                 f"From **{before.activity.name}** to **{after.activity.name}**!")
@@ -77,6 +76,7 @@ class MemberUpdate(commands.Cog):
                 color=0xcddc39,
                 timestamp=datetime.datetime.now()
             )
+            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             await channel.send(embed=embed)
 
 

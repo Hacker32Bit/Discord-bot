@@ -268,8 +268,8 @@ class MembersData(commands.Cog):
 
     @app_commands.command(name="info", description="Show information about Member.")
     @app_commands.choices(show_private=[
-        app_commands.Choice(name='No', value=False),
-        app_commands.Choice(name='Yes', value=True),
+        app_commands.Choice(name='No', value=0),
+        app_commands.Choice(name='Yes', value=1),
     ])
     @app_commands.describe(mention="Type Member name. Example: @Hacker32Bit")
     @app_commands.describe(show_private="Type Member name. Example: @Hacker32Bit")
