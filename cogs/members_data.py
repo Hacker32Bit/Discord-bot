@@ -51,8 +51,7 @@ class MembersData(commands.Cog):
     @app_commands.describe(
         languages="Enter yours languages list in ISO 639-1 code. (ad, ae, ..., zh, zu) Example: en, en-US, ru, zh")
     @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
-    @app_commands.describe(phone="[Private] Enter your phone in E.164 ([+][country code][area code][local phone "
-                                 "number]) format. Example: +14155552671")
+    @app_commands.describe(phone="[Private] Enter your phone in E.164 format. Example: +14155552671")
     @app_commands.describe(email="[Private] Enter your email in RFC 6530 standard. Example: local-part@domain.com")
     async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
                            gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
