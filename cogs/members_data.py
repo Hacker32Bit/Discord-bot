@@ -76,7 +76,7 @@ class MembersData(commands.Cog):
                 date = parse(birthday, fuzzy=False).date()
             except ValueError as err:
                 date = None
-                err_messages += str(err)
+                err_messages += f"{str(err)}\n"
 
         # country validation from countries_list.json
         if country:
@@ -115,7 +115,7 @@ class MembersData(commands.Cog):
                 print(phone_number, valid)
             except phonenumbers.NumberParseException as err:
                 phone = None
-                err_messages += str(err)
+                err_messages += f"Phone argument error: {str(err)}\n"
 
         # email validation
         if email:
@@ -133,7 +133,7 @@ class MembersData(commands.Cog):
                 # The exception message is human-readable explanation of why it's
                 # not a valid (or deliverable) email address.
                 email = None
-                err_messages += str(err)
+                err_messages += f"{str(err)}\n"
 
         # Return when have incorrect inputs. Else continues.
         if len(err_messages):
