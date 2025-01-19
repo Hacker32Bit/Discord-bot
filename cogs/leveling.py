@@ -2,7 +2,6 @@ import io
 import os
 import re
 import time
-import random
 from typing import Final
 import discord
 from discord import app_commands
@@ -403,14 +402,14 @@ class Leveling(commands.Cog):
 
         background_link = os.path.join(os.path.dirname(__file__), os.path.pardir, 'assets', 'images', 'rank_cards',
                                        f'{interaction.user.id}.png')
-        try:
-            user_picture = user.avatar.url
-        except AttributeError:
-            user_picture = f'https://cdn.discordapp.com/embed/avatars/{random.randrange(5)}.png'
+        # try:
+        #     user_picture = user.avatar.url
+        # except AttributeError:
+        #     user_picture = f'https://cdn.discordapp.com/embed/avatars/{random.randrange(5)}.png'
 
         args = {
             'bg_image': background_link if int(background) else None,  # Background image link
-            'profile_image': user_picture,  # User profile picture link
+            'profile_image': user.display_avatar.url,  # User profile picture link
             'level': int(level),  # User current level
             'current_xp': int(level)**2 * 100,  # Current level minimum xp
             'user_xp': exp,  # User current xp

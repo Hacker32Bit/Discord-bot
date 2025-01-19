@@ -14,10 +14,26 @@ ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 class MemberUpdate(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.invites = {}
 
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Member update\" cog is ready!")
+        # Getting all the guilds our bot is in
+        for guild in self.client.guilds:
+            # Adding each guild's invites to our dict
+            self.invites[self.client.guild.id] = await guild.invites()
+
+    @staticmethod
+    def find_invite_by_code(invite_list, code):
+        # Simply looping through each invite in an
+        # invite list which we will get using guild.invites()
+        for inv in invite_list:
+            # Check if the invite code in this element
+            # of the list is the one we're looking for
+            if inv.code == code:
+                # If it is, we return it.
+                return inv
 
     # Called when member update
     @commands.Cog.listener()
@@ -26,8 +42,32 @@ class MemberUpdate(commands.Cog):
         if before.pending and not after.pending:
             role = discord.utils.get(before.guild.roles, name="Member")
 
-            print(type(before), before)
-            print(type(before.pending), before.pending)
+            invites_before_join = self.invites[before.guild.id]
+            invites_after_join = await before.guild.invites()
+
+            for invite in invites_before_join:
+                # Now, we're using the function we created just
+                # before to check which invite count is bigger
+                # than it was before the user joined.
+                if invite.uses < self.find_invite_by_code(invites_after_join, invite.code).uses:
+                    # Now that we found which link was used,
+                    # we will print a couple things in our console:
+                    # the name, invite code used the the person
+                    # who created the invite code, or the inviter.
+                    print(f"Member {before.name} Joined")
+                    print(f"Invite Code: {invite.code}")
+                    print(f"Inviter: {invite.inviter}")
+
+                    # We will now update our cache so it's ready
+                    # for the next user that joins the guild
+
+                    self.invites[before.guild.id] = invites_after_join
+
+                    # We return here since we already found which
+                    # one was used and there is no point in
+                    # looping when we already got what we wanted
+
+            # print(type(before), before)
 
             await after.add_roles(role)
 
