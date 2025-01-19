@@ -14,20 +14,15 @@ ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 class MemberUpdate(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.invites = {}
-
+        self.invites = []
 
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Member update\" cog is ready!")
-        # Getting all the guilds our bot is in
-        for guild in self.client.guilds:
-            # Adding each guild's invites to our dict
-            self.invites[self.client.guild.id] = await guild.invites()
-
+        self.invites = await self.client.guild.invites()
 
     @staticmethod
-    def find_invite_by_code(invite_list, code):
+    async def find_invite_by_code(invite_list, code):
         # Simply looping through each invite in an
         # invite list which we will get using guild.invites()
         for inv in invite_list:
@@ -37,57 +32,24 @@ class MemberUpdate(commands.Cog):
                 # If it is, we return it.
                 return inv
 
-
-    @commands.Cog.listener()
-    async def on_member_update(self, member):
-        # Getting the invites before the user joining
-        # from our cache for this specific guild
-        invites_before_join = self.invites[member.guild.id]
-
-        # Getting the invites after the user joining
-        # so we can compare it with the first one, and
-        # see which invite uses number increased
-        invites_after_join = await member.guild.invites()
-
-        # Loops for each invite we have for the guild
-        # the user joined.
-        for invite in invites_before_join:
-            # Now, we're using the function we created just
-            # before to check which invite count is bigger
-            # than it was before the user joined.
-
-            if invite.uses < self.find_invite_by_code(invites_after_join, invite.code).uses:
-                # Now that we found which link was used,
-                # we will print a couple things in our console:
-                # the name, invite code used the the person
-                # who created the invite code, or the inviter.
-
-                print(f"Member {member.name} Joined")
-                print(f"Invite Code: {invite.code}")
-                print(f"Inviter: {invite.inviter}")
-
-                # We will now update our cache so it's ready
-                # for the next user that joins the guild
-                self.invites[member.guild.id] = invites_after_join
-
-                # We return here since we already found which
-                # one was used and there is no point in
-                # looping when we already got what we wanted
-
-
-    @commands.Cog.listener()
-    async def on_member_remove(self, member):
-        # Updates the cache when a user leaves to make sure
-        # everything is up to date
-        self.invites[member.guild.id] = await member.guild.invites()
-
-
     # Called when member update
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         # Give role when joined
         if before.pending and not after.pending:
             role = discord.utils.get(before.guild.roles, name="Member")
+
+            invites_before_join = self.invites
+            invites_after_join = await after.guild.invites()
+
+            for invite in invites_before_join:
+                if invite.uses < self.find_invite_by_code(invites_after_join, invite.code).uses:
+                    print(f"Member {after.name} Joined")
+                    print(f"Invite Code: {invite.code}")
+                    print(f"Inviter: {invite.inviter}")
+
+                    self.invites = invites_after_join
+
             await after.add_roles(role)
 
         # Change nickname alert
@@ -110,6 +72,11 @@ class MemberUpdate(commands.Cog):
             )
             await channel.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        # Updates the cache when a user leaves to make sure
+        # everything is up to date
+        self.invites = await member.guild.invites()
 
     # Called when member presence update
     @commands.Cog.listener()
