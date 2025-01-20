@@ -12,10 +12,10 @@ ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 
 class MemberUpdate(commands.Cog):
+    invites = {}
+
     def __init__(self, client):
         self.client = client
-        self.invites = {}
-
 
     @commands.Cog.listener()
     async def on_ready(self):
