@@ -12,10 +12,9 @@ ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 
 class MemberUpdate(commands.Cog):
-    invites = {}
-
     def __init__(self, client):
         self.client = client
+        self.invites = {}
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -23,6 +22,7 @@ class MemberUpdate(commands.Cog):
         for guild in self.client.guilds:
             # Adding each guild's invites to our dict
             self.invites[guild.id] = await guild.invites()
+        print(self.invites)
 
     @staticmethod
     def find_invite_by_code(invite_list, code):
@@ -41,6 +41,7 @@ class MemberUpdate(commands.Cog):
         # Getting the invites before the user joining
         # from our cache for this specific guild
 
+        print(member.guild.id)
         invites_before_join = self.invites[member.guild.id]
 
         # Getting the invites after the user joining
