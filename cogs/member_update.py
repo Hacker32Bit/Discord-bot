@@ -22,10 +22,10 @@ class MemberUpdate(commands.Cog):
         for guild in self.client.guilds:
             # Adding each guild's invites to our dict
             self.invites[guild.id] = await guild.invites()
-        print(self.invites)
+        print("OnReady", self.invites)
 
     @staticmethod
-    def find_invite_by_code(invite_list, code):
+    async def find_invite_by_code(invite_list, code):
         # Simply looping through each invite in an
         # invite list which we will get using guild.invites()
         for inv in invite_list:
@@ -41,8 +41,8 @@ class MemberUpdate(commands.Cog):
         # Getting the invites before the user joining
         # from our cache for this specific guild
 
-        print(member.guild.id)
-        invites_before_join = self.invites[member.guild.id]
+        print("OnMemberJoin", member.guild.id)
+        invites_before_join = await self.invites[member.guild.id]
 
         # Getting the invites after the user joining
         # so we can compare it with the first one, and
