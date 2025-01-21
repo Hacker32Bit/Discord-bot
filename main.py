@@ -22,13 +22,12 @@ intents.presences = True # NOQA
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
 
-def load_cogs():
-    for filename in os.listdir("./cogs"):
-        try:
-            if filename.endswith(".py"):
-                client.load_extension(f"cogs.{filename[:-3]}")
-        except Exception as err:
-            print(f'Failed to load {filename} cog: {err}')
+for filename in os.listdir("./cogs"):
+    try:
+        if filename.endswith(".py"):
+            client.load_extension(f"cogs.{filename[:-3]}")
+    except Exception as err:
+        print(f'Failed to load {filename} cog: {err}')
 
 
 @client.event
@@ -40,8 +39,6 @@ if __name__ == "__main__":
     try:
         handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
                                       mode="a")
-
-        load_cogs()
         client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
 
     except discord.HTTPException as e:
