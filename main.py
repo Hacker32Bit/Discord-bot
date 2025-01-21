@@ -33,12 +33,17 @@ async def load_extensions():
             print(f'Failed to load {filename} cog: {err}')
 
 
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
+
+
 async def main():
     try:
         await load_extensions()
         handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
                                       mode="a")
-
+        discord.utils.setup_logging(level=logging.DEBUG, root=False, handler=handler)
         await client.start(TOKEN)
 
     except discord.HTTPException as e:
