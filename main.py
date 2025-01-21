@@ -37,20 +37,19 @@ async def load_extensions():
 # print('We have logged in as {0.user}'.format(client))
 
 
-async def main():
-    async with client:
-        try:
-            await load_extensions()
-            handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
-                                          mode="a")
-            client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
+def main():
+    try:
+        load_extensions()
+        handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
+                                      mode="a")
+        client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
 
-        except discord.HTTPException as e:
-            if e.status == 429:
-                print("The Discord servers denied the connection for making too many requests")
-            else:
-                raise e
+    except discord.HTTPException as e:
+        if e.status == 429:
+            print("The Discord servers denied the connection for making too many requests")
+        else:
+            raise e
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
