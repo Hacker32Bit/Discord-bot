@@ -34,12 +34,11 @@ async def load_cogs():
 
 @client.event
 async def on_ready():
+    await load_cogs()
     print('We have logged in as {0.user}'.format(client))
 
 
 def main():
-    load_cogs()
-
     try:
         handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
                                       mode="a")
