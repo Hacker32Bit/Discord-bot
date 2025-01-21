@@ -12,10 +12,9 @@ ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 
 class MemberUpdate(commands.Cog):
-    invites = {}
-
     def __init__(self, client):
         self.client = client
+        self.invites = {}
 
 
     @commands.Cog.listener()
@@ -23,8 +22,8 @@ class MemberUpdate(commands.Cog):
         print("[INFO] \"Member update\" cog is ready!")
         for guild in self.client.guilds:
             # Adding each guild's invites to our dict
-            MemberUpdate.invites[guild.id] = await guild.invites()
-        print("OnReady", MemberUpdate.invites)
+            self.invites[guild.id] = await guild.invites()
+        print("OnReady", self.invites)
 
     @staticmethod
     async def find_invite_by_code(invite_list, code):
@@ -44,7 +43,7 @@ class MemberUpdate(commands.Cog):
         # from our cache for this specific guild
 
         print("OnMemberJoin", member.guild.id)
-        invites_before_join = await MemberUpdate.invites[member.guild.id]
+        invites_before_join = await self.invites[member.guild.id]
 
         # Getting the invites after the user joining
         # so we can compare it with the first one, and
@@ -74,7 +73,7 @@ class MemberUpdate(commands.Cog):
                 # We will now update our cache so it's ready
                 # for the next user that joins the guild
 
-                MemberUpdate.invites[member.guild.id] = invites_after_join
+                self.invites[member.guild.id] = invites_after_join
 
                 # We return here since we already found which
                 # one was used and there is no point in
@@ -84,7 +83,7 @@ class MemberUpdate(commands.Cog):
     async def on_member_remove(self, member):
         # Updates the cache when a user leaves to make sure
         # everything is up to date
-        MemberUpdate.invites[member.guild.id] = await member.guild.invites()
+        self.invites[member.guild.id] = await member.guild.invites()
 
     # Called when member update
     @commands.Cog.listener()
