@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import logging
 from time import strftime
+import asyncio
 
 
 load_dotenv()
@@ -52,4 +53,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    main()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
