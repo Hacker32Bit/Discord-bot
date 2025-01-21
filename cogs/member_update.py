@@ -8,6 +8,7 @@ import os
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
+GUILD_ID = Final[int] = os.getenv("GUILD_ID")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 
@@ -43,7 +44,7 @@ class MemberUpdate(commands.Cog):
         # from our cache for this specific guild
 
         print("OnMemberJoin", member.guild.id)
-        invites_before_join = await self.invites[member.guild.id]
+        invites_before_join = self.invites[GUILD_ID]
 
         # Getting the invites after the user joining
         # so we can compare it with the first one, and
@@ -73,7 +74,7 @@ class MemberUpdate(commands.Cog):
                 # We will now update our cache so it's ready
                 # for the next user that joins the guild
 
-                self.invites[member.guild.id] = invites_after_join
+                self.invites[GUILD_ID] = invites_after_join
 
                 # We return here since we already found which
                 # one was used and there is no point in
@@ -83,7 +84,7 @@ class MemberUpdate(commands.Cog):
     async def on_member_remove(self, member):
         # Updates the cache when a user leaves to make sure
         # everything is up to date
-        self.invites[member.guild.id] = await member.guild.invites()
+        self.invites[GUILD_ID] = await member.guild.invites()
 
     # Called when member update
     @commands.Cog.listener()
