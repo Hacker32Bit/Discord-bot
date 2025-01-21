@@ -22,17 +22,19 @@ intents.presences = True # NOQA
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
 
-for filename in os.listdir("./cogs"):
-    try:
-        if filename.endswith(".py"):
-            client.load_extension(f"cogs.{filename[:-3]}")
-    except Exception as err:
-        print(f'Failed to load {filename} cog: {err}')
+async def load_cogs():
+    for filename in os.listdir("./cogs"):
+        try:
+            if filename.endswith(".py"):
+                await client.load_extension(f"cogs.{filename[:-3]}")
+        except Exception as err:
+            print(f'Failed to load {filename} cog: {err}')
 
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    await load_cogs()
 
 
 if __name__ == "__main__":
