@@ -17,7 +17,7 @@ class MemberUpdate(commands.Cog):
         self.invites = {}
 
     @commands.Cog.listener()
-    async def setup_hook(self):
+    async def on_ready(self):
         print("[INFO] \"Member update\" cog is ready!")
         for guild in self.client.guilds:
             # Adding each guild's invites to our dict
