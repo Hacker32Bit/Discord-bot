@@ -3,7 +3,7 @@
 CURRENT_PID=$$
 TMP_PATH=$HOME/../../tmp
 WORK_DIR=$HOME/Discord-bot
-TERMINAL_LOGS_PATH=$WORK_DIR/terminal_logs
+TERMINAL_LOGS_PATH=$TMP_PATH/terminal_logs
 DISCORD_LOGS_PATH=$TMP_PATH/logs
 PYTHON_PATH=$WORK_DIR/.venv/bin/python
 PYTHON_PACKAGES_PATH=$WORK_DIR/.venv/lib/python3.*/site-packages
