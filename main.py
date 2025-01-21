@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 from typing import Final
@@ -22,25 +24,22 @@ intents.presences = True # NOQA
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
 
-def load_extensions():
+async def load_extensions():
     for filename in os.listdir("./cogs"):
         try:
             if filename.endswith(".py"):
-                client.load_extension(f"cogs.{filename[:-3]}")
+                await client.load_extension(f"cogs.{filename[:-3]}")
         except Exception as err:
             print(f'Failed to load {filename} cog: {err}')
 
 
-# load_cogs()
-# print('We have logged in as {0.user}'.format(client))
-
-
-def main():
+async def main():
     try:
-        load_extensions()
+        await load_extensions()
         handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
                                       mode="a")
-        client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
+
+        await client.start(TOKEN)
 
     except discord.HTTPException as e:
         if e.status == 429:
@@ -50,4 +49,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
