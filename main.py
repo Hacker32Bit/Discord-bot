@@ -1,5 +1,4 @@
 import asyncio
-
 import discord
 from discord.ext import commands
 from typing import Final
@@ -41,7 +40,7 @@ async def on_ready():
 async def main():
     try:
         await load_extensions()
-        handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
+        handler = logging.FileHandler(filename=f"~/../../tmp/logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
                                       mode="a")
         discord.utils.setup_logging(level=logging.DEBUG, root=False, handler=handler)
         await client.start(TOKEN)
