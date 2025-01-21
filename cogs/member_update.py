@@ -21,7 +21,7 @@ class MemberUpdate(commands.Cog):
         print("[INFO] \"Member update\" cog is ready!")
         for guild in self.client.guilds:
             # Adding each guild's invites to our dict
-            MemberUpdate.invites[guild.id] = await guild.invites()
+            self.invites[guild.id] = await guild.invites()
         print("setup_hook", self.invites)
 
     @staticmethod
