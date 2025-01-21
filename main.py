@@ -37,8 +37,8 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-async def main():
-    await load_cogs()
+def main():
+    load_cogs()
 
     try:
         handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
@@ -53,4 +53,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
