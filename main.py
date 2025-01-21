@@ -34,10 +34,11 @@ async def load_cogs():
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+
+
+async def main():
     await load_cogs()
 
-
-if __name__ == "__main__":
     try:
         handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
                                       mode="a")
@@ -48,3 +49,7 @@ if __name__ == "__main__":
             print("The Discord servers denied the connection for making too many requests")
         else:
             raise e
+
+
+if __name__ == "__main__":
+    main()
