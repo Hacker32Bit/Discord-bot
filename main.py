@@ -1,4 +1,6 @@
 import asyncio
+import sys
+
 import discord
 from discord.ext import commands
 from typing import Final
@@ -6,7 +8,6 @@ from dotenv import load_dotenv
 import os
 import logging
 from time import strftime
-
 
 load_dotenv()
 TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
@@ -16,9 +17,9 @@ APPLICATION_ID: Final[str] = os.getenv("APPLICATION_ID")
 intents: discord.Intents = discord.Intents.default()
 intents.message_content = True  # NOQA
 intents.members = True  # NOQA
-intents.voice_states = True # NOQA
-intents.guilds = True # NOQA
-intents.presences = True # NOQA
+intents.voice_states = True  # NOQA
+intents.guilds = True  # NOQA
+intents.presences = True  # NOQA
 
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
@@ -40,8 +41,10 @@ async def on_ready():
 async def main():
     try:
         await load_extensions()
-        handler = logging.FileHandler(filename=f"~/../../tmp/logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
-                                      mode="a")
+        handler = logging.FileHandler(
+            filename=os.path.join(os.sep, "tmp", "logs", f"{strftime('%Y-%m-%d %H:%M:%S')}.log"),
+            encoding='utf-8',
+            mode="a")
         discord.utils.setup_logging(level=logging.DEBUG, root=False, handler=handler)
         await client.start(TOKEN)
 
