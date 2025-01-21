@@ -13,7 +13,6 @@ RANK_CARDS=$WORK_DIR/assets/images/rank_cards
 END_TIME="19:00:00" # Set time when system should be reboot
 
 mkdir "$TMP_PATH/logs"
-mkdir "$TMP_PATH/terminal_logs"
 
 cd $WORK_DIR
 
@@ -115,14 +114,14 @@ echo "====== Starting backups ================================================="
 gdrive_check
 
 current_timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-echo "Copying previous terminal logs to gdrive..."
-rsync -rcv $TERMINAL_LOGS_PATH/ $GDRIVE_PATH/backups/terminal_logs/
-echo "Copying Discord logs to gdrive..."
+echo "Copying Discord log to gdrive..."
 rsync -rcv $DISCORD_LOGS_PATH/ $GDRIVE_PATH/backups/logs/
 echo "Copying database.sqlite to gdrive..."
 rsync -v $WORK_DIR/database.sqlite $GDRIVE_PATH/backups/databases/"$current_timestamp.sqlite"
 echo "Copying assets folder to gdrive..."
 rsync -rcv $RANK_CARDS/ $GDRIVE_PATH/backups/assets/images/rank_cards/
+echo "Copying terminal log to gdrive..."
+rsync -rcv $TERMINAL_LOGS_PATH/ $GDRIVE_PATH/backups/terminal_logs/
 echo "Completed!"
 
 
