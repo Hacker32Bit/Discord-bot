@@ -10,7 +10,7 @@ PYTHON_PACKAGES_PATH=$WORK_DIR/.venv/lib/python3.*/site-packages
 SCRIPT_PATH=$WORK_DIR/main.py
 GDRIVE_PATH=$HOME/mnt/gdrive/Discord-bot
 RANK_CARDS=$WORK_DIR/assets/images/rank_cards
-END_TIME="06:00:00" # Set time when system should be reboot
+END_TIME="19:00:00" # Set time when system should be reboot
 
 mkdir "$TMP_PATH/logs"
 mkdir "$TMP_PATH/terminal_logs"
