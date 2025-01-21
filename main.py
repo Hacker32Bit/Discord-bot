@@ -56,16 +56,16 @@ async def main():
 
 
 if __name__ == "__main__":
-    # asyncio.run(main())
-    try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
-    except KeyboardInterrupt:
-        print("Received Ctrl+C. Stopping gracefully...")
-        # Cancel all running tasks
-        for task in asyncio.Task.all_tasks():
-            task.cancel()
-        # Optionally: Close any open resources (sockets, files, etc.)
-        # Cleanup code here
-    finally:
-        loop.close()
+    asyncio.run(main())
+    # try:
+    #     loop = asyncio.get_event_loop()
+    #     loop.run_until_complete(main())
+    # except KeyboardInterrupt:
+    #     print("Received Ctrl+C. Stopping gracefully...")
+    #     # Cancel all running tasks
+    #     for task in asyncio.Task.all_tasks():
+    #         task.cancel()
+    #     # Optionally: Close any open resources (sockets, files, etc.)
+    #     # Cleanup code here
+    # finally:
+    #     loop.close()
