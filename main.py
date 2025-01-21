@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 from typing import Final
@@ -5,7 +7,6 @@ from dotenv import load_dotenv
 import os
 import logging
 from time import strftime
-import asyncio
 
 
 load_dotenv()
@@ -23,31 +24,33 @@ intents.presences = True # NOQA
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
 
-# def load_cogs():
-for filename in os.listdir("./cogs"):
-    try:
-        if filename.endswith(".py"):
-            client.load_extension(f"cogs.{filename[:-3]}")
-    except Exception as err:
-        print(f'Failed to load {filename} cog: {err}')
+async def load_extensions():
+    for filename in os.listdir("./cogs"):
+        try:
+            if filename.endswith(".py"):
+                await client.load_extension(f"cogs.{filename[:-3]}")
+        except Exception as err:
+            print(f'Failed to load {filename} cog: {err}')
 
 
 # load_cogs()
 # print('We have logged in as {0.user}'.format(client))
 
 
-def main():
-    try:
-        handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
-                                      mode="a")
-        client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
+async def main():
+    async with client:
+        try:
+            await load_extensions()
+            handler = logging.FileHandler(filename=f"./logs/{strftime('%Y-%m-%d %H:%M:%S')}.log", encoding='utf-8',
+                                          mode="a")
+            client.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
 
-    except discord.HTTPException as e:
-        if e.status == 429:
-            print("The Discord servers denied the connection for making too many requests")
-        else:
-            raise e
+        except discord.HTTPException as e:
+            if e.status == 429:
+                print("The Discord servers denied the connection for making too many requests")
+            else:
+                raise e
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
