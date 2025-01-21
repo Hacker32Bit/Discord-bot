@@ -8,7 +8,7 @@ import os
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
-GUILD_ID = Final[int] = os.getenv("GUILD_ID")
+GUILD_ID: Final[int] = int(os.getenv("GUILD_ID"))
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 
