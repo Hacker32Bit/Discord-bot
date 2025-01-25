@@ -6,11 +6,12 @@ WORK_DIR=$HOME/Discord-bot
 TERMINAL_LOGS_PATH=$TMP_PATH/terminal_logs
 DISCORD_LOGS_PATH=$TMP_PATH/logs
 PYTHON_PATH=$WORK_DIR/.venv/bin/python
+PIP_PATH=$WORK_DIR/.venv/bin/pip
 PYTHON_PACKAGES_PATH=$WORK_DIR/.venv/lib/python3.*/site-packages
 SCRIPT_PATH=$WORK_DIR/main.py
 GDRIVE_PATH=$HOME/mnt/gdrive/Discord-bot
 RANK_CARDS=$WORK_DIR/assets/images/rank_cards
-END_TIME="19:00:00" # Set time when system should be reboot
+END_TIME="06:00:00" # Set time when system should be reboot
 
 mkdir "$TMP_PATH/logs"
 
@@ -74,6 +75,11 @@ echo "-------------------------------------------------------------------------"
 
 echo "Updating project from GitHub..."
 git pull
+
+echo "-------------------------------------------------------------------------"
+
+echo "Updating g4f library..."
+source $PIP_PATH install -U g4f
 
 echo "-------------------------------------------------------------------------"
 
