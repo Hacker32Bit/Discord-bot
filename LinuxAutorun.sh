@@ -79,7 +79,7 @@ git pull
 echo "-------------------------------------------------------------------------"
 
 echo "Updating g4f library..."
-source $PIP_PATH install -U g4f
+trap 'echo "# $PIP_PATH install -U g4f"' DEBUG
 
 echo "-------------------------------------------------------------------------"
 
