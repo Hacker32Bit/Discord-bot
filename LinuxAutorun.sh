@@ -6,7 +6,6 @@ WORK_DIR=$HOME/Discord-bot
 TERMINAL_LOGS_PATH=$TMP_PATH/terminal_logs
 DISCORD_LOGS_PATH=$TMP_PATH/logs
 PYTHON_PATH=$WORK_DIR/.venv/bin/python
-PIP_PATH=$WORK_DIR/.venv/bin/pip
 PYTHON_PACKAGES_PATH=$WORK_DIR/.venv/lib/python3.*/site-packages
 SCRIPT_PATH=$WORK_DIR/main.py
 GDRIVE_PATH=$HOME/mnt/gdrive/Discord-bot
@@ -79,7 +78,7 @@ git pull
 echo "-------------------------------------------------------------------------"
 
 echo "Updating g4f library..."
-trap 'echo "# $PIP_PATH install -U g4f"' DEBUG
+.venv/bin/pip install -U g4f
 
 echo "-------------------------------------------------------------------------"
 
