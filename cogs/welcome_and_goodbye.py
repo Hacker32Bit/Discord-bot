@@ -15,7 +15,7 @@ LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
-cursor.execute("""CREATE TABLE "invites" (
+cursor.execute("""CREATE TABLE IF NOT EXISTS "invites" (
 	"user_id"	INTEGER NOT NULL UNIQUE,
 	"invited_by"	INTEGER NOT NULL UNIQUE,
 	PRIMARY KEY("user_id")
