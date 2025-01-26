@@ -18,13 +18,13 @@ cursor = database.cursor()
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS members (user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, name TEXT, 
 surname TEXT, gender INTEGER, birthday TEXT, country TEXT, languages TEXT, info TEXT, phone TEXT, email TEXT, 
-invites TEXT, invited_from TEXT, admin_info TEXT, PRIMARY KEY("user_id"));""")
+steam_trade_url TEXT, admin_info TEXT, PRIMARY KEY("user_id"));""")
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS members_privacy (user_id INTEGER NOT NULL, guild_id INTEGER NOT NULL, 
 name INTEGER NOT NULL DEFAULT 1, surname INTEGER NOT NULL DEFAULT 1, gender INTEGER NOT NULL DEFAULT 1, 
 birthday INTEGER NOT NULL DEFAULT 0, country INTEGER NOT NULL DEFAULT 1, languages INTEGER NOT NULL DEFAULT 1, 
 info INTEGER NOT NULL DEFAULT 1, phone INTEGER NOT NULL DEFAULT 0, email INTEGER NOT NULL DEFAULT 0, 
-PRIMARY KEY("user_id"));""")
+steam_trade_url INTEGER NOT NULL DEFAULT 0, PRIMARY KEY("user_id"));""")
 
 
 class MembersData(commands.Cog):
@@ -40,7 +40,8 @@ class MembersData(commands.Cog):
     async def about_update_function(interaction: discord.Interaction, name: str = None, surname: str = None,
                                     gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
                                     languages: str = None, info: str = None, phone: str = None, email: str = None,
-                                    is_admin: bool = False, mention: discord.Member = None):
+                                    steam_trade_url: str = None, is_admin: bool = False,
+                                    mention: discord.Member = None):
         # Set user_id from Interaction or from mention(If admin)
         user_id = interaction.user.id
         if mention:
@@ -129,17 +130,23 @@ class MembersData(commands.Cog):
                 email = None
                 err_messages += f"{str(err)}\n"
 
+        # Steam trade url checker
+        if steam_trade_url and "steamcommunity.com/tradeoffer/new/?partner=" not in steam_trade_url:
+            steam_trade_url = None
+            err_messages += f"{steam_trade_url} is not steam trade url!\n"
+
         # Everything good.
 
         # Fetch member data from db.
         cursor.execute(f"SELECT user_id, guild_id, name, surname, gender, birthday, country, languages, info, "
-                       f"phone, email FROM members "
+                       f"phone, email, steam_trade_url FROM members "
                        f"WHERE user_id = {user_id} AND guild_id = {interaction.guild.id}")
         result = cursor.fetchone()
 
         # Data for only exist keys and values for db query
         data = {"name": name, "surname": surname, "gender": gender.value if gender else None, "birthday": date,
-                "country": country, "languages": languages, "info": info, "phone": phone, "email": email}
+                "country": country, "languages": languages, "info": info, "phone": phone, "email": email,
+                "steam_trade_url": steam_trade_url}
 
         print("Initial data: ", data)
 
@@ -167,7 +174,7 @@ class MembersData(commands.Cog):
                 database.commit()
         else:
             (user_id, guild_id, old_name, old_surname, old_gender, old_birthday, old_country, old_languages,
-             old_info, old_phone, old_email) = result
+             old_info, old_phone, old_email, old_steam_trade_url) = result
 
             print("result", result)
 
@@ -222,13 +229,15 @@ class MembersData(commands.Cog):
     @app_commands.describe(info="Enter about you small info (MAX 4000 symbols)")
     @app_commands.describe(phone="[Private] Enter your phone in E.164 format. Example: +14155552671")
     @app_commands.describe(email="[Private] Enter your email in RFC 6530 standard. Example: local-part@domain.com")
+    @app_commands.describe(steam_trade_url="[Private] Enter your steam trade url.")
     async def about_update(self, interaction: discord.Interaction, name: str = None, surname: str = None,
                            gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
-                           languages: str = None, info: str = None, phone: str = None, email: str = None):
+                           languages: str = None, info: str = None, phone: str = None, email: str = None,
+                           steam_trade_url: str = None):
         # is_admin for access edit everything
         is_admin = discord.utils.get(interaction.guild.roles, name="Admin") in interaction.user.roles
         await self.about_update_function(interaction, name, surname, gender, birthday, country, languages, info, phone,
-                                         email, is_admin)
+                                         email, steam_trade_url, is_admin)
 
     @app_commands.checks.has_permissions(administrator=True)
     @app_commands.command(name="about_update_mention", description="[ADMIN] Add/Update information about member.")
@@ -249,12 +258,14 @@ class MembersData(commands.Cog):
     @app_commands.describe(info="Enter member small info (MAX 4000 symbols)")
     @app_commands.describe(phone="Enter member phone in E.164 format. Example: +14155552671")
     @app_commands.describe(email="Enter member email in RFC 6530 standard. Example: local-part@domain.com")
+    @app_commands.describe(steam_trade_url="Enter your steam trade url.")
     async def about_update_mention(self, interaction: discord.Interaction, mention: discord.Member, name: str = None,
                                    surname: str = None,
                                    gender: app_commands.Choice[int] = 0, birthday: str = None, country: str = None,
-                                   languages: str = None, info: str = None, phone: str = None, email: str = None):
+                                   languages: str = None, info: str = None, phone: str = None, email: str = None,
+                                   steam_trade_url: str = None):
         await self.about_update_function(interaction, name, surname, gender, birthday, country, languages, info, phone,
-                                         email, True, mention)
+                                         email, steam_trade_url, True, mention)
 
     @staticmethod
     async def show_info(interaction: discord.Interaction, mention: discord.Member = None,

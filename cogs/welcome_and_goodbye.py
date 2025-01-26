@@ -17,9 +17,9 @@ cursor = database.cursor()
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS "invites" (
 	"user_id"	INTEGER NOT NULL UNIQUE,
-	"invited_by"	INTEGER NOT NULL UNIQUE,
+	"invited_by"	INTEGER NOT NULL,
 	PRIMARY KEY("user_id")
-);""")
+)""")
 
 
 class WelcomeAndGoodbye(commands.Cog):
