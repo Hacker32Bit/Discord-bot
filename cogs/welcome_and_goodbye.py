@@ -52,6 +52,7 @@ class WelcomeAndGoodbye(commands.Cog):
         print(self)
         print(type(invite))
         print(invite)
+        print(self.invites)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
