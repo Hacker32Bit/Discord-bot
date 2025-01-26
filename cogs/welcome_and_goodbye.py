@@ -94,7 +94,7 @@ class WelcomeAndGoodbye(commands.Cog):
                 # looping when we already got what we wanted
 
                 cursor.execute(f"SELECT user_id, invited_by WHERE user_id = "
-                       f"{member.user.id}")
+                       f"{member.id}")
                 result = cursor.fetchone()
 
                 if not result:
