@@ -49,7 +49,7 @@ class WelcomeAndGoodbye(commands.Cog):
                 return inv
 
     @commands.Cog.listener()
-    async def on_member_join(self, member) -> None:
+    async def on_member_join(self, member: discord.Member) -> None:
 
         inviter = None
         invited_by = None
