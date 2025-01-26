@@ -1,3 +1,4 @@
+import math
 import sqlite3
 
 import discord
@@ -50,8 +51,8 @@ class WelcomeAndGoodbye(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member) -> None:
 
-        is_invited = False
         inviter = None
+        invited_by = None
 
         # Getting the invites before the user joining
         # from our cache for this specific guild
@@ -105,16 +106,37 @@ class WelcomeAndGoodbye(commands.Cog):
                                    f"VALUES({member.id}, {invited_by});")
                     database.commit()
 
-
         # Send message in LOG_CHANNEL if not invited
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
 
-        if is_invited:
+        if inviter and invited_by:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!\nReferred by **{inviter}**!",
                 color=0x9b59b6,
                 timestamp=datetime.datetime.now()
             )
+
+            cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
+                           f"{invited_by} and guild_id = {member.guild.id}")
+            result = cursor.fetchone()
+
+            if result is None:
+                cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
+                               f"VALUES({invited_by}, {member.guild.id}, 0, 0, 0)")
+                database.commit()
+            else:
+                user_id, guild_id, exp, level, last_lvl = result
+
+                # Give 150 XP for invite
+                exp_gained = 150
+                exp += exp_gained
+                level = 0.1 * (math.sqrt(exp))
+
+                cursor.execute(
+                    f"UPDATE activity_giveaway SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                    f"guild_id = {guild_id}")
+                database.commit()
+
         else:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!",
