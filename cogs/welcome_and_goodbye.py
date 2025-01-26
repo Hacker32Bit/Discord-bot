@@ -48,10 +48,11 @@ class WelcomeAndGoodbye(commands.Cog):
                 return inv
 
     @commands.Cog.listener()
-    async def on_guild_update(self, ctx) -> None:
+    async def on_guild_update(self, before, after) -> None:
         print(self)
-        print(type(ctx))
-        print(ctx)
+        print(type(before))
+        print(before)
+        print(after)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
