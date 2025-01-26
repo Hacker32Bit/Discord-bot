@@ -100,7 +100,7 @@ class WelcomeAndGoodbye(commands.Cog):
                 if not result:
                     is_invited = True
                     inviter = invite.inviter.mention
-                    invited_by = inviter.id
+                    invited_by = invite.inviter.id
                     cursor.execute(f"INSERT INTO invites(user_id, invited_by) "
                                    f"VALUES({inviter}, {invited_by});")
                     database.commit()
