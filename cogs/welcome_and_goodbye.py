@@ -102,7 +102,7 @@ class WelcomeAndGoodbye(commands.Cog):
                     inviter = invite.inviter.mention
                     invited_by = invite.inviter.id
                     cursor.execute(f"INSERT INTO invites(user_id, invited_by) "
-                                   f"VALUES({inviter}, {invited_by});")
+                                   f"VALUES({member.id}, {invited_by});")
                     database.commit()
 
 
