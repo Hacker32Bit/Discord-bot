@@ -28,7 +28,6 @@ class WelcomeAndGoodbye(commands.Cog):
         self.client = client
         self.invites = {}
 
-
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Welcome & Goodbye\" cog is ready!")
@@ -47,6 +46,12 @@ class WelcomeAndGoodbye(commands.Cog):
             if inv.code == code:
                 # If it is, we return it.
                 return inv
+
+    @commands.Cog.listener()
+    async def on_guild_update(self, ctx) -> None:
+        print(self)
+        print(type(ctx))
+        print(ctx)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
