@@ -98,7 +98,7 @@ class WelcomeAndGoodbye(commands.Cog):
                        f"{member.id}")
                 result = cursor.fetchone()
 
-                print(result)
+                print("db query result: ", result)
 
                 if not result:
                     inviter = invite.inviter.mention
@@ -110,8 +110,8 @@ class WelcomeAndGoodbye(commands.Cog):
         # Send message in LOG_CHANNEL if not invited
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
 
-        print(inviter)
-        print(invited_by)
+        print("inviter: ", inviter)
+        print("invited_by: ", invited_by)
 
         if inviter and invited_by:
             embed = discord.Embed(
