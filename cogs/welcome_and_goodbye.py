@@ -109,6 +109,9 @@ class WelcomeAndGoodbye(commands.Cog):
         # Send message in LOG_CHANNEL if not invited
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
 
+        print(inviter)
+        print(invited_by)
+
         if inviter and invited_by:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!\nReferred by **{inviter}**!",
