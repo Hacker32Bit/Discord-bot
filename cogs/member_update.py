@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from typing import Final
 import os
 
-
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
@@ -63,7 +62,7 @@ class MemberUpdate(commands.Cog):
             channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
             await channel.send(embed=embed)
 
-        if before and after and before.activity != after.activity:  # logging you member's activities
+        if before and before.activity and after and after.activity and before.activity != after.activity:  # logging you member's activities
             description = (
                 f"**{before.mention}**'s activity changed!\n"
                 f"From **{before.activity.name}** to **{after.activity.name}**!")
