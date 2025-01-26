@@ -115,17 +115,18 @@ class WelcomeAndGoodbye(commands.Cog):
                 color=0x9b59b6,
                 timestamp=datetime.datetime.now()
             )
+            await channel.send(embed=embed)
 
             cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
                            f"{invited_by} and guild_id = {member.guild.id}")
-            result = cursor.fetchone()
+            activity_giveaway_result = cursor.fetchone()
 
-            if result is None:
+            if activity_giveaway_result is None:
                 cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
                                f"VALUES({invited_by}, {member.guild.id}, 0, 0, 0)")
                 database.commit()
             else:
-                user_id, guild_id, exp, level, last_lvl = result
+                user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
 
                 # Give 150 XP for invite
                 exp_gained = 150
@@ -137,13 +138,69 @@ class WelcomeAndGoodbye(commands.Cog):
                     f"guild_id = {guild_id}")
                 database.commit()
 
+            cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
+                           f"{invited_by} and guild_id = {member.guild.id}")
+            leveling_result = cursor.fetchone()
+
+            if leveling_result is None:
+                cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
+                               f"VALUES({invited_by}, {member.guild.id}, 150, 0, 0, 0)")
+                database.commit()
+            else:
+                user_id, guild_id, exp, level, last_lvl = leveling_result
+
+                exp_gained = 150
+                exp += exp_gained
+                level = 0.1 * (math.sqrt(exp))
+
+                cursor.execute(f"UPDATE levels SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                               f"guild_id = {guild_id}")
+                database.commit()
+
+                if int(level) > last_lvl:
+                    cursor.execute(f"UPDATE levels SET last_lvl = {int(level)} WHERE user_id = {user_id} AND "
+                                   f"guild_id = {guild_id}")
+                    database.commit()
+
+                    user = member.guild.get_member(invited_by)
+
+                    if int(level) == 5:
+                        role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 10:
+                        role = discord.utils.get(member.guild.roles, name="Beginner (5 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 15:
+                        role = discord.utils.get(member.guild.roles, name="Intermediate (10 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 25:
+                        role = discord.utils.get(member.guild.roles, name="Advanced (20 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 50:
+                        role = discord.utils.get(member.guild.roles, name="Expert (30 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
+                        await user.add_roles(role)
+                    elif int(level) == 100:
+                        role = discord.utils.get(member.guild.roles, name="Elite (40 LVL)")
+                        await user.remove_roles(role)
+                        role = discord.utils.get(member.guild.roles, name="Godly (50 LVL)")
+                        await user.add_roles(role)
+
+                    await channel.send(f"{inviter} has leveled up to level {int(level)}!")
         else:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!",
                 color=0x4caf50,
                 timestamp=datetime.datetime.now()
             )
-        await channel.send(embed=embed)
+            await channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member) -> None:
