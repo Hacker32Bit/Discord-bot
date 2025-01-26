@@ -98,8 +98,9 @@ class WelcomeAndGoodbye(commands.Cog):
                        f"{member.id}")
                 result = cursor.fetchone()
 
+                print(result)
+
                 if not result:
-                    is_invited = True
                     inviter = invite.inviter.mention
                     invited_by = invite.inviter.id
                     cursor.execute(f"INSERT INTO invites(user_id, invited_by) "
