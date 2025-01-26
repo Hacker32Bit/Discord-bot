@@ -93,7 +93,7 @@ class WelcomeAndGoodbye(commands.Cog):
                 # one was used and there is no point in
                 # looping when we already got what we wanted
 
-                cursor.execute(f"SELECT user_id, invited_by WHERE user_id = "
+                cursor.execute(f"SELECT user_id, invited_by FROM invites WHERE user_id = "
                        f"{member.id}")
                 result = cursor.fetchone()
 
