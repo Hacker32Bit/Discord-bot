@@ -59,12 +59,15 @@ class WelcomeAndGoodbye(commands.Cog):
 
         print("OnMemberJoin", member.guild.id)
         invites_before_join = self.invites[member.guild.id]
+        print(invites_before_join)
 
         # Getting the invites after the user joining
         # so we can compare it with the first one, and
         # see which invite uses number increased
 
         invites_after_join = await member.guild.invites()
+        print(invites_after_join)
+
 
         # Loops for each invite we have for the guild
         # the user joined.
