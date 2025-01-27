@@ -60,7 +60,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def send_message(self, channel_id, message, file) -> None:
-        channel = self.client.get_channel(channel_id)
+        channel = await self.client.fetch_channel(channel_id)
         print(message)
         print(file)
         await channel.send(message)
