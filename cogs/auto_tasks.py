@@ -4,6 +4,8 @@ import io
 import sqlite3
 from typing import Final
 from PIL import Image
+from PIL.ImageFont import truetype
+from PIL.ImageDraw import Draw
 from discord.ext import commands, tasks
 from discord.errors import NotFound
 from discord import File
@@ -43,12 +45,26 @@ class AutoTask(commands.Cog):
         cursor.execute(descending)
         result = cursor.fetchall()
 
-        image = Image.new(mode='RGBA', size=(800, 60), color=(96, 125, 139, 100))
+        with Image.new(mode='RGBA', size=(800, 40), color=(96, 125, 139, 255 / 70)) as image:
+            notosans_bold = os.path.join(os.path.dirname(__file__), 'assets', 'NotoSans-Bold.ttf') # NOQA
+            notosans_regular = os.path.join(os.path.dirname(__file__), 'assets', 'NotoSans-Regular.ttf') # NOQA
+            rockybilly = os.path.join(os.path.dirname(__file__), 'assets', 'Rockybilly.ttf') # NOQA
 
-        for user in result:
-            print(user)
+            # ======== Fonts to use =============
+            font_normal = truetype(notosans_bold, 36, encoding='UTF-8')
+            font_small = truetype(notosans_regular, 20, encoding='UTF-8')
+            font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
-        return image
+            WHITE = (189, 195, 199)
+
+            draw = Draw(image)
+
+            draw.text((10, 10), "Test", WHITE, font=font_small)
+
+            for user in result:
+                print(user)
+
+            return image
 
     @tasks.loop(minutes=1)
     async def update_activity_giveaways_tables(self):
