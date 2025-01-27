@@ -43,7 +43,7 @@ class AutoTask(commands.Cog):
 
     @staticmethod
     async def create_table(client):
-        descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC LIMIT 10"
+        descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC"
         cursor.execute(descending)
         result = cursor.fetchall()
 
@@ -59,7 +59,9 @@ class AutoTask(commands.Cog):
                                       'Rockybilly.ttf')  # NOQA
 
             # ======== Fonts to use =============
+            font_normal_large = truetype(notosans_bold, 36, encoding='UTF-8')
             font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
+            font_small_large = truetype(notosans_regular, 36, encoding='UTF-8')
             font_small = truetype(notosans_regular, 24, encoding='UTF-8')
             font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
@@ -106,14 +108,20 @@ class AutoTask(commands.Cog):
                     border_color = (121, 85, 72, 255)
 
                 user_data = await client.fetch_user(user[0])
-                print(type(user_data))
-                print(user_data)
+
+                if user_data.avatar:
+                    print(type(user_data.avatar))
+                    print(user_data.avatar)
 
                 draw.rectangle([(0, h_pos), (width, h_pos + 56)], fill=color)
-                draw.text((10, h_pos + 6), "№", white, font=font_normal)
-                draw.text((56, h_pos + 6), "AVATAR", white, font=font_small)
-                draw.text((170, h_pos + 6), "NICKNAME", white, font=font_small)
-                draw.text((width - 50, h_pos + 6), "XP", white, font=font_small)
+                draw.text((10, h_pos + 6), place, white, font=font_normal_large)
+                draw.text((56, h_pos + 6), "av", white, font=font_small)
+                draw.text((170, h_pos + 6), user_data.name, white, font=font_small_large)
+
+                if user[2] >= 1000:
+                    draw.text((width - 50, h_pos + 6), "XP", (165, 214, 167, 255), font=font_normal_large)
+                else:
+                    draw.text((width - 50, h_pos + 6), "XP", white, font=font_small_large)
                 draw.line([(0, h_pos + 54), (width, h_pos + 54)], fill=border_color, width=2)
 
             image = image.crop((0, 0, width, new_height))
