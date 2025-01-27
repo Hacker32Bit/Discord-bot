@@ -81,7 +81,7 @@ class AutoTask(commands.Cog):
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
             draw.text((15, 2), "№", white, font=font_normal)
-            draw.text((59, 2), "PARTICIPANT", white, font=font_normal)
+            draw.text((69, 2), "PARTICIPANT", white, font=font_normal)
             draw.text((width - 42, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
@@ -108,9 +108,10 @@ class AutoTask(commands.Cog):
 
                 user_data = await client.fetch_user(user[0])
 
-                if user_data.avatar:
-                    print(type(user_data.avatar))
-                    print(user_data.avatar)
+                print(type(user_data.display_avatar))
+                print(user_data.display_avatar)
+                avatar = Image.open(io.BytesIO(user_data.display_avatar.read()))
+                avatar = avatar.resize((54, 54))
 
                 # Transform and calculate text width
                 transformed_place = str(place + 6)
@@ -118,8 +119,9 @@ class AutoTask(commands.Cog):
 
                 draw.rectangle([(0, h_pos), (width, h_pos + 56)], fill=color)
                 draw.text((27 - w / 2, h_pos + 1), transformed_place, white, font=font_normal_large)
-                draw.text((59, h_pos + 1), "av", white, font=font_small)
-                draw.text((171, h_pos + 1), user_data.name, white, font=font_small_large)
+                image.paste(avatar, (59, h_pos))
+                # draw.text((59, h_pos + 1), "av", white, font=font_small)
+                draw.text((133, h_pos + 1), user_data.name, white, font=font_small_large)
 
                 transformed_xp = str(user[2])
 
