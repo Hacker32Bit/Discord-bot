@@ -47,6 +47,7 @@ async def main():
             mode="a")
         discord.utils.setup_logging(level=logging.DEBUG, root=False, handler=handler)
         await client.start(TOKEN)
+        client.clear()
 
     except discord.HTTPException as e:
         if e.status == 429:

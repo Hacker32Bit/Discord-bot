@@ -27,7 +27,6 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def shutdown(self, ctx):
         print("[INFO] logging out...")
-        self.client.clear()
         await self.client.close()
 
     # Command for get server state
