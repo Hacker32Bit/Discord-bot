@@ -81,8 +81,8 @@ class AutoTask(commands.Cog):
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
             draw.text((15, 2), "№", white, font=font_normal)
-            draw.text((57, 2), "PARTICIPANT", white, font=font_normal)
-            draw.text((width - 50, 2), "XP", white, font=font_normal)
+            draw.text((59, 2), "PARTICIPANT", white, font=font_normal)
+            draw.text((width - 42, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
             place = 0
@@ -117,8 +117,8 @@ class AutoTask(commands.Cog):
                 w = draw.textlength(transformed_place, font=font_normal_large)
 
                 draw.rectangle([(0, h_pos), (width, h_pos + 56)], fill=color)
-                draw.text((23 - w / 2, h_pos + 1), transformed_place, white, font=font_normal_large)
-                draw.text((57, h_pos + 1), "av", white, font=font_small)
+                draw.text((27 - w / 2, h_pos + 1), transformed_place, white, font=font_normal_large)
+                draw.text((59, h_pos + 1), "av", white, font=font_small)
                 draw.text((171, h_pos + 1), user_data.name, white, font=font_small_large)
 
                 transformed_xp = str(user[2])
@@ -126,11 +126,11 @@ class AutoTask(commands.Cog):
                 if user[2] >= 1000:
                     # Transform and calculate text width
                     w = draw.textlength(transformed_xp, font=font_normal)
-                    draw.text((width - 35 - w / 2, h_pos + 6), transformed_xp, white, font=font_normal)
+                    draw.text((width - 37 - w / 2, h_pos + 6), transformed_xp, white, font=font_normal)
                 else:
                     # Transform and calculate text width
                     w = draw.textlength(transformed_xp, font=font_small)
-                    draw.text((width - 35 - w / 2, h_pos + 6), transformed_xp, white, font=font_small)
+                    draw.text((width - 37 - w / 2, h_pos + 6), transformed_xp, white, font=font_small)
                 draw.line([(0, h_pos + 54), (width, h_pos + 54)], fill=border_color, width=2)
 
             image = image.crop((0, 0, width, new_height))
