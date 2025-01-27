@@ -56,13 +56,8 @@ class AutoTask(commands.Cog):
             message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
             table = await self.create_table()
 
-            with io.BytesIO() as image_binary:
-                table.save(image_binary, format="PNG")
-                image_binary.seek(0)
-                result = File(fp=image_binary, filename="table.png")
-
-                await message.edit(content="the new content of the message", file=result)
-                print("UPDATE!!!")
+            await message.edit(content="the new content of the message", file=table)
+            print("UPDATE!!!")
 
         except NotFound as err:
             print("NO MESSAGES")
