@@ -96,14 +96,14 @@ class AutoTask(commands.Cog):
                 color = gray_transparent
                 border_color = gray
 
-                if place == 1:  # GOLD color
+                if place == 1 and user[2] >= 1000:  # GOLD color
                     h_pos = 40
                     color = (255, 193, 7, 191)
                     border_color = (255, 193, 7, 255)
-                elif place == 2:  # SILVER color
+                elif place == 2 and user[2] >= 1000:  # SILVER color
                     color = (158, 158, 158, 191)
                     border_color = (158, 158, 158, 255)
-                elif place == 3:  # BRONZE color
+                elif place == 3 and user[2] >= 1000:  # BRONZE color
                     color = (121, 85, 72, 191)
                     border_color = (121, 85, 72, 255)
 
@@ -114,7 +114,7 @@ class AutoTask(commands.Cog):
                     print(user_data.avatar)
 
                 draw.rectangle([(0, h_pos), (width, h_pos + 56)], fill=color)
-                draw.text((10, h_pos + 6), place, white, font=font_normal_large)
+                draw.text((10, h_pos + 6), str(place), white, font=font_normal_large)
                 draw.text((56, h_pos + 6), "av", white, font=font_small)
                 draw.text((170, h_pos + 6), user_data.name, white, font=font_small_large)
 
