@@ -43,7 +43,7 @@ class AutoTask(commands.Cog):
 
     @staticmethod
     async def create_table(client):
-        descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC"
+        descending = "SELECT * FROM activity_giveaway ORDER BY exp DESC LIMIT 10"
         cursor.execute(descending)
         result = cursor.fetchall()
 
@@ -80,9 +80,9 @@ class AutoTask(commands.Cog):
             draw = Draw(image)
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
-            draw.text((10, 2), "№", white, font=font_normal)
-            draw.text((56, 2), "AVATAR", white, font=font_normal)
-            draw.text((170, 2), "NICKNAME", white, font=font_normal)
+            draw.text((20, 2), "№", white, font=font_normal)
+            draw.text((57, 2), "AVATAR", white, font=font_normal)
+            draw.text((171, 2), "NICKNAME", white, font=font_normal)
             draw.text((width - 50, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
@@ -113,15 +113,25 @@ class AutoTask(commands.Cog):
                     print(type(user_data.avatar))
                     print(user_data.avatar)
 
+                # Transform and calculate text width
+                transformed_place = str(place)
+                w = draw.textlength(transformed_place, font=font_normal_large)
+
                 draw.rectangle([(0, h_pos), (width, h_pos + 56)], fill=color)
-                draw.text((10, h_pos + 6), str(place), white, font=font_normal_large)
-                draw.text((56, h_pos + 6), "av", white, font=font_small)
-                draw.text((170, h_pos + 6), user_data.name, white, font=font_small_large)
+                draw.text((23 - w / 2, h_pos + 1), transformed_place, white, font=font_normal_large)
+                draw.text((57, h_pos + 1), "av", white, font=font_small)
+                draw.text((171, h_pos + 1), user_data.name, white, font=font_small_large)
+
+                transformed_xp = str(user[2])
 
                 if user[2] >= 1000:
-                    draw.text((width - 50, h_pos + 6), "XP", (165, 214, 167, 255), font=font_normal_large)
+                    # Transform and calculate text width
+                    w = draw.textlength(transformed_xp, font=font_normal)
+                    draw.text((width - 35 - w, h_pos + 6), transformed_xp, white, font=font_normal)
                 else:
-                    draw.text((width - 50, h_pos + 6), "XP", white, font=font_small_large)
+                    # Transform and calculate text width
+                    w = draw.textlength(transformed_xp, font=font_small)
+                    draw.text((width - 35 - w, h_pos + 6), transformed_xp, white, font=font_small)
                 draw.line([(0, h_pos + 54), (width, h_pos + 54)], fill=border_color, width=2)
 
             image = image.crop((0, 0, width, new_height))
