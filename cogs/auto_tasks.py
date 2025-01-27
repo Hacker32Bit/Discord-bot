@@ -1,4 +1,7 @@
 import datetime
+import os
+from typing import Final
+
 from discord.ext import commands, tasks
 
 
@@ -6,10 +9,13 @@ utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
 time = datetime.time(hour=13, minute=50, tzinfo=utc)
 
+ACTIVITY_GIVEAWAY_CHANNEL_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_CHANNEL_ID")
+ACTIVITY_GIVEAWAY_MESSAGE_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_MESSAGE_ID")
+
 
 class AutoTask(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
         self.my_task.start()
         self.update_activity_giveaways_tables.start()
 
@@ -28,8 +34,15 @@ class AutoTask(commands.Cog):
 
     @tasks.loop(minutes=1)
     async def update_activity_giveaways_tables(self):
+        channel = self.bot.get_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
+        message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
+
+        if not message:
+            print("NO MESSAGES")
+
+        await message.edit(content="the new content of the message")
         print("UPDATE!!!")
 
 
-async def setup(client):
-    await client.add_cog(AutoTask(client))
+async def setup(bot):
+    await bot.add_cog(AutoTask(bot))
