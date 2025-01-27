@@ -42,7 +42,7 @@ class AutoTask(commands.Cog):
         cursor.execute(descending)
         result = cursor.fetchall()
 
-        image = Image.new(mode='RGBA', size=(60, 800), color=(96, 125, 139, 1.0))
+        image = Image.new(mode='RGBA', size=(60, 800), color=(96, 125, 139, 0))
 
         for user in result:
             print(user)
