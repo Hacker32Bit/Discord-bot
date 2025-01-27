@@ -86,9 +86,9 @@ class AutoTask(commands.Cog):
             draw.text((50, 3), "Avatar", white, font=font_normal)
             draw.text((200, 3), "Nickname", white, font=font_normal)
             draw.text((width - 50, 3), "XP", white, font=font_normal)
-            draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray, width=2)
+            draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
-            image.crop((0, 0, width, new_height))
+            image = image.crop((0, 0, width, new_height))
 
             for user in result:
                 print(user)
