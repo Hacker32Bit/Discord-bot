@@ -82,10 +82,10 @@ class AutoTask(commands.Cog):
             draw = Draw(image)
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
-            draw.text((10, 3), "№", white, font=font_normal)
-            draw.text((44, 3), "Avatar", white, font=font_normal)
-            draw.text((200, 3), "Nickname", white, font=font_normal)
-            draw.text((width - 40, 3), "XP", white, font=font_normal)
+            draw.text((10, 2), "№", white, font=font_normal)
+            draw.text((44, 2), "AVATAR", white, font=font_normal)
+            draw.text((135, 2), "NICKNAME", white, font=font_normal)
+            draw.text((width - 50, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
             image = image.crop((0, 0, width, new_height))
