@@ -59,7 +59,8 @@ class AdminCommands(commands.Cog):
     # Command for send message from Bot
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def send_message(self, ctx: discord.ext.commands.context.Context, channel_id, message, file: discord.Attachment) -> None:
+    async def send_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str = None,
+                           file: discord.Attachment = None) -> None:
         # channel = await self.client.fetch_channel(channel_id)
         print("channel_id: ", channel_id)
         print("message: ", message)
