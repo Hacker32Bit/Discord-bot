@@ -11,6 +11,7 @@ import os
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
+GENERAL_TEXT_CHANNEL_ID: Final[str] = os.getenv("GENERAL_TEXT_CHANNEL_ID")
 
 
 database = sqlite3.connect("database.sqlite")
@@ -215,6 +216,8 @@ class WelcomeAndGoodbye(commands.Cog):
                                    f"guild_id = {guild_id}")
                     database.commit()
 
+                    general_channel = await self.client.fetch_channel(GENERAL_TEXT_CHANNEL_ID)
+
                     user = member.guild.get_member(invited_by)
 
                     if int(level) == 5:
@@ -246,7 +249,7 @@ class WelcomeAndGoodbye(commands.Cog):
                         role = discord.utils.get(member.guild.roles, name="Godly (50 LVL)")
                         await user.add_roles(role)
 
-                    await channel.send(f"{inviter} has leveled up to level {int(level)}!")
+                    await general_channel.send(f"{inviter} has leveled up to level {int(level)}!")
         else:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!",
