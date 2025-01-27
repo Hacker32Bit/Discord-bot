@@ -1,4 +1,5 @@
 import random
+import sqlite3
 import time
 
 import discord
@@ -13,6 +14,8 @@ load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
+database = sqlite3.connect("database.sqlite")
+cursor = database.cursor()
 
 class AdminCommands(commands.Cog):
     def __init__(self, client):
@@ -55,6 +58,13 @@ class AdminCommands(commands.Cog):
     async def sync(self, ctx) -> None:
         fmt = await ctx.bot.tree.sync(guild=discord.Object(GUILD_ID))
         await ctx.send(f"synced {len(fmt)} commands")
+
+    # Remove referrer from DB by ID
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def remove_referrer(self, ctx: discord.ext.commands.context.Context, user_id: str) -> None:
+        descending = "DELETE FROM invites WHERE user_id = ?"
+        cursor.execute(descending, (user_id,))
 
     # Command for send message from Bot
     @commands.command()
