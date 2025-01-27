@@ -75,7 +75,7 @@ class WelcomeAndGoodbye(commands.Cog):
         # from our cache for this specific guild
 
         print("OnMemberJoin", member.guild.id)
-        invites_before_join = self.invites[member.guild.id]
+        invites_before_join = self.invites[member.guild.id].copy()
         print(invites_before_join)
 
         # Getting the invites after the user joining
