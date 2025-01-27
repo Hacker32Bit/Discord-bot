@@ -83,8 +83,8 @@ class AutoTask(commands.Cog):
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
             draw.text((10, 2), "№", white, font=font_normal)
-            draw.text((44, 2), "AVATAR", white, font=font_normal)
-            draw.text((135, 2), "NICKNAME", white, font=font_normal)
+            draw.text((46, 2), "AVATAR", white, font=font_normal)
+            draw.text((150, 2), "NICKNAME", white, font=font_normal)
             draw.text((width - 50, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
