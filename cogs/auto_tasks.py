@@ -49,7 +49,7 @@ class AutoTask(commands.Cog):
         height = 40
         width = 800
 
-        with Image.new(mode='RGBA', size=(height, width), color=(176, 190, 197, 191)) as image:
+        with Image.new(mode='RGBA', size=(width, height), color=(176, 190, 197, 191)) as image:
 
             notosans_bold = os.path.join('files_for_copy', 'disrank', 'assets', 'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join('files_for_copy', 'disrank', 'assets', 'NotoSans-Regular.ttf')  # NOQA
