@@ -148,7 +148,7 @@ class AutoTask(commands.Cog):
                 table.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="table.png")
-                await message.edit(content="the new content of the message", attachments=[result])
+                await message.edit(attachments=[result])
 
         except NotFound as err:
             print("NO MESSAGES in Activity giveaway!")

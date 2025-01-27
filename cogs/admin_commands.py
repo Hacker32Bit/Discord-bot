@@ -67,6 +67,26 @@ class AdminCommands(commands.Cog):
         cursor.execute(descending, (user_id,))
         database.commit()
 
+    # Remove data from activity_giveaway table
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def reset_activity_giveaway(self, ctx: discord.ext.commands.context.Context) -> None:
+        descending = "DELETE FROM activity_giveaway"
+        cursor.execute(descending)
+        database.commit()
+
+    # Add exp to user_id
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def add_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, exp: str) -> None:
+        pass
+
+    # Remove exp to user_id
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def add_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, exp: str) -> None:
+        pass
+
     # Command for send message from Bot
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
