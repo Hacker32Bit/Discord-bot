@@ -1,11 +1,11 @@
 import datetime
 import os
+import io
 import sqlite3
-from typing import Final, io
+from typing import Final
 from PIL import Image
 from discord.ext import commands, tasks
 from discord.errors import NotFound
-from discord import File
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
