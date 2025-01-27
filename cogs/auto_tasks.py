@@ -3,7 +3,7 @@ import os
 from typing import Final
 
 from discord.ext import commands, tasks
-
+from discord.errors import NotFound
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
@@ -35,13 +35,15 @@ class AutoTask(commands.Cog):
     @tasks.loop(minutes=1)
     async def update_activity_giveaways_tables(self):
         channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
-        message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
+        try:
+            message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
+            await message.edit(content="the new content of the message")
+            print("UPDATE!!!")
 
-        if not message:
+        except NotFound as err:
             print("NO MESSAGES")
 
-        await message.edit(content="the new content of the message")
-        print("UPDATE!!!")
+
 
 
 async def setup(bot):
