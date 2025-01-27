@@ -50,10 +50,12 @@ class AutoTask(commands.Cog):
         width = 800
 
         with Image.new(mode='RGBA', size=(width, height), color=(176, 190, 197, 191)) as image:
-
-            notosans_bold = os.path.join(os.path.dirname(__path__), 'files_for_copy', 'disrank', 'assets', 'NotoSans-Bold.ttf')  # NOQA
-            notosans_regular = os.path.join(os.path.dirname(__path__), 'files_for_copy', 'disrank', 'assets', 'NotoSans-Regular.ttf')  # NOQA
-            rockybilly = os.path.join(os.path.dirname(__path__), 'files_for_copy', 'disrank', 'assets', 'Rockybilly.ttf')  # NOQA
+            notosans_bold = os.path.join(os.path.dirname(__file__), '..', 'files_for_copy', 'disrank', 'assets',
+                                         'NotoSans-Bold.ttf')  # NOQA
+            notosans_regular = os.path.join(os.path.dirname(__file__), '..', 'files_for_copy', 'disrank', 'assets',
+                                            'NotoSans-Regular.ttf')  # NOQA
+            rockybilly = os.path.join(os.path.dirname(__file__), '..', 'files_for_copy', 'disrank', 'assets',
+                                      'Rockybilly.ttf')  # NOQA
 
             print(notosans_regular)
 
