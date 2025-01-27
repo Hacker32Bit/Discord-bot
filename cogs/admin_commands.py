@@ -63,7 +63,7 @@ class AdminCommands(commands.Cog):
         channel = await self.client.fetch_channel(channel_id)
         print("channel_id: ", channel_id)
         print("message: ", message)
-        await channel.send(message)
+        await channel.send(content=message)
 
     # Command for send file from Bot
     @commands.command()
@@ -79,13 +79,12 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def send_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str,
-                        file: discord.Attachment) -> None:
+                                 file: discord.Attachment) -> None:
         channel = await self.client.fetch_channel(channel_id)
         print("channel_id: ", channel_id)
         print("message: ", message)
         print("file: ", file)
-        await channel.send(message=message, file= await file.to_file())
-
+        await channel.send(content=message, file=await file.to_file())
 
     # Command for add manually join user log in log channel
     @commands.command()
@@ -98,7 +97,6 @@ class AdminCommands(commands.Cog):
             timestamp=datetime.datetime.now()
         )
         await channel.send(embed=embed)
-
 
     # Command for get members dict() who reacted on post by message_id
     @commands.command()
@@ -113,7 +111,6 @@ class AdminCommands(commands.Cog):
                 users.add(user)
         await ctx.send(f"Users: {', '.join(user.mention for user in users)}")
         return users
-
 
     # Command for get random winner from message reactions
     @commands.command()
