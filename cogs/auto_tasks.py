@@ -58,9 +58,8 @@ class AutoTask(commands.Cog):
             with io.BytesIO() as image_binary:
                 self.create_table().save(image_binary, 'PNG')
                 image_binary.seek(0)
-
-            await message.edit(content="the new content of the message", attachments=list(image_binary))
-            print("UPDATE!!!")
+                await message.edit(content="the new content of the message", attachments=list(image_binary))
+                print("UPDATE!!!")
 
         except NotFound as err:
             print("NO MESSAGES")
