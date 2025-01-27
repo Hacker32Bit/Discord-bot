@@ -6,6 +6,7 @@ from typing import Final
 from PIL import Image
 from discord.ext import commands, tasks
 from discord.errors import NotFound
+from discord import File
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
@@ -58,7 +59,8 @@ class AutoTask(commands.Cog):
             with io.BytesIO() as image_binary:
                 self.create_table().save(image_binary, 'PNG')
                 image_binary.seek(0)
-                await message.edit(content="the new content of the message", attachments=list(image_binary))
+                result = File(fp=image_binary, filename="table.png")
+                await message.edit(content="the new content of the message", attachments=result)
                 print("UPDATE!!!")
 
         except NotFound as err:
