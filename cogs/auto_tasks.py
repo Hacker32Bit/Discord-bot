@@ -110,7 +110,7 @@ class AutoTask(commands.Cog):
 
                 print(type(user_data.display_avatar))
                 print(user_data.display_avatar)
-                avatar = Image.open(user_data.display_avatar.to_file())
+                avatar = Image.open(user_data.display_avatar.to_file().fp)
                 avatar = avatar.resize((54, 54))
 
                 # Transform and calculate text width
