@@ -59,11 +59,11 @@ class AdminCommands(commands.Cog):
     # Command for send message from Bot
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def send_message(self, channel_id, message, file: discord.Embed) -> None:
+    async def send_message(self, channel_id, message, file) -> None:
         channel = await self.client.get_channel(channel_id)
         print(message)
         print(file)
-        await channel.send(message, file=file)
+        await channel.send(message)
 
     # Command for add manually join user log in log channel
     @commands.command()
