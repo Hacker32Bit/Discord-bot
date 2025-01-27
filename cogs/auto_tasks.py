@@ -37,7 +37,7 @@ class AutoTask(commands.Cog):
         # print("Need close server!")
 
     @staticmethod
-    async def create_table():
+    def create_table():
         descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC LIMIT 10"
         cursor.execute(descending)
         result = cursor.fetchall()
@@ -54,9 +54,12 @@ class AutoTask(commands.Cog):
         channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
         try:
             message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
-            table = await self.create_table()
 
-            await message.edit(content="the new content of the message", attachments=table)
+            with io.BytesIO() as image_binary:
+                self.create_table().save(image_binary, 'PNG')
+                image_binary.seek(0)
+
+            await message.edit(content="the new content of the message", attachments=list(image_binary))
             print("UPDATE!!!")
 
         except NotFound as err:
