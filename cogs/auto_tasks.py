@@ -47,14 +47,14 @@ class AutoTask(commands.Cog):
         result = cursor.fetchall()
 
         with Image.new(mode='RGBA', size=(800, 40), color=(144, 164, 174, 191)) as image:
-            # notosans_bold = os.path.join(os.path.dirname(__file__), 'assets', 'NotoSans-Bold.ttf')  # NOQA
-            # notosans_regular = os.path.join(os.path.dirname(__file__), 'assets', 'NotoSans-Regular.ttf')  # NOQA
-            # rockybilly = os.path.join(os.path.dirname(__file__), 'assets', 'Rockybilly.ttf')  # NOQA
+            notosans_bold = os.path.join('files_for_copy', 'disrank', 'assets', 'NotoSans-Bold.ttf')  # NOQA
+            notosans_regular = os.path.join('files_for_copy', 'disrank', 'assets', 'NotoSans-Regular.ttf')  # NOQA
+            rockybilly = os.path.join('files_for_copy', 'disrank', 'assets', 'Rockybilly.ttf')  # NOQA
 
             # ======== Fonts to use =============
-            # font_normal = truetype(notosans_bold, 36, encoding='UTF-8')
-            # font_small = truetype(notosans_regular, 20, encoding='UTF-8')
-            # font_signa = truetype(rockybilly, 25, encoding='UTF-8')
+            font_normal = truetype(notosans_bold, 36, encoding='UTF-8')
+            font_small = truetype(notosans_regular, 20, encoding='UTF-8')
+            font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
             white_color = (189, 195, 199)
 
