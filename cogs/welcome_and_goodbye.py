@@ -95,12 +95,40 @@ class WelcomeAndGoodbye(commands.Cog):
             # before to check which invite count is bigger
             # than it was before the user joined.
 
-            if invite.uses < self.find_invite_by_code(invites_after_join, invite.code).uses:
-                # Now that we found which link was used,
-                # we will print a couple things in our console:
-                # the name, invite code used the the person
-                # who created the invite code, or the inviter.
+            try:
+                if invite.uses < self.find_invite_by_code(invites_after_join, invite.code).uses:
+                    # Now that we found which link was used,
+                    # we will print a couple things in our console:
+                    # the name, invite code used the the person
+                    # who created the invite code, or the inviter.
 
+                    print(f"Member {member.name} Joined")
+                    print(f"Invite Code: {invite.code}")
+                    print(f"Inviter: {invite.inviter}")
+
+                    # We will now update our cache so it's ready
+                    # for the next user that joins the guild
+
+                    self.invites[member.guild.id] = invites_after_join
+
+                    # We return here since we already found which
+                    # one was used and there is no point in
+                    # looping when we already got what we wanted
+
+                    cursor.execute(f"SELECT user_id, invited_by FROM invites WHERE user_id = "
+                           f"{member.id}")
+                    result = cursor.fetchone()
+
+                    print("db query result: ", result)
+
+                    if not result:
+                        inviter = invite.inviter.mention
+                        invited_by = invite.inviter.id
+                        cursor.execute(f"INSERT INTO invites(user_id, invited_by) "
+                                       f"VALUES({member.id}, {invited_by});")
+                        database.commit()
+            except AttributeError as err:
+                # We found last time inviter.
                 print(f"Member {member.name} Joined")
                 print(f"Invite Code: {invite.code}")
                 print(f"Inviter: {invite.inviter}")
@@ -115,7 +143,7 @@ class WelcomeAndGoodbye(commands.Cog):
                 # looping when we already got what we wanted
 
                 cursor.execute(f"SELECT user_id, invited_by FROM invites WHERE user_id = "
-                       f"{member.id}")
+                               f"{member.id}")
                 result = cursor.fetchone()
 
                 print("db query result: ", result)
@@ -126,6 +154,7 @@ class WelcomeAndGoodbye(commands.Cog):
                     cursor.execute(f"INSERT INTO invites(user_id, invited_by) "
                                    f"VALUES({member.id}, {invited_by});")
                     database.commit()
+
 
         # Send message in LOG_CHANNEL if not invited
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
