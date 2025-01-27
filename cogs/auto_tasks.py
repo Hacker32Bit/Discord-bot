@@ -95,8 +95,10 @@ class AutoTask(commands.Cog):
                 color = gray_transparent
                 border_color = gray
 
-                if place == 1 and user[2] >= 1000:  # GOLD color
+                if place == 1:
                     h_pos = 40
+
+                if place == 1 and user[2] >= 1000:  # GOLD color
                     color = (255, 193, 7, 191)
                     border_color = (255, 193, 7, 255)
                 elif place == 2 and user[2] >= 1000:  # SILVER color
