@@ -49,15 +49,17 @@ class WelcomeAndGoodbye(commands.Cog):
 
     @commands.Cog.listener()
     async def on_invite_delete(self, invite) -> None:
-        print("invite type: ", type(invite))
+        print("on_invite_delete")
         print("invite: ", invite)
         print("before self.invites: ", self.invites)
-        # self.invites[invite.guild.id].append(invite)
-        # print("after self.invites: ", self.invites)
+        for item in self.invites[invite.guild.id]:
+            if item.code == invite.code:
+                self.invites[invite.guild.id].remove(item)
+        print("after self.invites: ", self.invites)
 
     @commands.Cog.listener()
     async def on_invite_create(self, invite) -> None:
-        print("invite type: ", type(invite))
+        print("on_invite_create")
         print("invite: ", invite)
         print("before self.invites: ", self.invites)
         self.invites[invite.guild.id].append(invite)
