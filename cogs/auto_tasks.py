@@ -7,10 +7,14 @@ utc = datetime.timezone.utc
 time = datetime.time(hour=13, minute=50, tzinfo=utc)
 
 
-class MyCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+class AutoTask(commands.Cog):
+    def __init__(self, client):
+        self.client = client
         self.my_task.start()
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print("[INFO] \"AutoTask\" cog is ready!")
 
     def cog_unload(self):
         self.my_task.cancel()
@@ -20,6 +24,10 @@ class MyCog(commands.Cog):
         pass
         # print("Need close server!")
 
+    @tasks.loop(minutes=5)
+    async def update_activity_giveaways_tables(self):
+        print("UPDATE!!!")
+
 
 async def setup(client):
-    await client.add_cog(MyCog(client))
+    await client.add_cog(AutoTask(client))
