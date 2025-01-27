@@ -61,8 +61,8 @@ class AutoTask(commands.Cog):
             print(notosans_regular)
 
             # ======== Fonts to use =============
-            font_normal = truetype(notosans_bold, 20, encoding='UTF-8')
-            font_small = truetype(notosans_regular, 20, encoding='UTF-8')
+            font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
+            font_small = truetype(notosans_regular, 24, encoding='UTF-8')
             font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
             print(font_small)
@@ -82,10 +82,10 @@ class AutoTask(commands.Cog):
             draw = Draw(image)
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
-            draw.text((5, 3), "№", white, font=font_normal)
-            draw.text((50, 3), "Avatar", white, font=font_normal)
+            draw.text((10, 3), "№", white, font=font_normal)
+            draw.text((44, 3), "Avatar", white, font=font_normal)
             draw.text((200, 3), "Nickname", white, font=font_normal)
-            draw.text((width - 50, 3), "XP", white, font=font_normal)
+            draw.text((width - 40, 3), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
             image = image.crop((0, 0, width, new_height))
