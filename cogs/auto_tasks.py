@@ -73,11 +73,11 @@ class AutoTask(commands.Cog):
             white = (255, 255, 255, 255)
             black = (0, 0, 0, 255)
 
-            gray_dark = (144, 164, 174, 255)
-            gray = (176, 190, 197, 255)
+            gray_dark = (120, 144, 156, 255)
+            gray = (144, 164, 174, 255)
 
-            gray_dark_transparent = (144, 164, 174, 191)
-            gray_transparent = (176, 190, 197, 191)
+            gray_dark_transparent = (120, 144, 156, 191)
+            gray_transparent = (144, 164, 174, 191)
 
             draw = Draw(image)
 
