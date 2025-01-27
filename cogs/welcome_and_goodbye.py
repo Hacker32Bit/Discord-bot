@@ -48,6 +48,14 @@ class WelcomeAndGoodbye(commands.Cog):
                 return inv
 
     @commands.Cog.listener()
+    async def on_invite_delete(self, invite) -> None:
+        print("invite type: ", type(invite))
+        print("invite: ", invite)
+        print("before self.invites: ", self.invites)
+        # self.invites[invite.guild.id].append(invite)
+        # print("after self.invites: ", self.invites)
+
+    @commands.Cog.listener()
     async def on_invite_create(self, invite) -> None:
         print("invite type: ", type(invite))
         print("invite: ", invite)
