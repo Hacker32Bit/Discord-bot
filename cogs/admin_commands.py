@@ -28,6 +28,7 @@ class AdminCommands(commands.Cog):
     async def shutdown(self, ctx):
         print("[INFO] logging out...")
         await self.client.close()
+        self.client.clear()
 
     # Command for get server state
     @commands.command()
@@ -59,7 +60,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def send_message(self, channel_id, message, file: discord.Embed) -> None:
-        channel = self.client.get_channel(channel_id)
+        channel = await self.client.get_channel(channel_id)
         print(message)
         print(file)
         await channel.send(message, file=file)
