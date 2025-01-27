@@ -34,7 +34,7 @@ class AutoTask(commands.Cog):
 
     @tasks.loop(minutes=1)
     async def update_activity_giveaways_tables(self):
-        channel = await self.bot.get_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
+        channel = self.bot.get_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
         message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
 
         if not message:
