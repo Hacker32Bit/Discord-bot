@@ -43,7 +43,7 @@ class AutoTask(commands.Cog):
 
     @staticmethod
     async def create_table(client):
-        descending = "SELECT * FROM activity_giveaway ORDER BY exp DESC LIMIT 10"
+        descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC LIMIT 10"
         cursor.execute(descending)
         result = cursor.fetchall()
 
@@ -82,7 +82,7 @@ class AutoTask(commands.Cog):
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
             draw.text((15, 2), "№", white, font=font_normal)
             draw.text((69, 2), "PARTICIPANT", white, font=font_normal)
-            draw.text((width - 42, 2), "XP", white, font=font_normal)
+            draw.text((width - 55, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
             place = 0
@@ -108,14 +108,12 @@ class AutoTask(commands.Cog):
 
                 user_data = await client.fetch_user(user[0])
 
-                print(type(user_data.display_avatar))
-                print(user_data.display_avatar)
                 file = await user_data.display_avatar.to_file()
                 avatar = Image.open(fp=file.fp)
                 avatar = avatar.resize((54, 54))
 
                 # Transform and calculate text width
-                transformed_place = str(place + 6)
+                transformed_place = str(place)
                 w = draw.textlength(transformed_place, font=font_normal_large)
 
                 draw.rectangle([(0, h_pos), (width, h_pos + 56)], fill=color)
@@ -151,10 +149,9 @@ class AutoTask(commands.Cog):
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="table.png")
                 await message.edit(content="the new content of the message", attachments=[result])
-                print("UPDATE!!!")
 
         except NotFound as err:
-            print("NO MESSAGES")
+            print("NO MESSAGES in Activity giveaway!")
 
 
 async def setup(bot):
