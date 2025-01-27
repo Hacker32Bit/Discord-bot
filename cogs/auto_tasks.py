@@ -75,7 +75,7 @@ class AutoTask(commands.Cog):
             draw.text((5, 3), "Avatar", white, font=font_normal)
             draw.line([(0, height - 2), (800, height - 2)], fill=gray, width=2)
 
-            # image.resize(width, height)
+            image.crop((0, 0, 800, 600 - height))
 
             for user in result:
                 print(user)
