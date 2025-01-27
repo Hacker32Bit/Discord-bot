@@ -6,6 +6,7 @@ from typing import Final
 from PIL import Image
 from PIL.ImageFont import truetype
 from PIL.ImageDraw import Draw
+from dateutil.utils import within_delta
 from discord.ext import commands, tasks
 from discord.errors import NotFound
 from discord import File
@@ -46,10 +47,10 @@ class AutoTask(commands.Cog):
         cursor.execute(descending)
         result = cursor.fetchall()
 
-        height = 40
         width = 800
+        height = 600
 
-        with Image.new(mode='RGBA', size=(width, 600), color=(176, 190, 197, 191)) as image:
+        with Image.new(mode='RGBA', size=(width, height), color=(0, 0, 0, 0)) as image:
             notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                          'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
@@ -66,16 +67,25 @@ class AutoTask(commands.Cog):
 
             print(font_small)
 
+            h_pos = 0
+            new_height = 40
+
             white = (255, 255, 255, 255)
             black = (0, 0, 0, 255)
+
+            gray_dark = (144, 164, 174, 255)
             gray = (176, 190, 197, 255)
+
+            gray_dark_transparent = (144, 164, 174, 191)
+            gray_transparent = (176, 190, 197, 191)
 
             draw = Draw(image)
 
             draw.text((5, 3), "Avatar", white, font=font_normal)
-            draw.line([(0, height - 2), (800, height - 2)], fill=gray, width=2)
+            draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
+            draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray, width=2)
 
-            image.crop((0, 0, 800, 600 - height))
+            image.crop((0, 0, width, new_height))
 
             for user in result:
                 print(user)
