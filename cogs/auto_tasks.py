@@ -64,13 +64,16 @@ class AutoTask(commands.Cog):
             font_small = truetype(notosans_regular, 20, encoding='UTF-8')
             font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
-            white = (255, 255, 255)
-            black = (0, 0, 0)
+            print(font_small)
+
+            white = (255, 255, 255, 255)
+            black = (0, 0, 0, 255)
+            gray = (176, 190, 197, 255)
 
             draw = Draw(image)
 
             draw.text((3, 3), "Test", black, font=font_small)
-            draw.line([(0, height - 2), (800, height - 2)], fill=white, width=2)
+            draw.line([(0, height - 2), (800, height - 2)], fill=gray, width=2)
 
             for user in result:
                 print(user)
