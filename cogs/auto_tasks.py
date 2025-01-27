@@ -69,7 +69,7 @@ class AutoTask(commands.Cog):
 
             draw = Draw(image)
 
-            draw.text((width + 3, height + 3), "Test", black, font=font_small)
+            draw.text((3, 3), "Test", black, font=font_small)
             draw.line([(0, height - 2), (800, height - 2)], fill=white, width=2)
 
             for user in result:
