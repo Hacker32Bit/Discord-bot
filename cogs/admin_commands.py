@@ -60,10 +60,11 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def send_message(self, channel_id, message, file) -> None:
-        channel = await self.client.fetch_channel(channel_id)
-        print(message)
-        print(file)
-        await channel.send(message)
+        # channel = await self.client.fetch_channel(channel_id)
+        print("channel_id: ", channel_id)
+        print("message: ", message)
+        print("file: ", file)
+        # await channel.send(message)
 
     # Command for add manually join user log in log channel
     @commands.command()
@@ -110,7 +111,7 @@ class AdminCommands(commands.Cog):
             winners += f"{winner.mention},"
 
         embed = discord.Embed(
-            description=f":tada: Congrats{winners[:len(winners)-1]}!\nYou are very lucky in this giveaway!",
+            description=f":tada: Congrats{winners[:len(winners) - 1]}!\nYou are very lucky in this giveaway!",
             color=0x9C27B0,
             timestamp=datetime.datetime.now()
         )
