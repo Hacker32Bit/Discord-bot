@@ -63,8 +63,10 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def remove_referrer(self, ctx: discord.ext.commands.context.Context, user_id: str) -> None:
+        print(user_id)
         descending = "DELETE FROM invites WHERE user_id = ?"
-        cursor.execute(descending, (user_id,))
+        result = cursor.execute(descending, (user_id,))
+        print(result)
 
     # Command for send message from Bot
     @commands.command()
