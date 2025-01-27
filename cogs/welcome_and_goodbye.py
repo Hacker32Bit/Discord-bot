@@ -166,7 +166,7 @@ class WelcomeAndGoodbye(commands.Cog):
         if inviter and invited_by:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!\nReferred by **{inviter}**!",
-                color=0x9b59b6,
+                color=0x9C27B0,
                 timestamp=datetime.datetime.now()
             )
             await channel.send(embed=embed)
