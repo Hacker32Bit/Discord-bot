@@ -89,6 +89,7 @@ class AutoTask(commands.Cog):
 
             for user in result:
                 h_pos += 56
+                new_height += 56
                 place += 1
 
                 color = gray_transparent
@@ -96,9 +97,6 @@ class AutoTask(commands.Cog):
 
                 if place == 1:
                     h_pos = 40
-                    new_height += 40
-                else:
-                    new_height += 56
 
                 if place == 1 and user[2] >= 1000:  # GOLD color
                     color = (255, 193, 7, 191)
