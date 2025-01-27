@@ -46,7 +46,11 @@ class AutoTask(commands.Cog):
         cursor.execute(descending)
         result = cursor.fetchall()
 
-        with Image.new(mode='RGBA', size=(800, 40), color=(144, 164, 174, 191)) as image:
+        height = 40
+        width = 800
+
+        with Image.new(mode='RGBA', size=(height, width), color=(176, 190, 197, 191)) as image:
+
             notosans_bold = os.path.join('files_for_copy', 'disrank', 'assets', 'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join('files_for_copy', 'disrank', 'assets', 'NotoSans-Regular.ttf')  # NOQA
             rockybilly = os.path.join('files_for_copy', 'disrank', 'assets', 'Rockybilly.ttf')  # NOQA
@@ -56,11 +60,13 @@ class AutoTask(commands.Cog):
             font_small = truetype(notosans_regular, 20, encoding='UTF-8')
             font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
-            white_color = (189, 195, 199)
+            white = (255, 255, 255)
+            black = (0, 0, 0)
 
             draw = Draw(image)
 
-            draw.text((10, 10), "Test", white_color, font=font_small)
+            draw.text((width + 3, height + 3), "Test", black, font=font_small)
+            draw.line([(0, height - 5), (800, height - 5)], fill=white, width=2)
 
             for user in result:
                 print(user)
