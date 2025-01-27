@@ -42,7 +42,7 @@ class AutoTask(commands.Cog):
         # print("Need close server!")
 
     @staticmethod
-    def create_table():
+    async def create_table(self):
         descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC LIMIT 10"
         cursor.execute(descending)
         result = cursor.fetchall()
@@ -58,14 +58,10 @@ class AutoTask(commands.Cog):
             rockybilly = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                       'Rockybilly.ttf')  # NOQA
 
-            print(notosans_regular)
-
             # ======== Fonts to use =============
             font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
             font_small = truetype(notosans_regular, 24, encoding='UTF-8')
             font_signa = truetype(rockybilly, 25, encoding='UTF-8')
-
-            print(font_small)
 
             h_pos = 0
             new_height = 40
@@ -83,15 +79,43 @@ class AutoTask(commands.Cog):
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
             draw.text((10, 2), "№", white, font=font_normal)
-            draw.text((46, 2), "AVATAR", white, font=font_normal)
-            draw.text((150, 2), "NICKNAME", white, font=font_normal)
+            draw.text((56, 2), "AVATAR", white, font=font_normal)
+            draw.text((170, 2), "NICKNAME", white, font=font_normal)
             draw.text((width - 50, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
             image = image.crop((0, 0, width, new_height))
 
+            place = 0
+            new_height = 56
             for user in result:
-                print(user)
+                h_pos += 56
+                place += 1
+
+                color = gray_transparent
+                border_color = gray
+
+                if place == 1:  # GOLD color
+                    h_pos = 40
+                    color = (255, 193, 7, 191)
+                    border_color = (255, 193, 7, 255)
+                elif place == 2:  # SILVER color
+                    color = (158, 158, 158, 191)
+                    border_color = (158, 158, 158, 255)
+                elif place == 3:  # BRONZE color
+                    color = (121, 85, 72, 191)
+                    border_color = (121, 85, 72, 255)
+
+                user_data = await self.bot.fetch_user(user[0])
+                print(type(user_data))
+                print(user_data)
+
+                draw.rectangle([(0, h_pos), (width, h_pos + new_height)], fill=color)
+                draw.text((10, h_pos + 6), "№", white, font=font_normal)
+                draw.text((56, h_pos + 6), "AVATAR", white, font=font_small)
+                draw.text((170, h_pos + 6), "NICKNAME", white, font=font_small)
+                draw.text((width - 50, h_pos + 6), "XP", white, font=font_small)
+                draw.line([(0, h_pos + new_height - 2), (width, h_pos + new_height - 2)], fill=border_color, width=2)
 
             return image
 
@@ -102,7 +126,8 @@ class AutoTask(commands.Cog):
             message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
 
             with io.BytesIO() as image_binary:
-                self.create_table().save(image_binary, 'PNG')
+                table = await self.create_table()
+                table.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="table.png")
                 await message.edit(content="the new content of the message", attachments=[result])
