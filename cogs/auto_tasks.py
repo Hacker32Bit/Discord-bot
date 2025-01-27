@@ -49,7 +49,7 @@ class AutoTask(commands.Cog):
         height = 40
         width = 800
 
-        with Image.new(mode='RGBA', size=(width, height), color=(176, 190, 197, 191)) as image:
+        with Image.new(mode='RGBA', size=(width, 600), color=(176, 190, 197, 191)) as image:
             notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                          'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
@@ -60,7 +60,7 @@ class AutoTask(commands.Cog):
             print(notosans_regular)
 
             # ======== Fonts to use =============
-            font_normal = truetype(notosans_bold, 36, encoding='UTF-8')
+            font_normal = truetype(notosans_bold, 20, encoding='UTF-8')
             font_small = truetype(notosans_regular, 20, encoding='UTF-8')
             font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
@@ -72,8 +72,10 @@ class AutoTask(commands.Cog):
 
             draw = Draw(image)
 
-            draw.text((3, 3), "Test", black, font=font_small)
+            draw.text((5, 3), "Avatar", white, font=font_normal)
             draw.line([(0, height - 2), (800, height - 2)], fill=gray, width=2)
+
+            image.resize(width, height)
 
             for user in result:
                 print(user)
