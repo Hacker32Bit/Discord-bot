@@ -56,7 +56,7 @@ class AutoTask(commands.Cog):
             message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
             table = await self.create_table()
 
-            await message.edit(content="the new content of the message", file=table)
+            await message.edit(content="the new content of the message", attachments=table)
             print("UPDATE!!!")
 
         except NotFound as err:
