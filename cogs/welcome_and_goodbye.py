@@ -49,11 +49,11 @@ class WelcomeAndGoodbye(commands.Cog):
 
     @commands.Cog.listener()
     async def on_invite_create(self, invite) -> None:
-        print(self)
-        print(type(invite))
-        print(invite)
-        print(self.invites)
+        print("invite type: ", type(invite))
+        print("invite: ", invite)
+        print("before self.invites: ", self.invites)
         self.invites[invite.guild.id].append(invite)
+        print("after self.invites: ", self.invites)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
