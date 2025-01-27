@@ -78,7 +78,7 @@ class AdminCommands(commands.Cog):
     # Command for send message with file from Bot
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def send_file(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str,
+    async def send_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str,
                         file: discord.Attachment) -> None:
         channel = await self.client.fetch_channel(channel_id)
         print("channel_id: ", channel_id)
