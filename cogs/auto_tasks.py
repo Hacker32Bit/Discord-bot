@@ -42,7 +42,7 @@ class AutoTask(commands.Cog):
         # print("Need close server!")
 
     @staticmethod
-    async def create_table(self):
+    async def create_table(client):
         descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC LIMIT 10"
         cursor.execute(descending)
         result = cursor.fetchall()
@@ -84,12 +84,11 @@ class AutoTask(commands.Cog):
             draw.text((width - 50, 2), "XP", white, font=font_normal)
             draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
 
-            image = image.crop((0, 0, width, new_height))
-
             place = 0
-            new_height = 56
+
             for user in result:
                 h_pos += 56
+                new_height += 56
                 place += 1
 
                 color = gray_transparent
@@ -106,17 +105,18 @@ class AutoTask(commands.Cog):
                     color = (121, 85, 72, 191)
                     border_color = (121, 85, 72, 255)
 
-                user_data = await self.bot.fetch_user(user[0])
+                user_data = await client.fetch_user(user[0])
                 print(type(user_data))
                 print(user_data)
 
-                draw.rectangle([(0, h_pos), (width, h_pos + new_height)], fill=color)
+                draw.rectangle([(0, h_pos), (width, h_pos + 56)], fill=color)
                 draw.text((10, h_pos + 6), "№", white, font=font_normal)
                 draw.text((56, h_pos + 6), "AVATAR", white, font=font_small)
                 draw.text((170, h_pos + 6), "NICKNAME", white, font=font_small)
                 draw.text((width - 50, h_pos + 6), "XP", white, font=font_small)
-                draw.line([(0, h_pos + new_height - 2), (width, h_pos + new_height - 2)], fill=border_color, width=2)
+                draw.line([(0, h_pos + 54), (width, h_pos + 54)], fill=border_color, width=2)
 
+            image = image.crop((0, 0, width, new_height))
             return image
 
     @tasks.loop(minutes=1)
@@ -126,7 +126,7 @@ class AutoTask(commands.Cog):
             message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
 
             with io.BytesIO() as image_binary:
-                table = await self.create_table()
+                table = await self.create_table(self.bot)
                 table.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="table.png")
