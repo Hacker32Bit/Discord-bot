@@ -60,7 +60,7 @@ class AutoTask(commands.Cog):
 
             draw = Draw(image)
 
-            draw.text((10, 10), "Test", white_color)
+            draw.text((10, 10), "Test", white_color, font=font_small)
 
             for user in result:
                 print(user)
