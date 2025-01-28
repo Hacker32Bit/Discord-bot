@@ -1,3 +1,4 @@
+import math
 import random
 import sqlite3
 import time
@@ -79,14 +80,54 @@ class AdminCommands(commands.Cog):
     # Add exp to user_id
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def add_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, exp: str) -> None:
-        pass
+    async def add_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, add_exp: str) -> None:
+        cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
+                       f"{user_id} and guild_id = {ctx.guild.id}")
+        activity_giveaway_result = cursor.fetchone()
 
-    # Remove exp to user_id
+        if activity_giveaway_result is None:
+            cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
+                           f"VALUES({user_id}, {ctx.guild.id}, {int(add_exp)}, 0, 0)")
+            database.commit()
+        else:
+            user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
+
+            # Give 150 XP for invite
+            exp_gained = add_exp
+            exp += exp_gained
+            level = 0.1 * (math.sqrt(exp))
+
+            cursor.execute(
+                f"UPDATE activity_giveaway SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                f"guild_id = {guild_id}")
+            database.commit()
+
+    # Reduce exp to user_id
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def add_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, exp: str) -> None:
-        pass
+    async def reduce_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, reduce_exp: str) -> None:
+        cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
+                       f"{user_id} and guild_id = {ctx.guild.id}")
+        activity_giveaway_result = cursor.fetchone()
+
+        if activity_giveaway_result is None:
+            cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
+                           f"VALUES({user_id}, {ctx.guild.id}, 0, 0, 0)")
+            database.commit()
+        else:
+            user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
+
+            # Give 150 XP for invite
+            exp_gained = reduce_exp
+            exp -= exp_gained
+            if exp < 0:
+                exp = 0
+            level = 0.1 * (math.sqrt(exp))
+
+            cursor.execute(
+                f"UPDATE activity_giveaway SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                f"guild_id = {guild_id}")
+            database.commit()
 
     # Command for send message from Bot
     @commands.command()
