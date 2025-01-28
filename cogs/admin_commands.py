@@ -17,6 +17,7 @@ GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
 
+
 class AdminCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -116,6 +117,51 @@ class AdminCommands(commands.Cog):
         print("message: ", message)
         print("file: ", file)
         await channel.send(content=message, file=await file.to_file())
+
+    # Command for send message with file from Bot
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def edit_file(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
+                           file: discord.Attachment) -> None:
+        print("channel_id: ", channel_id)
+        print("message_id: ", message_id)
+        print("file: ", file)
+
+        channel = await self.client.fetch_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+
+        await message.edit(attachments=[file])
+
+    # Command for send message with file from Bot
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def edit_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
+                                 message_text: str) -> None:
+        channel = await self.client.fetch_channel(channel_id)
+        print("channel_id: ", channel_id)
+        print("message_id: ", message_id)
+        print("message_text: ", message_text)
+
+        channel = await self.client.fetch_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+
+        await message.edit(content=message_text)
+
+    # Command for send message with file from Bot
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def edit_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
+                                 message_text: str, file: discord.Attachment) -> None:
+        channel = await self.client.fetch_channel(channel_id)
+        print("channel_id: ", channel_id)
+        print("message_id: ", message_id)
+        print("message_text: ", message_text)
+        print("file: ", file)
+
+        channel = await self.client.fetch_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+
+        await message.edit(content=message_text, attachments=[file])
 
     # Command for add manually join user log in log channel
     @commands.command()
