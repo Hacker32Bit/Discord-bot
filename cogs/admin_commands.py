@@ -93,7 +93,7 @@ class AdminCommands(commands.Cog):
             user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
 
             # Give 150 XP for invite
-            exp_gained = add_exp
+            exp_gained = int(add_exp)
             exp += exp_gained
             level = 0.1 * (math.sqrt(exp))
 
@@ -118,7 +118,7 @@ class AdminCommands(commands.Cog):
             user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
 
             # Give 150 XP for invite
-            exp_gained = reduce_exp
+            exp_gained = int(reduce_exp)
             exp -= exp_gained
             if exp < 0:
                 exp = 0
