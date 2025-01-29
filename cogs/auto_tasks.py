@@ -139,7 +139,7 @@ class AutoTask(commands.Cog):
             image = image.crop((0, 0, width, new_height))
             return image
 
-    @tasks.loop(minutes=10)
+    @tasks.loop(minutes=1)
     async def update_activity_giveaways_tables(self):
         channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
         try:
