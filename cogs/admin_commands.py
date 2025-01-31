@@ -2,6 +2,7 @@ import math
 import random
 import sqlite3
 import time
+import typing
 
 import discord
 from discord.ext import commands
@@ -192,7 +193,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def edit_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
-                                 message_text: str, files: list[discord.File]) -> None:
+                                 message_text: str, files: typing.Union[discord.Attachment]) -> None:
         channel = await self.client.fetch_channel(channel_id)
         print("channel_id: ", channel_id)
         print("message_id: ", message_id)
