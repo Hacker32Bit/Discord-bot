@@ -193,7 +193,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def edit_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
-                                 message_text: str, files: typing.Union[discord.Attachment]) -> None:
+                                 message_text: str, *files: discord.Attachment) -> None:
         channel = await self.client.fetch_channel(channel_id)
         print("channel_id: ", channel_id)
         print("message_id: ", message_id)
@@ -204,7 +204,7 @@ class AdminCommands(commands.Cog):
         channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
-        await message.edit(content=message_text, attachments=[files])
+        await message.edit(content=message_text, attachments=files)
 
     # Command for add manually join user log in log channel
     @commands.command()
