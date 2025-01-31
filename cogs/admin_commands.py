@@ -204,7 +204,7 @@ class AdminCommands(commands.Cog):
         files: [discord.File] = []
 
         for file in ctx.message.attachments:
-            files.append(file.to_file())
+            files.append(await file.to_file())
 
         channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
