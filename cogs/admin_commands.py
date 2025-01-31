@@ -201,10 +201,15 @@ class AdminCommands(commands.Cog):
         print("type file: ", type(ctx.message.attachments))
         print("file: ", ctx.message.attachments)
 
+        files: [discord.File] = []
+
+        for file in ctx.message.attachments:
+            files.append(file.to_file())
+
         channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
-        await message.edit(content=message_text, attachments=ctx.message.attachments)
+        await message.edit(content=message_text, attachments=files)
 
     # Command for add manually join user log in log channel
     @commands.command()
