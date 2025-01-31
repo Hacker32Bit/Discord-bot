@@ -171,7 +171,7 @@ class AdminCommands(commands.Cog):
         channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
-        await message.edit(attachments=file)
+        await message.edit(attachments=[file])
 
     # Command for send message with file from Bot
     @commands.command()
@@ -197,12 +197,13 @@ class AdminCommands(commands.Cog):
         print("channel_id: ", channel_id)
         print("message_id: ", message_id)
         print("message_text: ", message_text)
+        print("type file: ", type(file))
         print("file: ", file)
 
         channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
-        await message.edit(content=message_text, attachments=file)
+        await message.edit(content=message_text, attachments=[file])
 
     # Command for add manually join user log in log channel
     @commands.command()
