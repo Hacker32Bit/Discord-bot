@@ -204,7 +204,7 @@ class AdminCommands(commands.Cog):
         channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
-        await message.edit(content=message_text, attachments=files)
+        await message.edit(content=message_text, attachments=[files])
 
     # Command for add manually join user log in log channel
     @commands.command()
