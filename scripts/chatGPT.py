@@ -1,3 +1,4 @@
+from g4f.models import default
 from g4f.client import Client
 import asyncio
 import sys
@@ -14,7 +15,7 @@ args = parser.parse_args()
 client = Client()
 
 response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
+    model=default,
     messages=[{"role": "user", "content": args.text}],
 )
 
