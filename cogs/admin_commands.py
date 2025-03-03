@@ -160,7 +160,7 @@ class AdminCommands(commands.Cog):
         print("file: ", file)
         await channel.send(content=message, file=await file.to_file())
 
-    # Command for send message with file from Bot
+    # Command for edit file in message from Bot
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def edit_file(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str) -> None:
@@ -175,7 +175,7 @@ class AdminCommands(commands.Cog):
 
         await message.edit(attachments=files)
 
-    # Command for send message with file from Bot
+    # Command for edit message from Bot
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def edit_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
@@ -185,12 +185,11 @@ class AdminCommands(commands.Cog):
         print("message_id: ", message_id)
         print("message_text: ", message_text)
 
-        channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
         await message.edit(content=message_text)
 
-    # Command for send message with file from Bot
+    # Command for edit message with file from Bot
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def edit_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
@@ -202,7 +201,6 @@ class AdminCommands(commands.Cog):
         for file in ctx.message.attachments:
             files.append(await file.to_file())
 
-        channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
         await message.edit(content=message_text, attachments=files)
