@@ -116,8 +116,8 @@ class CaseOpening(commands.Cog):
             # ======== Fonts to use =============
             font_normal_large = truetype(notosans_bold, 36, encoding='UTF-8')
             font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
-            font_small_large = truetype(notosans_regular, 36)
-            font_small = truetype(notosans_regular, 18)
+            font_small_large = truetype(notosans_regular, 36, encoding='UTF-8')
+            font_small = truetype(notosans_regular, 18, encoding='UTF-8')
 
             h_pos = 0
             new_height = 40
@@ -125,8 +125,13 @@ class CaseOpening(commands.Cog):
             white = (255, 255, 255, 255)
 
             draw = Draw(image)
-
-            draw.text((15, 5), drop_name, white, font=font_small)
+            is_star = "★" in drop_name
+            if is_star:
+                drop_name = drop_name[1:]
+                draw.text((15, 5), u"\u2605", white)
+                draw.text((35, 5), drop_name, white, font=font_small)
+            else:
+                draw.text((15, 5), drop_name, white, font=font_small)
 
             return image
 
