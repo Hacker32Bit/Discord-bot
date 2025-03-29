@@ -58,7 +58,21 @@ class CaseOpening(commands.Cog):
                 rarity = rarity.replace('StatTrak™ ', '')
             if any(text.lower() in rarity for text in ["knife", "gloves", "extraordinary", "contraband", "★"]):
                 rarity = "contraband"
-
+            elif "covert" in rarity:
+                rarity = "covert"
+            elif "classified" in rarity:
+                rarity = "classified"
+            elif "restricted" in rarity:
+                rarity = "restricted"
+            elif "mil-spec" in rarity:
+                rarity = "mil_spec"
+            elif "industrial grade" in rarity:
+                rarity = "industrial_grade"
+            elif "consumer grade" in rarity:
+                rarity = "consumer_grade"
+            else:
+                print("RARITY detection error!")
+                return
 
         except Exception as err:
             print(err)
