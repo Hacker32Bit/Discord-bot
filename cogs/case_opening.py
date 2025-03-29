@@ -128,7 +128,8 @@ class CaseOpening(commands.Cog):
             is_star = "★" in drop_name
             if is_star:
                 drop_name = drop_name[1:]
-                draw.text((15, 5), u"\u2605", white)
+                unicode_font = truetype("DejaVuSans.ttf", 18)
+                draw.text((15, 5), u"\u2605", white, font=unicode_font)
                 draw.text((35, 5), drop_name, white, font=font_small)
             else:
                 draw.text((15, 5), drop_name, white, font=font_small)
