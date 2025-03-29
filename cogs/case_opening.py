@@ -1,3 +1,4 @@
+from time import sleep
 import discord
 from PIL import Image
 from PIL.ImageDraw import Draw
@@ -29,6 +30,10 @@ class CaseOpening(commands.Cog):
 
         try:
             r = requests.get(drop_url + '?l=english')
+            while r.status_code == 429:
+                sleep(10)
+                r = requests.get(drop_url + '?l=english')
+
             json_string = r.text.split('var g_rgAssets = ')[1].split('var g_rgCurrency')[0].strip().replace(';', '')
 
             data = json.loads(json_string)
