@@ -35,7 +35,6 @@ class WelcomeAndGoodbye(commands.Cog):
         for guild in self.client.guilds:
             # Adding each guild's invites to our dict
             self.invites[guild.id] = await guild.invites()
-        print("on_ready", self.invites)
 
     @staticmethod
     def find_invite_by_code(invite_list, code):
@@ -50,21 +49,13 @@ class WelcomeAndGoodbye(commands.Cog):
 
     @commands.Cog.listener()
     async def on_invite_delete(self, invite) -> None:
-        print("on_invite_delete")
-        print("invite: ", invite)
-        print("before self.invites: ", self.invites)
         for item in self.invites[invite.guild.id]:
             if item.code == invite.code:
                 self.invites[invite.guild.id].remove(item)
-        print("after self.invites: ", self.invites)
 
     @commands.Cog.listener()
     async def on_invite_create(self, invite) -> None:
-        print("on_invite_create")
-        print("invite: ", invite)
-        print("before self.invites: ", self.invites)
         self.invites[invite.guild.id].append(invite)
-        print("after self.invites: ", self.invites)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
@@ -75,17 +66,13 @@ class WelcomeAndGoodbye(commands.Cog):
         # Getting the invites before the user joining
         # from our cache for this specific guild
 
-        print("OnMemberJoin", member.guild.id)
         invites_before_join = self.invites[member.guild.id].copy()
-        print(invites_before_join)
 
         # Getting the invites after the user joining
         # so we can compare it with the first one, and
         # see which invite uses number increased
 
         invites_after_join = await member.guild.invites()
-        print(invites_after_join)
-
 
         # Loops for each invite we have for the guild
         # the user joined.
@@ -103,10 +90,6 @@ class WelcomeAndGoodbye(commands.Cog):
                     # the name, invite code used the the person
                     # who created the invite code, or the inviter.
 
-                    print(f"Member {member.name} Joined")
-                    print(f"Invite Code: {invite.code}")
-                    print(f"Inviter: {invite.inviter}")
-
                     # We will now update our cache so it's ready
                     # for the next user that joins the guild
 
@@ -120,8 +103,6 @@ class WelcomeAndGoodbye(commands.Cog):
                            f"{member.id}")
                     result = cursor.fetchone()
 
-                    print("db query result: ", result)
-
                     if not result:
                         inviter = invite.inviter.mention
                         invited_by = invite.inviter.id
@@ -130,10 +111,6 @@ class WelcomeAndGoodbye(commands.Cog):
                         database.commit()
             except AttributeError as err:
                 # We found last time inviter.
-                print(f"Member {member.name} Joined")
-                print(f"Invite Code: {invite.code}")
-                print(f"Inviter: {invite.inviter}")
-
                 # We will now update our cache so it's ready
                 # for the next user that joins the guild
 
@@ -147,8 +124,6 @@ class WelcomeAndGoodbye(commands.Cog):
                                f"{member.id}")
                 result = cursor.fetchone()
 
-                print("db query result: ", result)
-
                 if not result:
                     inviter = invite.inviter.mention
                     invited_by = invite.inviter.id
@@ -159,9 +134,6 @@ class WelcomeAndGoodbye(commands.Cog):
 
         # Send message in LOG_CHANNEL if not invited
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
-
-        print("inviter: ", inviter)
-        print("invited_by: ", invited_by)
 
         if inviter and invited_by:
             embed = discord.Embed(

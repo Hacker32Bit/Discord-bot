@@ -6,7 +6,6 @@ from typing import Final
 from PIL import Image
 from PIL.ImageFont import truetype
 from PIL.ImageDraw import Draw
-from dateutil.utils import within_delta
 from discord.ext import commands, tasks
 from discord.errors import NotFound
 from discord import File

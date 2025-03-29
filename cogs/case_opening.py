@@ -60,8 +60,8 @@ class CaseOpening(commands.Cog):
         print("name: ", name)
         print("quality: ", quality)
         print("rarity: ", rarity)
-        print("file: ", is_stattrak)
-        result = "" + case_name + "\n" + name + "\n" + quality + "\n" + rarity + "\n" + is_stattrak
+        print("is_stattrak: ", is_stattrak)
+        result = "" + case_name + "\n" + name + "\n" + quality + "\n" + rarity + "\n" + str(is_stattrak)
         await channel.send(content=result)
 
     @staticmethod
