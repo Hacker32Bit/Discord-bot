@@ -37,9 +37,10 @@ class CaseOpening(commands.Cog):
 
             name = data["name"]
             quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
-            rarity = data["type"].lower()
+            rarity = data["type"]
             image_url = "https://community.fastly.steamstatic.com/economy/image/" + data["icon_url"]
             is_stattrak = "StatTrak" in rarity
+            rarity = rarity.lower()
             if is_stattrak:
                 rarity = rarity.replace('StatTrak™ ', '')
             if any(text.lower() in rarity for text in ["knife", "gloves", "extraordinary", "contraband", "★"]):
