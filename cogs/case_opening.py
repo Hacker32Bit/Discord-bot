@@ -37,11 +37,13 @@ class CaseOpening(commands.Cog):
 
             name = data["name"]
             quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
-            rarity = data["type"]
+            rarity = data["type"].lower()
             image_url = "https://community.fastly.steamstatic.com/economy/image/" + data["icon_url"]
             is_stattrak = "StatTrak" in rarity
             if is_stattrak:
                 rarity = rarity.replace('StatTrak™ ', '')
+            if any(text.lower() in rarity for text in ["knife", "gloves", "extraordinary", "contraband", "★"]):
+                rarity = "contraband"
 
 
         except Exception as err:
@@ -65,11 +67,11 @@ class CaseOpening(commands.Cog):
         await channel.send(content=result)
 
     @staticmethod
-    async def create_image(client, case_name: str, quality: str, drop_name: str, ):
+    async def create_image(client, case_name: str, quality: str, drop_name: str, rarity: str):
         width = 800
         height = 600
 
-        with Image.open(f"assets/images/cases/backgrounds/{quality}.png") as image:
+        with Image.open(f"assets/images/cases/backgrounds/{rarity}.png") as image:
             notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                          'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
