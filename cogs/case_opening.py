@@ -114,10 +114,10 @@ class CaseOpening(commands.Cog):
                                             'NotoSans-Regular.ttf')  # NOQA
 
             # ======== Fonts to use =============
-            font_normal_large = truetype(notosans_bold, 36, encoding='UTF-8')
-            font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
-            font_small_large = truetype(notosans_regular, 36, encoding='UTF-8')
-            font_small = truetype(notosans_regular, 18, encoding='UTF-8')
+            font_normal_bold = truetype(notosans_bold, 36, encoding='UTF-8')
+            font_normal = truetype(notosans_regular, 24, encoding='UTF-8')
+            font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
+            font_small = truetype(notosans_regular, 14, encoding='UTF-8')
 
             h_pos = 0
             new_height = 40
@@ -129,10 +129,10 @@ class CaseOpening(commands.Cog):
             if is_star:
                 drop_name = drop_name[1:]
                 unicode_font = truetype("DejaVuSans.ttf", 18)
-                draw.text((15, 5), u"\u2605", white, font=unicode_font)
-                draw.text((35, 5), drop_name, white, font=font_small)
+                draw.text((13, 5), u"\u2605", white, font=unicode_font)
+                draw.text((25, 5), drop_name, white, font=font_small_bold)
             else:
-                draw.text((15, 5), drop_name, white, font=font_small)
+                draw.text((14, 5), drop_name, white, font=font_small_bold)
 
             return image
 
