@@ -58,8 +58,6 @@ class CaseOpening(commands.Cog):
             is_stattrak = "StatTrak" in rarity
             ansi_color = '[2;34m'
             rarity = rarity.lower()
-            if is_stattrak:
-                rarity = rarity.replace('StatTrak™ ', '')
             if any(text.lower() in rarity for text in ["knife", "gloves", "extraordinary", "contraband", "★"]):
                 ansi_color = '[2;33m'
                 rarity = "contraband"
@@ -119,7 +117,7 @@ class CaseOpening(commands.Cog):
             font_normal_large = truetype(notosans_bold, 36, encoding='UTF-8')
             font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
             font_small_large = truetype(notosans_regular, 36, encoding='UTF-8')
-            font_small = truetype(notosans_regular, 24, encoding='UTF-8')
+            font_small = truetype(notosans_regular, 18, encoding='UTF-8')
 
             h_pos = 0
             new_height = 40
@@ -128,7 +126,9 @@ class CaseOpening(commands.Cog):
 
             draw = Draw(image)
 
-            draw.text((15, 2), drop_name, white, font=font_normal)
+            text = u"★" + drop_name
+
+            draw.text((15, 5), text, white, font=font_small)
 
             return image
 
