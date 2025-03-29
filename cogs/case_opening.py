@@ -56,9 +56,9 @@ class CaseOpening(commands.Cog):
         print("user_id: ", user_id)
         print("case_name: ", case_name)
         print("drop_url: ", drop_url)
-        print("file: ", file)
-        result = "" + user_id + case_name + drop_url
-        await channel.send(content=result, file=await file.to_file())
+        print("file: ", image_url)
+        result = "" + user_id + "\n" + case_name+ "\n" + drop_url + "\n" + image_url
+        await channel.send(content=result)
 
     @staticmethod
     async def create_image(client, case_name: str, quality: str, drop_name: str,):
