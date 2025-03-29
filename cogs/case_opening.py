@@ -31,14 +31,22 @@ class CaseOpening(commands.Cog):
         try:
             r = requests.get(drop_url + '?l=english')
             while r.status_code == 429:
+                print("Page is not loaded! Retrying after 10 seconds...")
                 sleep(10)
                 r = requests.get(drop_url + '?l=english')
 
             json_string = r.text.split('var g_rgAssets = ')[1].split('var g_rgCurrency')[0].strip().replace(';', '')
 
             data = json.loads(json_string)
-            for _ in range(3):
-                data = data[next(iter(data))]
+            try:
+                for _ in range(3):
+                    data = data[next(iter(data))]
+            except Exception as err:
+                print(err)
+                try:
+                    data = data[0][0]
+                except Exception as err2:
+                    print(err2)
 
             name = data["name"]
             quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
