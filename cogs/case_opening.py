@@ -116,8 +116,8 @@ class CaseOpening(commands.Cog):
             # ======== Fonts to use =============
             font_normal_large = truetype(notosans_bold, 36, encoding='UTF-8')
             font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
-            font_small_large = truetype(notosans_regular, 36, encoding='UTF-8')
-            font_small = truetype(notosans_regular, 18, encoding='UTF-8')
+            font_small_large = truetype(notosans_regular, 36)
+            font_small = truetype(notosans_regular, 18)
 
             h_pos = 0
             new_height = 40
@@ -126,9 +126,7 @@ class CaseOpening(commands.Cog):
 
             draw = Draw(image)
 
-            text = u"★" + drop_name
-
-            draw.text((15, 5), text, white, font=font_small)
+            draw.text((15, 5), drop_name, white, font=font_small)
 
             return image
 
