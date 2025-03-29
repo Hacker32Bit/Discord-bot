@@ -24,8 +24,7 @@ class CaseOpening(commands.Cog):
     # Command for open case event
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def open_cs_case(self, ctx: discord.ext.commands.context.Context, user_id: str, case_name: str, drop_url: str,
-                                 file: discord.Attachment) -> None:
+    async def open_cs_case(self, ctx: discord.ext.commands.context.Context, user_id: str, case_name: str, drop_url: str) -> None:
 
         try:
             r = requests.get(drop_url + '?l=english')
@@ -38,6 +37,7 @@ class CaseOpening(commands.Cog):
             name = data["name"]
             quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
             rarity = data["type"]
+            image_url = "https://community.fastly.steamstatic.com/economy/image/" + data["icon_url"]
             is_stattrak = "StatTrak" in rarity
             if is_stattrak:
                 rarity = rarity.replace('StatTrak™ ', '')
