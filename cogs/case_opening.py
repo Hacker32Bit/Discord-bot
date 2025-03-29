@@ -24,7 +24,8 @@ class CaseOpening(commands.Cog):
     # Command for open case event
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def open_cs_case(self, ctx: discord.ext.commands.context.Context, user_id: str, case_name: str, drop_url: str) -> None:
+    async def open_cs_case(self, ctx: discord.ext.commands.context.Context, user_id: str, case_name: str,
+                           drop_url: str) -> None:
 
         try:
             r = requests.get(drop_url + '?l=english')
@@ -54,14 +55,17 @@ class CaseOpening(commands.Cog):
 
         channel = await self.client.fetch_channel(1241019624313851969)
         print("user_id: ", user_id)
-        print("case_name: ", case_name)
         print("drop_url: ", drop_url)
-        print("file: ", image_url)
-        result = "" + user_id + "\n" + case_name+ "\n" + drop_url + "\n" + image_url
+        print("case_name: ", case_name)
+        print("name: ", name)
+        print("quality: ", quality)
+        print("rarity: ", rarity)
+        print("file: ", is_stattrak)
+        result = "" + case_name + "\n" + name + "\n" + quality + "\n" + rarity + "\n" + is_stattrak
         await channel.send(content=result)
 
     @staticmethod
-    async def create_image(client, case_name: str, quality: str, drop_name: str,):
+    async def create_image(client, case_name: str, quality: str, drop_name: str, ):
         width = 800
         height = 600
 
