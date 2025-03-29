@@ -102,7 +102,7 @@ class CaseOpening(commands.Cog):
             image_binary.seek(0)
             result = File(fp=image_binary, filename="event.png")
             content = f"{user.mention}```ansi\nhas opened a container and found: {ansi_color}{name}[0m\n```"
-            await channel.send(content=content, attachments=[result])
+            await channel.send(content=content, file=result)
 
     @staticmethod
     async def create_image(case_name: str, quality: str, drop_name: str, rarity: str, is_stattrak: bool):
