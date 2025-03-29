@@ -9,9 +9,12 @@ from typing import Final
 import os
 import requests
 import json
+import io
+from discord import File
 
 load_dotenv()
 EVENTS_CHANNEL_ID: Final[str] = os.getenv("EVENTS_CHANNEL_ID")
+ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 
 class CaseOpening(commands.Cog):
@@ -53,49 +56,56 @@ class CaseOpening(commands.Cog):
             rarity = data["type"]
             image_url = "https://community.fastly.steamstatic.com/economy/image/" + data["icon_url"]
             is_stattrak = "StatTrak" in rarity
+            ansi_color = '[2;34m'
             rarity = rarity.lower()
             if is_stattrak:
                 rarity = rarity.replace('StatTrak™ ', '')
             if any(text.lower() in rarity for text in ["knife", "gloves", "extraordinary", "contraband", "★"]):
+                ansi_color = '[2;33m'
                 rarity = "contraband"
             elif "covert" in rarity:
+                ansi_color = '[2;31m'
                 rarity = "covert"
             elif "classified" in rarity:
+                ansi_color = '[2;35m'
                 rarity = "classified"
             elif "restricted" in rarity:
                 rarity = "restricted"
             elif "mil-spec" in rarity:
                 rarity = "mil_spec"
             elif "industrial grade" in rarity:
+                ansi_color = '[2;37m'
                 rarity = "industrial_grade"
             elif "consumer grade" in rarity:
+                ansi_color = '[2;37m'
                 rarity = "consumer_grade"
             else:
-                print("RARITY detection error!")
+                channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+                await channel.send(content="RARITY detection error!")
                 return
 
         except Exception as err:
-            print(err)
+            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+            await channel.send(content=str(err))
             return
 
+        # Everything ok!
+
+        # Fetch data from discord server
         user = await self.client.fetch_user(user_id)
-
-        print("user type", type(user))
-        print("user", user)
-
         channel = await self.client.fetch_channel(1241019624313851969)
-        print("user_id: ", user_id)
-        print("drop_url: ", drop_url)
-        print("case_name: ", case_name)
-        print("name: ", name)
-        print("quality: ", quality)
-        print("rarity: ", rarity)
-        print("is_stattrak: ", is_stattrak)
-        result = "" + case_name + "\n" + name + "\n" + quality + "\n" + rarity + "\n" + str(is_stattrak)
-        await channel.send(content=result)
+
+        # Create and send image
+        with io.BytesIO() as image_binary:
+            event = await self.create_image(case_name, quality, name, rarity, is_stattrak)
+            event.save(image_binary, 'PNG')
+            image_binary.seek(0)
+            result = File(fp=image_binary, filename="event.png")
+            content = f"{user.mention}```ansi\nhas opened a container and found: {ansi_color}{name}[0m\n```"
+            await channel.send(content=content, attachments=[result])
 
     @staticmethod
-    async def create_image(client, case_name: str, quality: str, drop_name: str, rarity: str):
+    async def create_image(case_name: str, quality: str, drop_name: str, rarity: str, is_stattrak: bool):
         width = 800
         height = 600
 
@@ -104,37 +114,22 @@ class CaseOpening(commands.Cog):
                                          'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                             'NotoSans-Regular.ttf')  # NOQA
-            rockybilly = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
-                                      'Rockybilly.ttf')  # NOQA
 
             # ======== Fonts to use =============
             font_normal_large = truetype(notosans_bold, 36, encoding='UTF-8')
             font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
             font_small_large = truetype(notosans_regular, 36, encoding='UTF-8')
             font_small = truetype(notosans_regular, 24, encoding='UTF-8')
-            font_signa = truetype(rockybilly, 25, encoding='UTF-8')
 
             h_pos = 0
             new_height = 40
 
             white = (255, 255, 255, 255)
-            black = (0, 0, 0, 255)
-
-            gray_dark = (120, 144, 156, 255)
-            gray = (144, 164, 174, 255)
-
-            gray_dark_transparent = (120, 144, 156, 191)
-            gray_transparent = (144, 164, 174, 191)
 
             draw = Draw(image)
 
-            draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
-            draw.text((15, 2), "№", white, font=font_normal)
-            draw.text((69, 2), "PARTICIPANT", white, font=font_normal)
-            draw.text((width - 55, 2), "XP", white, font=font_normal)
-            draw.line([(0, new_height - 2), (width, new_height - 2)], fill=gray_dark, width=2)
+            draw.text((15, 2), drop_name, white, font=font_normal)
 
-            image = image.crop((0, 0, width, new_height))
             return image
 
 
