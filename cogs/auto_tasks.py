@@ -34,7 +34,7 @@ class AutoTask(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("[INFO] \"AutoTask\" cog is ready!")
+        print("[INFO] \"Auto Task\" cog is ready!")
 
     @tasks.loop(time=time)
     async def my_task(self):

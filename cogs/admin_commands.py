@@ -26,7 +26,7 @@ class AdminCommands(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("[INFO] \"Admin commands\" cog is ready!")
+        print("[INFO] \"Admin Commands\" cog is ready!")
 
     # Command for shutdown bot (restart bot)
     @commands.command()

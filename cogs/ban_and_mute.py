@@ -14,7 +14,7 @@ class BanAndMute(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("[INFO] \"Welcome & Goodbye\" cog is ready!")
+        print("[INFO] \"Ban & Mute\" cog is ready!")
 
     @commands.Cog.listener()
     async def on_member_ban(self):
