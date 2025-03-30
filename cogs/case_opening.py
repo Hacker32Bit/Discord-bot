@@ -149,7 +149,7 @@ class CaseOpening(commands.Cog):
             draw.ellipse((0, 0, 99, 99), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
-            image.paste(avatar, (444, 478), avatar.convert("RGBA"))
+            image.paste(avatar, (678, 478), avatar.convert("RGBA"))
 
 
             draw = Draw(image)
@@ -163,7 +163,8 @@ class CaseOpening(commands.Cog):
             else:
                 draw.text((10, 10), drop_name, title_color, font=font_small_bold)
 
-            draw.text((10, 30), quality, grey, font=font_small_bold)
+            draw.text((655, 492), nickname, grey, font=font_normal_bold, anchor='rt')
+            draw.text((655, 541), user_name, grey, font=font_normal, anchor='rt')
 
             return image
 
