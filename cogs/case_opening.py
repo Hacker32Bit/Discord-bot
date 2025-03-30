@@ -116,10 +116,9 @@ class CaseOpening(commands.Cog):
                                             'NotoSans-Regular.ttf')  # NOQA
 
             # ======== Fonts to use =============
-            font_normal_bold = truetype(notosans_bold, 40, encoding='UTF-8')
+            font_normal_bold = truetype("Helvetica.ttf", 40, encoding='UTF-8')
             font_normal = truetype(notosans_regular, 28, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
-            font_small = truetype(notosans_regular, 14, encoding='UTF-8')
 
             white = (255, 255, 255, 255)
             orange = (207, 106, 50, 255)
@@ -141,7 +140,7 @@ class CaseOpening(commands.Cog):
 
             # Create circle avatar image
             avatar_file = await avatar.to_file()
-            img = Image.open(fp=avatar_file.fp).convert("RGBA")
+            img = Image.open(fp=avatar_file.fp)
             background = Image.new("RGBA", img.size, (0, 0, 0, 0))
 
             mask = Image.new("RGBA", img.size, 0)
@@ -149,7 +148,7 @@ class CaseOpening(commands.Cog):
             draw.ellipse((0, 0, 99, 99), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
-            image.paste(avatar, (677, 477), avatar.convert("RGBA"))
+            image.paste(avatar, (678, 477), avatar.convert("RGBA"))
 
 
             draw = Draw(image)
@@ -166,7 +165,7 @@ class CaseOpening(commands.Cog):
             draw.text((10, 30), quality, grey, font=font_small_bold)
 
             draw.text((655, 492), nickname, white, font_size=40, anchor='rt')
-            draw.text((655, 541), user_name, white, font_size=28, anchor='rt')
+            draw.text((655, 541), user_name, white, font_normal, anchor='rt')
 
             return image
 
