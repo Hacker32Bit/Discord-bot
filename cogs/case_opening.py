@@ -119,6 +119,7 @@ class CaseOpening(commands.Cog):
             font_normal_bold = truetype("DejaVuSans.ttf", 40, encoding='UTF-8')
             font_normal = truetype(notosans_regular, 22, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
+            font_small = truetype(notosans_regular, 16, encoding='UTF-8')
 
             white = (255, 255, 255, 255)
             orange = (207, 106, 50, 255)
@@ -135,21 +136,18 @@ class CaseOpening(commands.Cog):
             image.paste(case_image, (528, 14), case_image.convert("RGBA"))
 
             # Get key image and paste
-
-
-
             key_image = Image.open(f"assets/images/cases/{case_name}/key.png")
             image.paste(key_image, (528, 241), key_image.convert("RGBA"))
 
             # Create circle avatar image
             avatar_file = await avatar.to_file()
             img = Image.open(fp=avatar_file.fp).convert("RGBA")
-            img = img.resize((100, 100))
+            img = img.resize((99, 99))
             background = Image.new("RGBA", img.size, (0, 0, 0, 0))
 
             mask = Image.new("RGBA", img.size, 0)
             draw = Draw(mask)
-            draw.ellipse((0, 0, 100, 100), fill='green', outline=None)
+            draw.ellipse((0, 0, 99, 99), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
             image.paste(avatar, (677, 477), avatar.convert("RGBA"))
@@ -166,7 +164,7 @@ class CaseOpening(commands.Cog):
             else:
                 draw.text((10, 10), drop_name, title_color, font=font_small_bold)
 
-            draw.text((10, 30), quality, grey, font=font_small_bold)
+            draw.text((10, 33), quality, grey, font=font_small)
 
             draw.text((655, 492), nickname, white, font_normal_bold, anchor='rt')
             draw.text((655, 551), user_name, white, font_normal, anchor='rt')
