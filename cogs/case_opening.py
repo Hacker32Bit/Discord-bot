@@ -126,7 +126,7 @@ class CaseOpening(commands.Cog):
 
             # Get item image from url and paste
             item_image = Image.open(requests.get(image_url, stream=True).raw)
-            item_image.resize((505, 379))
+            item_image = item_image.resize((509, 382))
             image.paste(item_image, (0, 60), item_image.convert("RGBA"))
 
 
@@ -135,6 +135,9 @@ class CaseOpening(commands.Cog):
             image.paste(case_image, (528, 14), case_image.convert("RGBA"))
 
             # Get key image and paste
+
+
+
             key_image = Image.open(f"assets/images/cases/{case_name}/key.png")
             image.paste(key_image, (528, 241), key_image.convert("RGBA"))
 
