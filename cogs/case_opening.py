@@ -91,7 +91,7 @@ class CaseOpening(commands.Cog):
 
         # Fetch data from discord server
         user = await self.client.fetch_user(user_id)
-        channel = await self.client.fetch_channel(1241019624313851969)
+        channel = await self.client.fetch_channel(EVENTS_CHANNEL_ID)
 
         # Create and send image
         with io.BytesIO() as image_binary:
