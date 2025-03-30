@@ -142,7 +142,7 @@ class CaseOpening(commands.Cog):
             # Create circle avatar image
             avatar_file = await avatar.to_file()
             img = Image.open(fp=avatar_file.fp).convert("RGBA")
-            img = img.resize((99, 99))
+            img = img.resize((100, 100))
             background = Image.new("RGBA", img.size, (0, 0, 0, 0))
 
             mask = Image.new("RGBA", img.size, 0)
@@ -150,7 +150,7 @@ class CaseOpening(commands.Cog):
             draw.ellipse((0, 0, 99, 99), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
-            image.paste(avatar, (677, 477), avatar.convert("RGBA"))
+            image.paste(avatar, (678, 477), avatar.convert("RGBA"))
 
 
             draw = Draw(image)
