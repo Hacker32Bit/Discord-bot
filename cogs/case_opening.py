@@ -130,14 +130,26 @@ class CaseOpening(commands.Cog):
             item_image.resize((505, 379))
             image.paste(item_image, (0, 67), item_image)
 
+            final2 = Image.alpha_composite(Image.new("RGBA", image.size), image)
+            final2 = Image.alpha_composite(final2, item_image)
+            image = final2
+
 
             # Get case image and paste
             case_image = Image.open(f"assets/images/cases/{case_name}/case.png").convert("RGBA")
             image.paste(case_image, (528, 14), case_image)
 
+            final2 = Image.alpha_composite(Image.new("RGBA", image.size), image)
+            final2 = Image.alpha_composite(final2, case_image)
+            image = final2
+
             # Get key image and paste
             key_image = Image.open(f"assets/images/cases/{case_name}/key.png").convert("RGBA")
             image.paste(key_image, (528, 241), key_image)
+
+            final2 = Image.alpha_composite(Image.new("RGBA", image.size), image)
+            final2 = Image.alpha_composite(final2, key_image)
+            image = final2
 
             print(nickname)
             print(user_name)
