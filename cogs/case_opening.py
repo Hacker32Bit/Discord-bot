@@ -146,7 +146,7 @@ class CaseOpening(commands.Cog):
 
             mask = Image.new("RGBA", img.size, 0)
             draw = Draw(mask)
-            draw.ellipse((70, 70, 470, 540), fill='green', outline=None)
+            draw.ellipse((0, 0, 99, 99), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
             image.paste(avatar, (444, 478), avatar.convert("RGBA"))
