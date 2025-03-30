@@ -116,10 +116,9 @@ class CaseOpening(commands.Cog):
                                             'NotoSans-Regular.ttf')  # NOQA
 
             # ======== Fonts to use =============
-            font_normal_bold = truetype(notosans_bold, 40, encoding='UTF-8')
+            font_normal_bold = truetype("DejaVuSans.ttf", 40, encoding='UTF-8')
             font_normal = truetype(notosans_regular, 28, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
-            unicode_font = truetype("DejaVuSans.ttf", 18)
 
             white = (255, 255, 255, 255)
             orange = (207, 106, 50, 255)
@@ -150,13 +149,14 @@ class CaseOpening(commands.Cog):
             draw.ellipse((0, 0, 100, 100), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
-            image.paste(avatar, (678, 477), avatar.convert("RGBA"))
+            image.paste(avatar, (677, 477), avatar.convert("RGBA"))
 
 
             draw = Draw(image)
             is_star = "★" in drop_name
             title_color = orange if is_stattrak else white
             if is_star:
+                unicode_font = truetype("DejaVuSans.ttf", 18)
                 drop_name = drop_name[1:]
                 draw.text((9, 11), u"\u2605", title_color, font=unicode_font)  # Draw star.
                 draw.text((26, 10), drop_name, title_color, font=font_small_bold)
@@ -165,7 +165,7 @@ class CaseOpening(commands.Cog):
 
             draw.text((10, 30), quality, grey, font=font_small_bold)
 
-            draw.text((655, 492), nickname, white, font=unicode_font, font_size=40, anchor='rt')
+            draw.text((655, 492), nickname, white, font_normal_bold, anchor='rt')
             draw.text((655, 541), user_name, white, font_normal, anchor='rt')
 
             return image
