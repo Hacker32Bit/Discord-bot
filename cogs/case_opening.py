@@ -109,7 +109,7 @@ class CaseOpening(commands.Cog):
         width = 800
         height = 600
 
-        with Image.open(f"assets/images/cases/backgrounds/{rarity}.png").convert("RGBA") as image:
+        with Image.open(f"assets/images/cases/backgrounds/{rarity}.png") as image:
             notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                          'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
@@ -126,18 +126,18 @@ class CaseOpening(commands.Cog):
             grey = (178, 178, 178, 255)
 
             # Get item image from url and paste
-            item_image = Image.open(requests.get(image_url, stream=True).raw).convert("RGBA")
+            item_image = Image.open(requests.get(image_url, stream=True).raw)
             item_image.resize((505, 379))
-            image.paste(item_image, (0, 67), mask=image)
+            image.paste(item_image, (0, 67), item_image.convert("RGBA"))
 
 
             # Get case image and paste
-            case_image = Image.open(f"assets/images/cases/{case_name}/case.png").convert("RGBA")
-            image.paste(case_image, (528, 14), case_image)
+            case_image = Image.open(f"assets/images/cases/{case_name}/case.png")
+            image.paste(case_image, (528, 14), case_image.convert("RGBA"))
 
             # Get key image and paste
-            key_image = Image.open(f"assets/images/cases/{case_name}/key.png").convert("RGBA")
-            image.paste(key_image, (528, 241), key_image)
+            key_image = Image.open(f"assets/images/cases/{case_name}/key.png")
+            image.paste(key_image, (528, 241), key_image.convert("RGBA"))
 
 
             print(nickname)
