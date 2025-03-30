@@ -96,7 +96,7 @@ class CaseOpening(commands.Cog):
         # Create and send image
         with io.BytesIO() as image_binary:
             event = await self.create_image(case_name, image_url, quality, name, rarity, is_stattrak, user.display_name,
-                                            user.mention, user.display_avatar)
+                                            user.global_name, user.display_avatar)
             event.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="event.png")
@@ -116,8 +116,8 @@ class CaseOpening(commands.Cog):
                                             'NotoSans-Regular.ttf')  # NOQA
 
             # ======== Fonts to use =============
-            font_normal_bold = truetype(notosans_bold, 36, encoding='UTF-8')
-            font_normal = truetype(notosans_regular, 24, encoding='UTF-8')
+            font_normal_bold = truetype(notosans_bold, 40, encoding='UTF-8')
+            font_normal = truetype(notosans_regular, 28, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
             font_small = truetype(notosans_regular, 14, encoding='UTF-8')
 
@@ -149,7 +149,7 @@ class CaseOpening(commands.Cog):
             draw.ellipse((0, 0, 99, 99), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
-            image.paste(avatar, (678, 478), avatar.convert("RGBA"))
+            image.paste(avatar, (677, 478), avatar.convert("RGBA"))
 
 
             draw = Draw(image)
@@ -163,8 +163,10 @@ class CaseOpening(commands.Cog):
             else:
                 draw.text((10, 10), drop_name, title_color, font=font_small_bold)
 
-            draw.text((655, 492), nickname, grey, font=font_normal_bold, anchor='rt')
-            draw.text((655, 541), user_name, grey, font=font_normal, anchor='rt')
+            draw.text((10, 30), quality, grey, font=font_small_bold)
+
+            draw.text((655, 492), nickname, white, font=font_normal_bold, anchor='rt')
+            draw.text((655, 541), user_name, white, font=font_normal, anchor='rt')
 
             return image
 
