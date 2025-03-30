@@ -96,7 +96,7 @@ class CaseOpening(commands.Cog):
         # Create and send image
         with io.BytesIO() as image_binary:
             event = await self.create_image(case_name, image_url, quality, name, rarity, is_stattrak, user.display_name,
-                                            user.global_name, user.display_avatar)
+                                            user.name, user.display_avatar)
             event.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="event.png")
@@ -142,7 +142,6 @@ class CaseOpening(commands.Cog):
             # Create circle avatar image
             avatar_file = await avatar.to_file()
             img = Image.open(fp=avatar_file.fp).convert("RGBA")
-            img.resize((99, 99))
             background = Image.new("RGBA", img.size, (0, 0, 0, 0))
 
             mask = Image.new("RGBA", img.size, 0)
@@ -150,7 +149,7 @@ class CaseOpening(commands.Cog):
             draw.ellipse((0, 0, 99, 99), fill='green', outline=None)
 
             avatar = Image.composite(img, background, mask)
-            image.paste(avatar, (677, 478), avatar.convert("RGBA"))
+            image.paste(avatar, (677, 477), avatar.convert("RGBA"))
 
 
             draw = Draw(image)
@@ -166,8 +165,8 @@ class CaseOpening(commands.Cog):
 
             draw.text((10, 30), quality, grey, font=font_small_bold)
 
-            draw.text((655, 492), nickname, white, font=font_normal_bold, anchor='rt')
-            draw.text((655, 541), user_name, white, font=font_normal, anchor='rt')
+            draw.text((655, 492), nickname, white, font_size=40, anchor='rt')
+            draw.text((655, 541), user_name, white, font_size=28, anchor='rt')
 
             return image
 
