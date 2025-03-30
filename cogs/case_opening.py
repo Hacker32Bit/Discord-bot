@@ -140,7 +140,8 @@ class CaseOpening(commands.Cog):
             image.paste(key_image, (528, 241), key_image.convert("RGBA"))
 
             # Create circle avatar image
-            img = Image.open(avatar).convert("RGBA")
+            avatar_file = await avatar.to_file()
+            img = Image.open(fp=avatar_file.fp).convert("RGBA")
             background = Image.new("RGBA", img.size, (0, 0, 0, 0))
 
             mask = Image.new("RGBA", img.size, 0)
