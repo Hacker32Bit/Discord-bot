@@ -109,7 +109,7 @@ class CaseOpening(commands.Cog):
         width = 800
         height = 600
 
-        with Image.open(f"assets/images/cases/backgrounds/{rarity}.png") as image:
+        with Image.open(f"assets/images/cases/backgrounds/{rarity}.png").convert('RGBA') as image:
             notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                          'NotoSans-Bold.ttf')  # NOQA
             notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
@@ -126,16 +126,16 @@ class CaseOpening(commands.Cog):
             grey = (178, 178, 178, 255)
 
             # Get item image from url and paste
-            item_image = Image.open(requests.get(image_url, stream=True).raw).convert('RGBA')
+            item_image = Image.open(requests.get(image_url, stream=True).raw)
             item_image.resize((509, 382))
             image.paste(item_image, (0, 67))
 
             # Get case image and paste
-            case_image = Image.open(f"assets/images/cases/{case_name}/case.png").convert('RGBA')
-            image.paste(case_image, (536, 25))
+            case_image = Image.open(f"assets/images/cases/{case_name}/case.png")
+            image.paste(case_image, (528, 14))
 
             # Get key image and paste
-            key_image = Image.open(f"assets/images/cases/{case_name}/key.png").convert('RGBA')
+            key_image = Image.open(f"assets/images/cases/{case_name}/key.png")
             image.paste(key_image, (528, 241))
 
             print(nickname)
@@ -149,11 +149,11 @@ class CaseOpening(commands.Cog):
                 drop_name = drop_name[1:]
                 unicode_font = truetype("DejaVuSans.ttf", 18)
                 draw.text((9, 11), u"\u2605", title_color, font=unicode_font)  # Draw star.
-                draw.text((20, 10), drop_name, title_color, font=font_small_bold)
+                draw.text((26, 10), drop_name, title_color, font=font_small_bold)
             else:
                 draw.text((10, 10), drop_name, title_color, font=font_small_bold)
 
-            draw.text((10, 40), quality, grey, font=font_small_bold)
+            draw.text((10, 30), quality, grey, font=font_small_bold)
 
             return image
 
