@@ -117,7 +117,7 @@ class CaseOpening(commands.Cog):
 
             # ======== Fonts to use =============
             font_normal_bold = truetype("DejaVuSans.ttf", 40, encoding='UTF-8')
-            font_normal = truetype(notosans_regular, 28, encoding='UTF-8')
+            font_normal = truetype(notosans_regular, 22, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
 
             white = (255, 255, 255, 255)
@@ -141,7 +141,7 @@ class CaseOpening(commands.Cog):
             # Create circle avatar image
             avatar_file = await avatar.to_file()
             img = Image.open(fp=avatar_file.fp).convert("RGBA")
-            img.resize((100, 100))
+            img = img.resize((100, 100))
             background = Image.new("RGBA", img.size, (0, 0, 0, 0))
 
             mask = Image.new("RGBA", img.size, 0)
@@ -166,7 +166,7 @@ class CaseOpening(commands.Cog):
             draw.text((10, 30), quality, grey, font=font_small_bold)
 
             draw.text((655, 492), nickname, white, font_normal_bold, anchor='rt')
-            draw.text((655, 541), user_name, white, font_normal, anchor='rt')
+            draw.text((655, 551), user_name, white, font_normal, anchor='rt')
 
             return image
 
