@@ -103,7 +103,7 @@ class CaseOpening(commands.Cog):
             await channel.send(content=content, file=result)
 
     @staticmethod
-    async def create_image(case_name: str, quality: str, drop_name: str, rarity: str, is_stattrak: bool):
+    async def create_image(case_name: str, image_url: str, quality: str, drop_name: str, rarity: str, is_stattrak: bool):
         width = 800
         height = 600
 
@@ -119,20 +119,27 @@ class CaseOpening(commands.Cog):
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
             font_small = truetype(notosans_regular, 14, encoding='UTF-8')
 
-            h_pos = 0
-            new_height = 40
-
             white = (255, 255, 255, 255)
+            orange = (207, 106, 50, 255)
+            grey = (178, 178, 178, 255)
 
             draw = Draw(image)
             is_star = "★" in drop_name
+            title_color = orange if is_stattrak else white
             if is_star:
                 drop_name = drop_name[1:]
-                unicode_font = truetype("DejaVuSans.ttf", 20)
-                draw.text((10, 10), u"\u2605", white, font=unicode_font)
-                draw.text((35, 10), drop_name, white, font=font_small_bold)
+                unicode_font = truetype("DejaVuSans.ttf", 18)
+                draw.text((9, 11), u"\u2605", title_color, font=unicode_font) # Draw star.
+                draw.text((20, 10), drop_name, title_color, font=font_small_bold)
             else:
-                draw.text((10, 10), drop_name, white, font=font_small_bold)
+                draw.text((10, 10), drop_name, title_color, font=font_small_bold)
+
+            draw.text((10, 40), quality, grey, font=font_small_bold)
+
+
+            item_image = Image.open(requests.get(image_url, stream=True).raw)
+            image.paste(item_image, (20, 40))
+
 
             return image
 
