@@ -95,7 +95,8 @@ class CaseOpening(commands.Cog):
 
         # Create and send image
         with io.BytesIO() as image_binary:
-            event = await self.create_image(case_name, image_url, quality, name, rarity, is_stattrak)
+            event = await self.create_image(case_name, image_url, quality, name, rarity, is_stattrak, user.display_name,
+                                            user.mention, user.display_avatar)
             event.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="event.png")
@@ -103,7 +104,8 @@ class CaseOpening(commands.Cog):
             await channel.send(content=content, file=result)
 
     @staticmethod
-    async def create_image(case_name: str, image_url: str, quality: str, drop_name: str, rarity: str, is_stattrak: bool):
+    async def create_image(case_name: str, image_url: str, quality: str, drop_name: str, rarity: str,
+                           is_stattrak: bool, nickname: str, user_name: str, avatar: discord.Asset):
         width = 800
         height = 600
 
@@ -123,23 +125,35 @@ class CaseOpening(commands.Cog):
             orange = (207, 106, 50, 255)
             grey = (178, 178, 178, 255)
 
+            # Get item image from url and paste
+            item_image = Image.open(requests.get(image_url, stream=True).raw).convert('RGBA')
+            item_image.resize((509, 382))
+            image.paste(item_image, (0, 67))
+
+            # Get case image and paste
+            case_image = Image.open(f"assets/images/cases/{case_name}/case.png").convert('RGBA')
+            image.paste(case_image, (536, 25))
+
+            # Get key image and paste
+            key_image = Image.open(f"assets/images/cases/{case_name}/key.png").convert('RGBA')
+            image.paste(key_image, (528, 241))
+
+            print(nickname)
+            print(user_name)
+            print(avatar.url)
+
             draw = Draw(image)
             is_star = "★" in drop_name
             title_color = orange if is_stattrak else white
             if is_star:
                 drop_name = drop_name[1:]
                 unicode_font = truetype("DejaVuSans.ttf", 18)
-                draw.text((9, 11), u"\u2605", title_color, font=unicode_font) # Draw star.
+                draw.text((9, 11), u"\u2605", title_color, font=unicode_font)  # Draw star.
                 draw.text((20, 10), drop_name, title_color, font=font_small_bold)
             else:
                 draw.text((10, 10), drop_name, title_color, font=font_small_bold)
 
             draw.text((10, 40), quality, grey, font=font_small_bold)
-
-
-            item_image = Image.open(requests.get(image_url, stream=True).raw)
-            image.paste(item_image, (20, 40))
-
 
             return image
 
