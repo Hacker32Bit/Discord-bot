@@ -119,6 +119,7 @@ class CaseOpening(commands.Cog):
             font_normal_bold = truetype(notosans_bold, 40, encoding='UTF-8')
             font_normal = truetype(notosans_regular, 28, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
+            unicode_font = truetype("DejaVuSans.ttf", 18)
 
             white = (255, 255, 255, 255)
             orange = (207, 106, 50, 255)
@@ -157,7 +158,6 @@ class CaseOpening(commands.Cog):
             title_color = orange if is_stattrak else white
             if is_star:
                 drop_name = drop_name[1:]
-                unicode_font = truetype("DejaVuSans.ttf", 18)
                 draw.text((9, 11), u"\u2605", title_color, font=unicode_font)  # Draw star.
                 draw.text((26, 10), drop_name, title_color, font=font_small_bold)
             else:
@@ -165,7 +165,7 @@ class CaseOpening(commands.Cog):
 
             draw.text((10, 30), quality, grey, font=font_small_bold)
 
-            draw.text((655, 492), nickname, white, font_size=40, anchor='rt')
+            draw.text((655, 492), nickname, white, font=unicode_font, font_size=40, anchor='rt')
             draw.text((655, 541), user_name, white, font_normal, anchor='rt')
 
             return image
