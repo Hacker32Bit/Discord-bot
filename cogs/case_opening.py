@@ -95,7 +95,7 @@ class CaseOpening(commands.Cog):
 
         # Create and send image
         with io.BytesIO() as image_binary:
-            event = await self.create_image(case_name, quality, name, rarity, is_stattrak)
+            event = await self.create_image(case_name, image_url, quality, name, rarity, is_stattrak)
             event.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="event.png")
