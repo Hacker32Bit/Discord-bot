@@ -116,7 +116,7 @@ class CaseOpening(commands.Cog):
                                             'NotoSans-Regular.ttf')  # NOQA
 
             # ======== Fonts to use =============
-            font_normal_bold = truetype("Helvetica.ttf", 40, encoding='UTF-8')
+            font_normal_bold = truetype(notosans_bold, 40, encoding='UTF-8')
             font_normal = truetype(notosans_regular, 28, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
 
