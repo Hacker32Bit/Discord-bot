@@ -128,7 +128,7 @@ class CaseOpening(commands.Cog):
             # Get item image from url and paste
             item_image = Image.open(requests.get(image_url, stream=True).raw)
             item_image.resize((505, 379))
-            image.paste(item_image, (0, 67), item_image.convert("RGBA"))
+            image.paste(item_image, (0, 60), item_image.convert("RGBA"))
 
 
             # Get case image and paste
@@ -139,10 +139,17 @@ class CaseOpening(commands.Cog):
             key_image = Image.open(f"assets/images/cases/{case_name}/key.png")
             image.paste(key_image, (528, 241), key_image.convert("RGBA"))
 
+            # Create circle avatar image
+            img = Image.open(avatar.to_file()).convert("RGBA")
+            background = Image.new("RGBA", img.size, (0, 0, 0, 0))
 
-            print(nickname)
-            print(user_name)
-            print(avatar.url)
+            mask = Image.new("RGBA", img.size, 0)
+            draw = Draw(mask)
+            draw.ellipse((70, 70, 470, 540), fill='green', outline=None)
+
+            avatar = Image.composite(img, background, mask)
+            image.paste(avatar, (444, 478), avatar.convert("RGBA"))
+
 
             draw = Draw(image)
             is_star = "★" in drop_name
