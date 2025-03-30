@@ -128,15 +128,8 @@ class CaseOpening(commands.Cog):
             # Get item image from url and paste
             item_image = Image.open(requests.get(image_url, stream=True).raw).convert("RGBA")
             item_image.resize((505, 379))
-            # image.paste(item_image, (0, 67), item_image)
+            image.paste(item_image, (0, 67), mask=image)
 
-            final1 = Image.new("RGBA", image.size)
-            final1.paste(image, (0, 0), image)
-            final1.paste(item_image, (0, 67), item_image)
-            final2 = Image.new("RGBA", image.size)
-            final2 = Image.alpha_composite(final2, image)
-            final2 = Image.alpha_composite(final2, item_image)
-            image = final2
 
             # Get case image and paste
             case_image = Image.open(f"assets/images/cases/{case_name}/case.png").convert("RGBA")
