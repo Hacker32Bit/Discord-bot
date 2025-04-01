@@ -95,7 +95,7 @@ class Generator:
                 return str(round(xp / 1000000, 1)) + "M"
 
         draw = ImageDraw.Draw(card)
-        draw.text((245, 105), user_name, DARK, font=font_base)
+        draw.text((245, 110), user_name, DARK, font=font_base)
         draw.text((245, 150), f"Rank #{user_position}", DARK, font=font_small)
         text = f"Level {level}"
         text_w = draw.textlength(text, font_normal)
