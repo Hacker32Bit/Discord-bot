@@ -78,6 +78,7 @@ class Generator:
         font_normal = ImageFont.truetype(self.notosans_bold, 36, encoding='UTF-8')
         font_small = ImageFont.truetype(self.notosans_regular, 20, encoding='UTF-8')
         font_signa = ImageFont.truetype(self.rockybilly, 25, encoding='UTF-8')
+        font_base = ImageFont.truetype("DejaVuSans.ttf", 36, encoding='UTF-8')
 
         # ======== Colors ========================
 
@@ -94,7 +95,7 @@ class Generator:
                 return str(round(xp / 1000000, 1)) + "M"
 
         draw = ImageDraw.Draw(card)
-        draw.text((245, 105), user_name, DARK, font=font_normal)
+        draw.text((245, 105), user_name, DARK, font=font_base)
         draw.text((245, 150), f"Rank #{user_position}", DARK, font=font_small)
         text = f"Level {level}"
         text_w = draw.textlength(text, font_normal)
