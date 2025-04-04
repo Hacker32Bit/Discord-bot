@@ -165,6 +165,13 @@ class MembersGiveaway(commands.Cog):
 
             draw.rectangle(((26, 545), (width, 573)), fill=discord_color)
 
+            dark_bg = (40,43,48,255)
+            dark_bg2 = (66,69,73,255)
+            draw.rectangle(((774, 545), (779, 573)), fill=dark_bg)
+            draw.rectangle(((779, 545), (800, 573)), fill=dark_bg2)
+
+
+
             return image
 
 
