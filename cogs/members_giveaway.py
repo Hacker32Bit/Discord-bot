@@ -152,6 +152,10 @@ class MembersGiveaway(commands.Cog):
             draw.text((774, 479), limit_text, white, font=font_normal_bold, anchor='rt')
             draw.text((774 - limit_w, 486), f"{members_count}", white, font=font_normal, anchor='rt')
 
+
+            limit = "100"
+            members_count = "99"
+
             # progress bar
             if int(members_count) >= int(limit):
                 width = 774
