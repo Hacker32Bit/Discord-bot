@@ -153,8 +153,8 @@ class MembersGiveaway(commands.Cog):
             draw.text((774 - limit_w, 486), f"{members_count}", white, font=font_normal, anchor='rt')
 
 
-            limit = "100"
-            members_count = "99"
+            limit = "1000"
+            members_count = "999"
 
             # progress bar
             if int(members_count) >= int(limit):
@@ -168,7 +168,7 @@ class MembersGiveaway(commands.Cog):
             dark_bg = (40,43,48,255)
             dark_bg2 = (66,69,73,255)
             draw.rectangle(((774, 545), (779, 573)), fill=dark_bg)
-            draw.rectangle(((779, 545), (800, 573)), fill=dark_bg2)
+            draw.rectangle(((780, 545), (800, 573)), fill=dark_bg2)
 
 
 
