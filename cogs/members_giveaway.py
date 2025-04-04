@@ -94,7 +94,7 @@ class MembersGiveaway(commands.Cog):
 
         # Create and send image
         with io.BytesIO() as image_binary:
-            giveaway = await self.create_image(image_url, quality, name, rarity, is_stattrak, 0, count)
+            giveaway = await self.create_image(image_url, quality, name, rarity, is_stattrak, int(ctx.guild.member_count), count)
             giveaway.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="giveaway.png")
@@ -142,6 +142,8 @@ class MembersGiveaway(commands.Cog):
                 draw.text((10, 10), drop_name, title_color, font=font_small_bold)
 
             draw.text((10, 33), quality, grey, font=font_small)
+            draw.text((10, 50), members_count, grey, font=font_small)
+            draw.text((10, 80), limit, grey, font=font_small)
 
 
             return image
