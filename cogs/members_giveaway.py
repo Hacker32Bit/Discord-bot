@@ -157,9 +157,9 @@ class MembersGiveaway(commands.Cog):
                 width = 774
             else:
                 width = math.ceil((748 / int(limit)) * int(members_count)) + 10
-                draw.polygon(((width, 545), (width + 29, 545), (width, 574)), fill=discord_color)
+                draw.polygon(((width, 545), (width + 29, 545), (width, 573)), fill=discord_color)
 
-            draw.rectangle(((26, 545), (width, 574)), fill=discord_color)
+            draw.rectangle(((26, 545), (width, 573)), fill=discord_color)
 
             return image
 
