@@ -155,9 +155,6 @@ class AdminCommands(commands.Cog):
     async def send_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str,
                                  file: discord.Attachment) -> None:
         channel = await self.client.fetch_channel(channel_id)
-        print("channel_id: ", channel_id)
-        print("message: ", message)
-        print("file: ", file)
         await channel.send(content=message, file=await file.to_file())
 
     # Command for edit file in message from Bot
@@ -181,10 +178,6 @@ class AdminCommands(commands.Cog):
     async def edit_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
                                  message_text: str) -> None:
         channel = await self.client.fetch_channel(channel_id)
-        print("channel_id: ", channel_id)
-        print("message_id: ", message_id)
-        print("message_text: ", message_text)
-
         message = await channel.fetch_message(message_id)
 
         await message.edit(content=message_text)
