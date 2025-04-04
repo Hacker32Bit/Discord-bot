@@ -80,7 +80,7 @@ class MembersGiveaway(commands.Cog):
             elif "consumer grade" in rarity:
                 rarity = "consumer_grade"
             else:
-                channel = await self.client.fetch_channel(1241019624313851969)
+                channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
                 await channel.send(content="RARITY detection error!")
                 return
 
@@ -90,7 +90,7 @@ class MembersGiveaway(commands.Cog):
             return
 
         # Everything ok!
-        channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)
+        channel = await self.client.fetch_channel(1241019624313851969)
 
         # Create and send image
         with io.BytesIO() as image_binary:
