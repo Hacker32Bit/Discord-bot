@@ -43,11 +43,14 @@ gdrive_check() {
 connection_check() {
   echo "Checking internet(Google Drive service) availability and waiting for access to network..."
 
-  while ! ping -c 1 -W 1 drive.google.com; do
-      echo "Waiting for drive.google.com - network interface might be down..."
-      sleep 30
+  while true; do
+    if ping -c1 1.1.1.1 &> /dev/null; then
+        echo "Internet is available"
+        break
+    fi
+    echo "No internet connection. Retrying in 30 seconds..."
+    sleep 30
   done
-  echo "Connected!"
 }
 
 echo "====== Script started! =================================================="
