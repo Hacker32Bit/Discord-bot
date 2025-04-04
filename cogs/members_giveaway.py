@@ -1,3 +1,5 @@
+import math
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -123,7 +125,7 @@ class MembersGiveaway(commands.Cog):
 
             white = (255, 255, 255, 255)
             orange = (207, 106, 50, 255)
-            grey = (178, 178, 178, 255)
+            discord_color = (114,137,218, 255)
 
             # Get item image from url and paste
             item_image = Image.open(requests.get(image_url, stream=True).raw)
@@ -143,11 +145,21 @@ class MembersGiveaway(commands.Cog):
 
             draw.text((10, 33), quality, white, font=font_small)
 
+            # text
             draw.text((616, 347), limit, white, font=font_normal_bold)
             limit_text = f" / {limit}"
             limit_w = draw.textlength(limit_text, font_normal_bold)
             draw.text((774, 479), limit_text, white, font=font_normal_bold, anchor='rt')
-            draw.text((774 - limit_w, 487), f"{members_count}", white, font=font_normal, anchor='rt')
+            draw.text((774 - limit_w, 486), f"{members_count}", white, font=font_normal, anchor='rt')
+
+            # progress bar
+            if int(members_count) >= int(limit):
+                width = 774
+            else:
+                width = math.ceil((748 / int(limit)) * int(members_count)) + 10
+                draw.polygon(((width - 15, 545), (width + 14, 545), (width - 15, 574)), fill=discord_color)
+
+            draw.rectangle(((26, 545), (width, 574)), fill=discord_color)
 
             return image
 
