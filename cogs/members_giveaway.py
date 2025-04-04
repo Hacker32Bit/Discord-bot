@@ -94,7 +94,7 @@ class MembersGiveaway(commands.Cog):
 
         # Create and send image
         with io.BytesIO() as image_binary:
-            giveaway = await self.create_image(image_url, quality, name, rarity, is_stattrak, int(ctx.guild.member_count), count)
+            giveaway = await self.create_image(image_url, quality, name, rarity, is_stattrak, str(ctx.guild.member_count), str(count))
             giveaway.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="giveaway.png")
@@ -103,7 +103,7 @@ class MembersGiveaway(commands.Cog):
 
     @staticmethod
     async def create_image(image_url: str, quality: str, drop_name: str, rarity: str,
-                           is_stattrak: bool, members_count: int, limit: int):
+                           is_stattrak: bool, members_count: str, limit: str):
         width = 800
         height = 600
 
@@ -117,7 +117,7 @@ class MembersGiveaway(commands.Cog):
 
             # ======== Fonts to use =============
             font_normal_bold = truetype(notosans_bold, 40, encoding='UTF-8')
-            font_normal = truetype(notosans_regular, 22, encoding='UTF-8')
+            font_normal = truetype(notosans_regular, 40, encoding='UTF-8')
             font_small_bold = truetype(notosans_bold, 16, encoding='UTF-8')
             font_small = truetype(notosans_regular, 16, encoding='UTF-8')
 
@@ -141,10 +141,13 @@ class MembersGiveaway(commands.Cog):
             else:
                 draw.text((10, 10), drop_name, title_color, font=font_small_bold)
 
-            draw.text((10, 33), quality, grey, font=font_small)
-            draw.text((10, 50), str(members_count), grey, font=font_small)
-            draw.text((10, 80), str(limit), grey, font=font_small)
+            draw.text((10, 33), quality, white, font=font_small)
 
+            draw.text((616, 362), limit, white, font=font_normal_bold)
+            limit_text = f" / {limit}"
+            limit_w = draw.textlength(limit_text, font_normal_bold)
+            draw.text((774, 482), limit_text, white, font=font_normal_bold, anchor='rt')
+            draw.text((774 - limit_w, 482), f"{members_count}", white, font=font_normal, anchor='rt')
 
             return image
 
