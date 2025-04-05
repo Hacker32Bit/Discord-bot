@@ -1,5 +1,4 @@
 import math
-
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -13,11 +12,14 @@ import json
 from time import sleep
 import io
 from discord import File
+from discord.errors import NotFound
+
 
 load_dotenv()
 GIVEAWAYS_CHANNEL_ID: Final[str] = os.getenv("GIVEAWAYS_CHANNEL_ID")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
-
+GIVEAWAYS_MESSAGE_ID: Final[str] = os.getenv("GIVEAWAYS_MESSAGE_ID")
+GIVEAWAYS_MESSAGE_IMAGE_ID: Final[str] = os.getenv("GIVEAWAYS_MESSAGE_IMAGE_ID")
 
 class MembersGiveaway(commands.Cog):
     def __init__(self, client):
@@ -29,11 +31,38 @@ class MembersGiveaway(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
-        pass
+        channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)
+        try:
+            message = await channel.fetch_message(GIVEAWAYS_MESSAGE_ID)
+            image = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
+
+            with io.BytesIO() as image_binary:
+                giveaway = await self.update_image(message)
+                giveaway.save(image_binary, 'PNG')
+                image_binary.seek(0)
+                result = File(fp=image_binary, filename="giveaway.png")
+                await image.edit(content="", attachments=[result])
+
+        except NotFound as err:
+            print("NO MESSAGES in Activity giveaway!")
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member) -> None:
-        pass
+    async def on_member_remove(self, member: discord.Member) -> None:
+        channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)
+        try:
+            message = await channel.fetch_message(GIVEAWAYS_MESSAGE_ID)
+            image = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
+
+            print(message)
+            print(image)
+
+        except NotFound as err:
+            print("NO MESSAGES in Activity giveaway!")
+
+    @staticmethod
+    async def update_image(self, test):
+        print(test)
+
 
     # Command for create giveaway message
     @commands.command()
