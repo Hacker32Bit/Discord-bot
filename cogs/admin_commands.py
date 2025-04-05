@@ -176,7 +176,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def edit_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
-                                 message_text: str) -> None:
+                           message_text: str) -> None:
         channel = await self.client.fetch_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
@@ -227,9 +227,11 @@ class AdminCommands(commands.Cog):
     # Command for get random winner from message reactions
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
-    async def giveaway_random(self, ctx, message_id, count, repeat: str = None) -> None:
+    async def giveaway_random(self, ctx, count, message_id, message_id2: str = None, repeat: str = None) -> None:
         await ctx.send(f"Participants of the competition.")
         get_all_reacted_users = await self.get_members_list(ctx, message_id)
+        if message_id2:
+            get_all_reacted_users = get_all_reacted_users.union(await self.get_members_list(ctx, message_id2))
 
         winners = " "
         for i in range(int(count)):
