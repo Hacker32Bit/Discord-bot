@@ -14,7 +14,6 @@ from time import sleep
 import io
 from discord import File
 
-
 load_dotenv()
 GIVEAWAYS_CHANNEL_ID: Final[str] = os.getenv("GIVEAWAYS_CHANNEL_ID")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
@@ -96,19 +95,17 @@ class MembersGiveaway(commands.Cog):
 
         # Create and send image
         with io.BytesIO() as image_binary:
-            giveaway = await self.create_image(image_url, quality, name, rarity, is_stattrak, str(ctx.guild.member_count), str(count))
+            giveaway = await self.create_image(image_url, quality, name, rarity, is_stattrak,
+                                               str(ctx.guild.member_count), str(count))
             giveaway.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="giveaway.png")
-            content = f""
+            content = f"> @Member Giveaway starts when there will be {count} subscribers.\n> Condition: Put any reaction to this message."
             await channel.send(content=content, file=result)
 
     @staticmethod
     async def create_image(image_url: str, quality: str, drop_name: str, rarity: str,
                            is_stattrak: bool, members_count: str, limit: str):
-        width = 800
-        height = 600
-
         with Image.open(f"assets/images/giveaways/backgrounds/{rarity}.png") as image:
             notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
                                          'assets',
@@ -125,7 +122,7 @@ class MembersGiveaway(commands.Cog):
 
             white = (255, 255, 255, 255)
             orange = (207, 106, 50, 255)
-            discord_color = (114,137,218, 255)
+            discord_color = (114, 137, 218, 255)
 
             # Get item image from url and paste
             item_image = Image.open(requests.get(image_url, stream=True).raw)
@@ -152,10 +149,6 @@ class MembersGiveaway(commands.Cog):
             draw.text((774, 479), limit_text, white, font=font_normal_bold, anchor='rt')
             draw.text((774 - limit_w, 486), f"{members_count}", white, font=font_normal, anchor='rt')
 
-
-            limit = "1000"
-            members_count = "999"
-
             # progress bar
             if int(members_count) >= int(limit):
                 width = 774
@@ -165,12 +158,10 @@ class MembersGiveaway(commands.Cog):
 
             draw.rectangle(((26, 545), (width, 573)), fill=discord_color)
 
-            dark_bg = (40,43,48,255)
-            dark_bg2 = (66,69,73,255)
+            dark_bg = (40, 43, 48, 255)
+            dark_bg2 = (66, 69, 73, 255)
             draw.rectangle(((774, 545), (779, 573)), fill=dark_bg)
             draw.rectangle(((780, 545), (800, 573)), fill=dark_bg2)
-
-
 
             return image
 

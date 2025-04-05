@@ -106,9 +106,6 @@ class CaseOpening(commands.Cog):
     @staticmethod
     async def create_image(case_name: str, image_url: str, quality: str, drop_name: str, rarity: str,
                            is_stattrak: bool, nickname: str, user_name: str, avatar: discord.Asset):
-        width = 800
-        height = 600
-
         with Image.open(f"assets/images/cases/backgrounds/{rarity}.png") as image:
             notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
                                          'NotoSans-Bold.ttf')  # NOQA
