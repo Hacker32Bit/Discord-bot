@@ -34,10 +34,10 @@ class MembersGiveaway(commands.Cog):
         channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)
         try:
             message = await channel.fetch_message(GIVEAWAYS_MESSAGE_ID)
-            image = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
+            image_message = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
 
             limit = message.content.split('be ')[1].split(' subscribers')[0]
-            image = await image.attachments[0].to_file()
+            image = await image_message.attachments[0].to_file()
             members_count = message.guild.member_count
 
             with io.BytesIO() as image_binary:
@@ -45,7 +45,7 @@ class MembersGiveaway(commands.Cog):
                 giveaway.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="giveaway.png")
-                await image.edit(content="", attachments=[result])
+                await image_message.edit(content="", attachments=[result])
 
         except NotFound as err:
             print("NO MESSAGES in Activity giveaway!")
@@ -55,10 +55,10 @@ class MembersGiveaway(commands.Cog):
         channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)
         try:
             message = await channel.fetch_message(GIVEAWAYS_MESSAGE_ID)
-            image = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
+            image_message = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
 
             limit = message.content.split('be ')[1].split(' subscribers')[0]
-            image = await image.attachments[0].to_file()
+            image = await image_message.attachments[0].to_file()
             members_count = message.guild.member_count
 
             with io.BytesIO() as image_binary:
@@ -66,7 +66,7 @@ class MembersGiveaway(commands.Cog):
                 giveaway.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="giveaway.png")
-                await image.edit(content="", attachments=[result])
+                await image_message.edit(content="", attachments=[result])
 
         except NotFound as err:
             print("NO MESSAGES in Activity giveaway!")
