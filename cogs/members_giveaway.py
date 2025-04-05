@@ -35,13 +35,16 @@ class MembersGiveaway(commands.Cog):
         try:
             message = await channel.fetch_message(GIVEAWAYS_MESSAGE_ID)
             image = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
+            limit = message.content.split('be ')[1].split(' subscribers')[0]
+            print(limit)
+            print(image.attachments[0])
 
-            with io.BytesIO() as image_binary:
-                giveaway = await self.update_image(message)
-                giveaway.save(image_binary, 'PNG')
-                image_binary.seek(0)
-                result = File(fp=image_binary, filename="giveaway.png")
-                await image.edit(content="", attachments=[result])
+            # with io.BytesIO() as image_binary:
+            #     giveaway = await self.update_image(message)
+            #     giveaway.save(image_binary, 'PNG')
+            #     image_binary.seek(0)
+            #     result = File(fp=image_binary, filename="giveaway.png")
+            #     await image.edit(content="", attachments=[result])
 
         except NotFound as err:
             print("NO MESSAGES in Activity giveaway!")
