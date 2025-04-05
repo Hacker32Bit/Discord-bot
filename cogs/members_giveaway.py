@@ -38,10 +38,10 @@ class MembersGiveaway(commands.Cog):
 
             limit = message.content.split('be ')[1].split(' subscribers')[0]
             image = image.attachments[0].to_file()
-            counts = message.guild.member_count
+            members_count = message.guild.member_count
 
             with io.BytesIO() as image_binary:
-                giveaway = await self.update_image(image, counts, limit)
+                giveaway = await self.update_image(image, members_count, limit)
                 giveaway.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="giveaway.png")
@@ -59,10 +59,10 @@ class MembersGiveaway(commands.Cog):
 
             limit = message.content.split('be ')[1].split(' subscribers')[0]
             image = image.attachments[0].to_file()
-            counts = message.guild.member_count
+            members_count = message.guild.member_count
 
             with io.BytesIO() as image_binary:
-                giveaway = await self.update_image(image, counts, limit)
+                giveaway = await self.update_image(image, members_count, limit)
                 giveaway.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="giveaway.png")
@@ -72,10 +72,48 @@ class MembersGiveaway(commands.Cog):
             print("NO MESSAGES in Activity giveaway!")
 
     @staticmethod
-    async def update_image(image, counts, limit):
-        print(image)
-        print(counts)
-        print(limit)
+    async def update_image(image, members_count, limit):
+        with Image.open(fp=image.fp) as image:
+            notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
+                                         'assets',
+                                         'NotoSans-Bold.ttf')  # NOQA
+            notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
+                                            'assets',
+                                            'NotoSans-Regular.ttf')  # NOQA
+
+            # ======== Fonts to use =============
+            font_normal_bold = truetype(notosans_bold, 40, encoding='UTF-8')
+            font_normal = truetype(notosans_regular, 40, encoding='UTF-8')
+
+            white = (255, 255, 255, 255)
+            discord_color = (114, 137, 218, 255)
+            dark_bg = (40, 43, 48, 255)
+            dark_bg2 = (66, 69, 73, 255)
+
+            draw = Draw(image)
+
+            # Reset values and progress bar
+            draw.rectangle(((280, 465), (799, 530)), fill=dark_bg2)
+            draw.rectangle(((26, 545), (774, 530)), fill=dark_bg)
+
+            # Draw new
+            limit_text = f" / {limit}"
+            limit_w = draw.textlength(limit_text, font_normal_bold)
+            draw.text((774, 479), limit_text, white, font=font_normal_bold, anchor='rt')
+            draw.text((774 - limit_w, 486), f"{members_count}", white, font=font_normal, anchor='rt')
+
+            # progress bar
+            if int(members_count) >= int(limit):
+                width = 774
+            else:
+                width = math.ceil((748 / int(limit)) * int(members_count)) + 10
+                draw.polygon(((width, 545), (width + 28, 545), (width, 573)), fill=discord_color)
+
+            draw.rectangle(((26, 545), (width, 573)), fill=discord_color)
+            draw.rectangle(((774, 545), (779, 573)), fill=dark_bg)
+            draw.rectangle(((780, 545), (800, 573)), fill=dark_bg2)
+
+            return image
 
     # Command for create giveaway message
     @commands.command()
