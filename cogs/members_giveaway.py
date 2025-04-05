@@ -94,7 +94,7 @@ class MembersGiveaway(commands.Cog):
 
             # Reset values and progress bar
             draw.rectangle(((280, 465), (799, 530)), fill=dark_bg2)
-            draw.rectangle(((26, 545), (774, 530)), fill=dark_bg)
+            draw.rectangle(((26, 545), (774, 573)), fill=dark_bg)
 
             # Draw new
             limit_text = f" / {limit}"
