@@ -100,8 +100,7 @@ class MembersGiveaway(commands.Cog):
             giveaway.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="giveaway.png")
-            content = f"> @Member Giveaway starts when there will be {count} subscribers.\n> Condition: Put any reaction to this message."
-            await channel.send(content=content, file=result)
+            await channel.send(file=result)
 
     @staticmethod
     async def create_image(image_url: str, quality: str, drop_name: str, rarity: str,
@@ -143,6 +142,7 @@ class MembersGiveaway(commands.Cog):
             draw.text((10, 33), quality, white, font=font_small)
 
             # text
+            draw.text((22, 390), f"x{len(limit)}", white, font=font_normal_bold)
             draw.text((616, 347), limit, white, font=font_normal_bold)
             limit_text = f" / {limit}"
             limit_w = draw.textlength(limit_text, font_normal_bold)
