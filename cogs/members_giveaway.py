@@ -37,7 +37,7 @@ class MembersGiveaway(commands.Cog):
             image = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
 
             limit = message.content.split('be ')[1].split(' subscribers')[0]
-            image = image.attachments[0].to_file()
+            image = await image.attachments[0].to_file()
             members_count = message.guild.member_count
 
             with io.BytesIO() as image_binary:
@@ -58,7 +58,7 @@ class MembersGiveaway(commands.Cog):
             image = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
 
             limit = message.content.split('be ')[1].split(' subscribers')[0]
-            image = image.attachments[0].to_file()
+            image = await image.attachments[0].to_file()
             members_count = message.guild.member_count
 
             with io.BytesIO() as image_binary:
