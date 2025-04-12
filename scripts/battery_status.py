@@ -92,10 +92,30 @@ while True:
     if GPIO.input(4) == GPIO.LOW:
         output_result += "Power Adapter Plug In" + "\n"
         if read_capacity(bus) < 5:
+            output_result += "----------------------------------------" + "\n"
+            output_result += "read_capacity(bus) < 5!" + "\n"
+
+            f = open("/tmp/battery_status", "w")
+            f.write(output_result)
+            f.close()
+
+            call("cp /tmp/battery_status logs/battery_status", shell=True)
+            call("cp -R /tmp/logs logs/logs", shell=True)
+            call("cp -R /tmp/terminal_logs logs/terminal_logs", shell=True)
             call("sudo shutdown -h now", shell=True)
     if GPIO.input(4) == GPIO.HIGH:
         output_result += "Power Adapter Unplug" + "\n"
         if read_capacity(bus) < 10:
+            output_result += "----------------------------------------" + "\n"
+            output_result += "read_capacity(bus) < 10!" + "\n"
+
+            f = open("/tmp/battery_status", "w")
+            f.write(output_result)
+            f.close()
+
+            call("cp /tmp/battery_status logs/battery_status", shell=True)
+            call("cp -R /tmp/logs logs/logs", shell=True)
+            call("cp -R /tmp/terminal_logs logs/terminal_logs", shell=True)
             call("sudo shutdown -h now", shell=True)
 
     output_result += "----------------------------------------" + "\n"
