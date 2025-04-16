@@ -99,9 +99,9 @@ while True:
             f.write(output_result)
             f.close()
 
-            call("cp /tmp/battery_status logs/battery_status", shell=True)
-            call("cp -R /tmp/logs logs/logs", shell=True)
-            call("cp -R /tmp/terminal_logs logs/terminal_logs", shell=True)
+            call("cp /tmp/battery_status /home/gektor/Discord-bot/logs/battery_status", shell=True)
+            call("cp -R /tmp/logs /home/gektor/Discord-bot/logs/", shell=True)
+            call("cp -R /tmp/terminal_logs /home/gektor/Discord-bot/logs/", shell=True)
             call("sudo shutdown -h now", shell=True)
     if GPIO.input(4) == GPIO.HIGH:
         output_result += "Power Adapter Unplug" + "\n"
@@ -113,9 +113,9 @@ while True:
             f.write(output_result)
             f.close()
 
-            call("cp /tmp/battery_status logs/battery_status", shell=True)
-            call("cp -R /tmp/logs logs/logs", shell=True)
-            call("cp -R /tmp/terminal_logs logs/terminal_logs", shell=True)
+            call("cp /tmp/battery_status /home/gektor/Discord-bot/logs/battery_status", shell=True)
+            call("cp -R /tmp/logs /home/gektor/Discord-bot/logs/", shell=True)
+            call("cp -R /tmp/terminal_logs /home/gektor/Discord-bot/logs/", shell=True)
             call("sudo shutdown -h now", shell=True)
 
     output_result += "----------------------------------------" + "\n"
