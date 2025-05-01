@@ -30,7 +30,12 @@ if ! rclone lsf gdrive: &>/dev/null; then
 fi
 
 # 5. Restore backups
-rclone move "$GDRIVE_PATH/database.sqlite" "$WORK_DIR/"
+if rclone lsf "$GDRIVE_PATH" | grep -q "^database.sqlite$"; then
+    echo "Found database.sqlite on Google Drive, restoring..."
+    rclone move "$GDRIVE_PATH/database.sqlite" "$WORK_DIR/"
+else
+    echo "No database.sqlite found on Google Drive — skipping restore."
+fi
 rclone copy "$GDRIVE_PATH/.env" "$WORK_DIR/"
 rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links --recursive
 
