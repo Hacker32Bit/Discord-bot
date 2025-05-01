@@ -49,7 +49,9 @@ if [ ! -f "$WORK_DIR/.env" ]; then
   exit 1
 fi
 
+env > /tmp/systemd_env_debug.txt
+
 source "$WORK_DIR/.venv/bin/activate"
 cd "$WORK_DIR"
-$PYTHON main.py 2>&1 | tee "$LOG_FILE" &
+$PYTHON "$WORK_DIR/main.py" 2>&1 | tee "$LOG_FILE" &
 echo $! > /tmp/discord_bot.pid
