@@ -41,7 +41,7 @@ rclone copy "$GDRIVE_PATH/.env" "$WORK_DIR/"
 rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links
 
 # 6. Start main.py with logging
-mkdir -p /tmp/terminal_log
+mkdir -p /tmp/terminal_logs
 mkdir -p /tmp/logs
 
 if [ ! -f "$WORK_DIR/.env" ]; then
@@ -50,5 +50,6 @@ if [ ! -f "$WORK_DIR/.env" ]; then
 fi
 
 source "$WORK_DIR/.venv/bin/activate"
-$PYTHON "$WORK_DIR/main.py" 2>&1 | tee "$LOG_FILE" &
+cd "$WORK_DIR"
+$PYTHON main.py 2>&1 | tee "$LOG_FILE" &
 echo $! > /tmp/discord_bot.pid
