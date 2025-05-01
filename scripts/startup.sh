@@ -5,7 +5,7 @@ export PATH="/home/gektor/Discord-bot/.venv/bin:$PATH"
 WORK_DIR="/home/gektor/Discord-bot"
 GDRIVE_PATH="gdrive:/Discord-bot"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-LOG_FILE="/tmp/terminal_log/$TIMESTAMP.log"
+LOG_FILE="/tmp/terminal_logs/$TIMESTAMP.log"
 PYTHON="$WORK_DIR/.venv/bin/python"
 
 # 1. Wait for Internet (retry until ping works)
