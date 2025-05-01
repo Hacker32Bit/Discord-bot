@@ -50,6 +50,6 @@ if [ ! -f "$WORK_DIR/.env" ]; then
 fi
 
 # Activate env and launch with logging
-source "$WORK_DIR/.venv/bin/activate"
+cd $WORK_DIR
 $PYTHON main.py 2>&1 | tee "$LOG_FILE" &
 echo $! > /tmp/discord_bot.pid
