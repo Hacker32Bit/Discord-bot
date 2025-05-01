@@ -43,15 +43,3 @@ rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links
 # 6. Start main.py with logging
 mkdir -p /tmp/terminal_logs
 mkdir -p /tmp/logs
-
-if [ ! -f "$WORK_DIR/.env" ]; then
-  echo "Missing .env file — aborting."
-  exit 1
-fi
-
-env > /tmp/systemd_env_debug.txt
-
-source "$WORK_DIR/.venv/bin/activate"
-cd "$WORK_DIR"
-$PYTHON "$WORK_DIR/main.py" 2>&1 | tee "$LOG_FILE" &
-echo $! > /tmp/discord_bot.pid
