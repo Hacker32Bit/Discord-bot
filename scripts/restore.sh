@@ -5,8 +5,6 @@ export PATH="/home/gektor/Discord-bot/.venv/bin:$PATH"
 WORK_DIR="/home/gektor/Discord-bot"
 GDRIVE_PATH="gdrive:/Discord-bot"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-LOG_FILE="/tmp/terminal_logs/$TIMESTAMP.log"
-PYTHON="$WORK_DIR/.venv/bin/python"
 
 # 1. Wait for Internet (retry until ping works)
 until ping -c1 8.8.8.8 &>/dev/null; do
@@ -27,7 +25,6 @@ rsync -rcv "$WORK_DIR/files_for_copy/" "$PYTHON_SITE_PACKAGES/"
 # 4. Check Google Drive (assumes rclone is already mounted or accessible)
 if ! rclone lsf gdrive: &>/dev/null; then
   echo "Google Drive unavailable!"
-  exit 1
 fi
 
 # 5. Restore backups
@@ -41,5 +38,4 @@ rclone copy "$GDRIVE_PATH/.env" "$WORK_DIR/"
 rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links
 
 # 6. Start main.py with logging
-mkdir -p /tmp/terminal_logs
 mkdir -p /tmp/logs
