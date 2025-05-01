@@ -3,7 +3,7 @@
 set -e
 export PATH="/home/gektor/Discord-bot/.venv/bin:$PATH"
 WORK_DIR="/home/gektor/Discord-bot"
-GDRIVE_PATH="gdrive:/backups"
+GDRIVE_PATH="gdrive:/Discord-bot"
 LOG_FILE="/tmp/terminal_logs/$(date '+%Y-%m-%d %H:%M:%S').log"
 PYTHON="$WORK_DIR/.venv/bin/python"
 
@@ -32,7 +32,7 @@ fi
 # 5. Restore backups
 rclone move "$GDRIVE_PATH/database.sqlite" "$WORK_DIR/"
 rclone copy "$GDRIVE_PATH/.env" "$WORK_DIR/"
-rclone copy "$GDRIVE_PATH/assets/" "$WORK_DIR/assets/" --copy-links --recursive
+rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links --recursive
 
 # 6. Start main.py with logging
 mkdir -p /tmp/terminal_logs
