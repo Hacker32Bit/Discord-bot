@@ -4,7 +4,8 @@ set -e
 export PATH="/home/gektor/Discord-bot/.venv/bin:$PATH"
 WORK_DIR="/home/gektor/Discord-bot"
 GDRIVE_PATH="gdrive:/Discord-bot"
-LOG_FILE="/tmp/terminal_logs/$(date '+%Y-%m-%d %H:%M:%S').log"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+LOG_FILE="/tmp/terminal_log/$TIMESTAMP.log"
 PYTHON="$WORK_DIR/.venv/bin/python"
 
 # 1. Wait for Internet (retry until ping works)
@@ -14,11 +15,11 @@ until ping -c1 8.8.8.8 &>/dev/null; do
 done
 
 # 2. Update project
-cd $WORK_DIR
+cd "$WORK_DIR"
 git pull
 
 # 3. Upgrade dependencies
-. $WORK_DIR/.venv/bin/activate
+source "$WORK_DIR/.venv/bin/activate"
 pip install -U g4f
 PYTHON_SITE_PACKAGES=$(find "$VIRTUAL_ENV/lib" -type d -name "site-packages" | head -n 1)
 rsync -rcv "$WORK_DIR/files_for_copy/" "$PYTHON_SITE_PACKAGES/"
@@ -40,16 +41,14 @@ rclone copy "$GDRIVE_PATH/.env" "$WORK_DIR/"
 rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links
 
 # 6. Start main.py with logging
-mkdir -p /tmp/terminal_logs
+mkdir -p /tmp/terminal_log
 mkdir -p /tmp/logs
 
-# Ensure .env exists
 if [ ! -f "$WORK_DIR/.env" ]; then
   echo "Missing .env file — aborting."
   exit 1
 fi
 
-# Activate env and launch with logging
-cd $WORK_DIR
-$PYTHON main.py 2>&1 | tee "$LOG_FILE" &
+source "$WORK_DIR/.venv/bin/activate"
+$PYTHON "$WORK_DIR/main.py" 2>&1 | tee "$LOG_FILE" &
 echo $! > /tmp/discord_bot.pid
