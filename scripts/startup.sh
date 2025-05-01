@@ -37,7 +37,7 @@ else
     echo "No database.sqlite found on Google Drive — skipping restore."
 fi
 rclone copy "$GDRIVE_PATH/.env" "$WORK_DIR/"
-rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links --recursive
+rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links
 
 # 6. Start main.py with logging
 mkdir -p /tmp/terminal_logs
