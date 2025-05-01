@@ -19,7 +19,7 @@ git pull
 
 # 3. Upgrade dependencies
 . $WORK_DIR/.venv/bin/activate
-pip install -U -r requirements.txt
+pip install -U g4f
 PYTHON_SITE_PACKAGES=$(find "$VIRTUAL_ENV/lib" -type d -name "site-packages" | head -n 1)
 rsync -rcv "$WORK_DIR/files_for_copy/" "$PYTHON_SITE_PACKAGES/"
 
