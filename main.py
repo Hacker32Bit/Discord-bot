@@ -25,12 +25,16 @@ client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLIC
 
 
 async def load_extensions():
-    for filename in os.listdir("./cogs"):
-        try:
-            if filename.endswith(".py"):
+    cogs_path = os.path.join(os.path.dirname(__file__), "cogs")
+    if not os.path.isdir(cogs_path):
+        print(f"[ERROR] Cogs directory not found: {cogs_path}")
+        return
+    for filename in os.listdir(cogs_path):
+        if filename.endswith(".py"):
+            try:
                 await client.load_extension(f"cogs.{filename[:-3]}")
-        except Exception as err:
-            print(f'Failed to load {filename} cog: {err}')
+            except Exception as err:
+                print(f"Failed to load {filename}: {err}")
 
 
 @client.event
