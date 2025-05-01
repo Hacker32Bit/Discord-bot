@@ -41,5 +41,6 @@ rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links
 
 # 6. Start main.py with logging
 mkdir -p /tmp/terminal_logs
+mkdir -p /tmp/logs
 $PYTHON main.py >> "$LOG_FILE" 2>&1 &
 echo $! > /tmp/discord_bot.pid
