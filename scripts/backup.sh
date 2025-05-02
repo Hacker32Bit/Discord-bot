@@ -1,6 +1,8 @@
 #!/bin/bash
 
 REBOOT_SHUTDOWN=$1
+echo "$REBOOT_SHUTDOWN" | tee -a "$LOGFILE"
+
 LOGFILE="/tmp/backup.log"
 
 set -e
