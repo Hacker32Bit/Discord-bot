@@ -9,7 +9,7 @@ GDRIVE_PATH="gdrive:/Discord-bot"
 PYTHON_PID_FILE="/tmp/discord_bot.pid"
 
 # 1. Stop bot
-systemctl stop discord-bot.service
+sudo systemctl stop discord-bot.service
 # Graceful shutdown
 #if [ -f /tmp/discord_bot.pid ]; then
 #    BOT_PID=$(cat /tmp/discord_bot.pid)
