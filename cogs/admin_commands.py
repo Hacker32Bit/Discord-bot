@@ -10,7 +10,7 @@ import datetime
 from dotenv import load_dotenv
 from typing import Final
 import os
-from subprocess import check_output
+from subprocess import check_output, call
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
@@ -28,13 +28,38 @@ class AdminCommands(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Admin Commands\" cog is ready!")
 
-    # Command for shutdown bot (restart bot)
+    # Command for logout bot (logout bot)
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def logout(self, ctx):
+        print("[INFO] logging out...")
+        await ctx.send("Goodbye. You can wake me up from Raspberry PI(Or wait for auto reboot)")
+        await self.client.close()
+        self.client.clear()
+
+    # Command for shutdown system
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def shutdown(self, ctx):
-        print("[INFO] logging out...")
-        await self.client.close()
-        self.client.clear()
+        print("[INFO] Shutting down!")
+        message = call("pwd", shell=True)
+        await ctx.send(message)
+
+    # Command for reboot system (restart bot)
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def reboot(self, ctx):
+        print("[INFO] Restarting...")
+        message = call("pwd", shell=True)
+        await ctx.send(message)
+
+    # Command for reboot system (restart bot)
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def update(self, ctx):
+        print("[INFO] Updating project...")
+        message = call("git status", shell=True)
+        await ctx.send(message)
 
     # Command for get server state
     @commands.command()
