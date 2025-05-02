@@ -16,8 +16,8 @@ fi
 # 2. Sync files to Google Drive
 rclone copy "/tmp/logs/" "$GDRIVE_PATH/backups/logs/"
 rclone copy "$WORK_DIR/assets/images/rank_cards/" "$GDRIVE_PATH/backups/assets/images/rank_cards/"
-rclone copy "/tmp/terminal_log.log" "$GDRIVE_PATH/backups/terminal_logs/${timestamp}.log"
-rclone copy "$WORK_DIR/database.sqlite" "$GDRIVE_PATH/backups/databases/${timestamp}.sqlite"
+rclone copyto "/tmp/terminal_log.log" "$GDRIVE_PATH/backups/terminal_logs/${timestamp}.log"
+rclone copyto "$WORK_DIR/database.sqlite" "$GDRIVE_PATH/backups/databases/${timestamp}.sqlite"
 
 # 3. Optional: wait for rclone to complete syncs
 sleep 30
