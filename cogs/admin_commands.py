@@ -54,7 +54,7 @@ class AdminCommands(commands.Cog):
     async def reboot(self, ctx):
         print("[INFO] Restarting...")
         try:
-            result = check_output(["pwd"]).strip().decode("utf-8")
+            result = check_output(["reboot"]).strip().decode("utf-8")
             await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
