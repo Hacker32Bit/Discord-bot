@@ -1,6 +1,7 @@
 #!/bin/bash
 
 MODE=$1
+LOGFILE="/tmp/backup.log"
 
 set -e
 timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
@@ -8,7 +9,11 @@ WORK_DIR="/home/gektor/Discord-bot"
 GDRIVE_PATH="gdrive:/Discord-bot"
 PYTHON_PID_FILE="/tmp/discord_bot.pid"
 
+echo "[INFO] Backup started at $timestamp" | tee -a "$LOGFILE"
+
+
 # 1. Stop bot
+echo "[INFO] Stopping Discord bot..." | tee -a "$LOGFILE"
 sudo systemctl stop discord-bot.service
 # Graceful shutdown
 #if [ -f /tmp/discord_bot.pid ]; then
@@ -28,6 +33,7 @@ sudo systemctl stop discord-bot.service
 #fi
 
 # 2. Sync files to Google Drive
+echo "[INFO] Backing up files..." | tee -a "$LOGFILE"
 echo "Uploading logs..."
 if rclone copy "/tmp/logs/" "$GDRIVE_PATH/backups/logs/" --copy-links; then
   echo "Logs uploaded successfully."
@@ -53,14 +59,19 @@ else
   echo "Failed to upload database." >&2
 fi
 
-# Now reboot or shutdown
-if [[ "$MODE" == "shutdown" ]]; then
-    echo "[INFO] Shutting down system..."
-    sudo shutdown -h now
-elif [[ "$MODE" == "reboot" ]]; then
-    echo "[INFO] Rebooting system..."
-    sudo reboot
+if [ $? -eq 0 ]; then
+    echo "[INFO] Backup complete." | tee -a "$LOGFILE"
 else
-    echo "[ERROR] Unknown mode: $MODE"
+    echo "[ERROR] Backup failed!" | tee -a "$LOGFILE"
     exit 1
+fi
+
+
+# Reboot or shutdown if requested
+if [ "$MODE" == "reboot" ]; then
+    echo "[INFO] Rebooting system..." | tee -a "$LOGFILE"
+    sudo /sbin/reboot
+elif [ "$MODE" == "shutdown" ]; then
+    echo "[INFO] Shutting down system..." | tee -a "$LOGFILE"
+    sudo /sbin/shutdown -h now
 fi
