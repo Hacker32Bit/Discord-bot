@@ -46,11 +46,11 @@ fi
 
 # Reboot or shutdown
 if [ "$REBOOT_SHUTDOWN" == "reboot" ]; then
-  echo "Rebooting system..."
+  echo "Rebooting system..." | tee -a "$LOGFILE"
   sudo reboot
 elif [ "$REBOOT_SHUTDOWN" == "shutdown" ]; then
-  echo "Shutting down system..."
+  echo "Shutting down system..." | tee -a "$LOGFILE"
   sudo shutdown -h now
 else
-  echo "Unknown action: $REBOOT_SHUTDOWN"
+  echo "Unknown action: $REBOOT_SHUTDOWN" | tee -a "$LOGFILE"
 fi
