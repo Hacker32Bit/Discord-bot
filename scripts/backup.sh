@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$REBOOT_SHUTDOWN=$1
+REBOOT_SHUTDOWN=$1
 LOGFILE="/tmp/backup.log"
 
 set -e
