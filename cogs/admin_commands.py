@@ -2,7 +2,6 @@ import math
 import random
 import sqlite3
 import time
-import typing
 
 import discord
 from discord.ext import commands
@@ -10,7 +9,7 @@ import datetime
 from dotenv import load_dotenv
 from typing import Final
 import os
-from subprocess import check_output, Popen, DEVNULL
+from subprocess import check_output, Popen
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
@@ -43,7 +42,9 @@ class AdminCommands(commands.Cog):
     async def shutdown(self, ctx):
         print("[INFO] Shutting down!")
         try:
-            Popen(["nohup", "/usr/bin/bash", "scripts/backup.sh", "shutdown"], stdout=DEVNULL, stderr=DEVNULL)
+            Popen([
+                "sudo", "systemctl", "start", "discord-bot-power.service", "shutdown"
+            ])
             await ctx.send("Shutdown initiated. Backing up and turning off...")
         except Exception as e:
             await ctx.send(e)
@@ -54,7 +55,9 @@ class AdminCommands(commands.Cog):
     async def reboot(self, ctx):
         print("[INFO] Restarting...")
         try:
-            Popen(["nohup", "/usr/bin/bash", "scripts/backup.sh", "reboot"], stdout=DEVNULL, stderr=DEVNULL)
+            Popen([
+                "sudo", "systemctl", "start", "discord-bot-power.service", "reboot"
+            ])
             await ctx.send("Reboot initiated. Backing up and restarting...")
         except Exception as e:
             await ctx.send(e)
