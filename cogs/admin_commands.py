@@ -43,9 +43,11 @@ class AdminCommands(commands.Cog):
         print("[INFO] Shutting down!")
         try:
             Popen([
-                "sudo", "systemctl", "stop", "discord-bot.service", "reboot"
+                "sudo", "systemctl", "set-environment", "REBOOT_SHUTDOWN=shutdown"
             ])
             await ctx.send("Shutdown initiated. Backing up and turning off...")
+            await self.client.close()
+            self.client.clear()
         except Exception as e:
             await ctx.send(e)
 
@@ -56,9 +58,11 @@ class AdminCommands(commands.Cog):
         print("[INFO] Restarting...")
         try:
             Popen([
-                "sudo", "systemctl", "stop", "discord-bot.service", "reboot"
+                "sudo", "systemctl", "set-environment", "REBOOT_SHUTDOWN=reboot"
             ])
             await ctx.send("Reboot initiated. Backing up and restarting...")
+            await self.client.close()
+            self.client.clear()
         except Exception as e:
             await ctx.send(e)
 
