@@ -1,4 +1,4 @@
 #!/bin/bash
 
-pwd
+/usr/bin/bash scripts/backup.sh
 sudo /sbin/reboot
