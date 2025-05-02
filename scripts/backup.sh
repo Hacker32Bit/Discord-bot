@@ -1,6 +1,5 @@
 #!/bin/bash
 
-MODE=$1
 LOGFILE="/tmp/backup.log"
 
 set -e
@@ -43,4 +42,15 @@ if [ $? -eq 0 ]; then
 else
     echo "[ERROR] Backup failed!" | tee -a "$LOGFILE"
     exit 1
+fi
+
+# Reboot or shutdown
+if [ "$REBOOT_SHUTDOWN" == "reboot" ]; then
+  echo "Rebooting system..."
+  sudo reboot
+elif [ "$REBOOT_SHUTDOWN" == "shutdown" ]; then
+  echo "Shutting down system..."
+  sudo shutdown -h now
+else
+  echo "Unknown action: $REBOOT_SHUTDOWN"
 fi
