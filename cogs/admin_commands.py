@@ -43,7 +43,7 @@ class AdminCommands(commands.Cog):
     async def shutdown(self, ctx):
         print("[INFO] Shutting down!")
         try:
-            result = check_output(["/usr/bin/bash", "scripts/shutdown.sh"]).strip().decode("utf-8")
+            result = check_output(["/usr/bin/bash", "scripts/backup.sh", "shutdown"]).strip().decode("utf-8")
             await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
@@ -54,7 +54,7 @@ class AdminCommands(commands.Cog):
     async def reboot(self, ctx):
         print("[INFO] Restarting...")
         try:
-            result = check_output(["/usr/bin/bash", "scripts/reboot.sh"]).strip().decode("utf-8")
+            result = check_output(["/usr/bin/bash", "scripts/backup.sh", "reboot"]).strip().decode("utf-8")
             await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
