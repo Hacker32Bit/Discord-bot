@@ -10,7 +10,7 @@ import datetime
 from dotenv import load_dotenv
 from typing import Final
 import os
-from subprocess import check_output, call
+from subprocess import check_output
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
@@ -42,24 +42,33 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def shutdown(self, ctx):
         print("[INFO] Shutting down!")
-        message = call("pwd", shell=True)
-        await ctx.send(message)
+        try:
+            result = check_output(["pwd"]).strip().decode("utf-8")
+            await ctx.send(result)
+        except Exception as e:
+            await ctx.send(e)
 
     # Command for reboot system (restart bot)
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def reboot(self, ctx):
         print("[INFO] Restarting...")
-        message = call("pwd", shell=True)
-        await ctx.send(message)
+        try:
+            result = check_output(["pwd"]).strip().decode("utf-8")
+            await ctx.send(result)
+        except Exception as e:
+            await ctx.send(e)
 
     # Command for reboot system (restart bot)
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def update(self, ctx):
         print("[INFO] Updating project...")
-        message = call("git status", shell=True)
-        await ctx.send(message)
+        try:
+            result = check_output(["git", "pull"]).strip().decode("utf-8")
+            await ctx.send(result)
+        except Exception as e:
+            await ctx.send(e)
 
     # Command for get server state
     @commands.command()
