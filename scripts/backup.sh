@@ -11,27 +11,6 @@ PYTHON_PID_FILE="/tmp/discord_bot.pid"
 
 echo "[INFO] Backup started at $timestamp" | tee -a "$LOGFILE"
 
-
-# 1. Stop bot
-echo "[INFO] Stopping Discord bot..." | tee -a "$LOGFILE"
-sudo systemctl stop discord-bot.service
-# Graceful shutdown
-#if [ -f /tmp/discord_bot.pid ]; then
-#    BOT_PID=$(cat /tmp/discord_bot.pid)
-#    echo "Stopping bot (PID: $BOT_PID)..."
-#    kill -SIGINT "$BOT_PID"
-#    sleep 10
-#else
-#    echo "No PID file found. Trying pgrep fallback..."
-#    BOT_PID=$(pgrep -f "main.py")
-#    if [ -n "$BOT_PID" ]; then
-#        kill -SIGINT "$BOT_PID"
-#        sleep 10
-#    else
-#        echo "Bot not running."
-#    fi
-#fi
-
 # 2. Sync files to Google Drive
 echo "[INFO] Backing up files..." | tee -a "$LOGFILE"
 echo "Uploading logs..."
@@ -64,14 +43,4 @@ if [ $? -eq 0 ]; then
 else
     echo "[ERROR] Backup failed!" | tee -a "$LOGFILE"
     exit 1
-fi
-
-
-# Reboot or shutdown if requested
-if [ "$MODE" == "reboot" ]; then
-    echo "[INFO] Rebooting system..." | tee -a "$LOGFILE"
-    sudo /sbin/reboot
-elif [ "$MODE" == "shutdown" ]; then
-    echo "[INFO] Shutting down system..." | tee -a "$LOGFILE"
-    sudo /sbin/shutdown -h now
 fi
