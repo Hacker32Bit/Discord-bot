@@ -10,7 +10,7 @@ import datetime
 from dotenv import load_dotenv
 from typing import Final
 import os
-from subprocess import check_output, call
+from subprocess import check_output, Popen
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
@@ -43,8 +43,8 @@ class AdminCommands(commands.Cog):
     async def shutdown(self, ctx):
         print("[INFO] Shutting down!")
         try:
-            result = check_output(["/usr/bin/bash", "scripts/backup.sh", "shutdown"]).strip().decode("utf-8")
-            await ctx.send(result)
+            Popen(["/usr/bin/bash", "scripts/backup.sh", "shutdown"])
+            await ctx.send("Shutting down...")
         except Exception as e:
             await ctx.send(e)
 
@@ -54,8 +54,8 @@ class AdminCommands(commands.Cog):
     async def reboot(self, ctx):
         print("[INFO] Restarting...")
         try:
-            result = check_output(["/usr/bin/bash", "scripts/backup.sh", "reboot"]).strip().decode("utf-8")
-            await ctx.send(result)
+            Popen(["/usr/bin/bash", "scripts/backup.sh", "reboot"])
+            await ctx.send("Restarting...")
         except Exception as e:
             await ctx.send(e)
 
