@@ -12,10 +12,11 @@ from discord import File
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
-time = datetime.time(hour=13, minute=50, tzinfo=utc)
+time = datetime.time(hour=6, minute=0, second=0, tzinfo=utc)
 
 ACTIVITY_GIVEAWAY_CHANNEL_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_CHANNEL_ID")
 ACTIVITY_GIVEAWAY_MESSAGE_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_MESSAGE_ID")
+ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
@@ -26,10 +27,12 @@ class AutoTask(commands.Cog):
         self.bot = bot
         self.my_task.start()
         self.update_activity_giveaways_tables.start()
+        self.reboot.start()
 
     def cog_unload(self):
         self.my_task.cancel()
         self.update_activity_giveaways_tables.cancel()
+        self.reboot.cancel()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -39,6 +42,21 @@ class AutoTask(commands.Cog):
     async def my_task(self):
         pass
         # print("Need close server!")
+
+    @tasks.loop(time=time)
+    async def reboot(self):
+        print("Need close server!")
+        channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+        try:
+            # Write intent for backup script
+            with open("/tmp/bot_action", "w") as f:
+                f.write("reboot")
+
+            await channel.send("Daily reboot initiated. Backing up and restarting...")
+            await self.bot.close()
+            self.bot.clear()
+        except Exception as e:
+            await channel.send(e)
 
     @staticmethod
     async def create_table(client):
