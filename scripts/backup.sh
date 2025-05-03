@@ -1,8 +1,5 @@
 #!/bin/bash
 
-REBOOT_SHUTDOWN=$1
-echo "$REBOOT_SHUTDOWN" | tee -a "$LOGFILE"
-
 LOGFILE="/tmp/backup.log"
 
 set -e
@@ -48,12 +45,14 @@ else
 fi
 
 # Reboot or shutdown
-if [ "$REBOOT_SHUTDOWN" == "reboot" ]; then
+ACTION=$(cat /tmp/bot_action 2>/dev/null || echo "none")
+echo "$ACTION" | tee -a "$LOGFILE"
+if [ "$ACTION" == "reboot" ]; then
   echo "Rebooting system..." | tee -a "$LOGFILE"
   sudo reboot
-elif [ "$REBOOT_SHUTDOWN" == "shutdown" ]; then
+elif [ "$ACTION" == "shutdown" ]; then
   echo "Shutting down system..." | tee -a "$LOGFILE"
   sudo shutdown -h now
 else
-  echo "Unknown action: $REBOOT_SHUTDOWN" | tee -a "$LOGFILE"
+  echo "Unknown action: $ACTION" | tee -a "$LOGFILE"
 fi

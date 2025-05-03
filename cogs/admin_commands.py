@@ -42,9 +42,10 @@ class AdminCommands(commands.Cog):
     async def shutdown(self, ctx):
         print("[INFO] Shutting down!")
         try:
-            Popen([
-                "sudo", "systemctl", "set-environment", "REBOOT_SHUTDOWN=shutdown"
-            ])
+            # Write intent for backup script
+            with open("/tmp/bot_action", "w") as f:
+                f.write("shutdown")
+
             await ctx.send("Shutdown initiated. Backing up and turning off...")
             await self.client.close()
             self.client.clear()
@@ -57,9 +58,10 @@ class AdminCommands(commands.Cog):
     async def reboot(self, ctx):
         print("[INFO] Restarting...")
         try:
-            Popen([
-                "sudo", "systemctl", "set-environment", "REBOOT_SHUTDOWN=reboot"
-            ])
+            # Write intent for backup script
+            with open("/tmp/bot_action", "w") as f:
+                f.write("reboot")
+
             await ctx.send("Reboot initiated. Backing up and restarting...")
             await self.client.close()
             self.client.clear()
