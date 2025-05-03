@@ -98,6 +98,19 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def connection_status(self, ctx):
+        try:
+            result = ""
+            scan = check_output(["/bin/nmcli", "device wifi rescan"]).strip().decode("utf-8")
+            result += check_output(["/bin/nmcli", "device wifi list"]).strip().decode("utf-8")
+            result += 89 * "-" + "\n"
+            result += check_output(["/bin/nmcli", "connection show"]).strip().decode("utf-8")
+            await ctx.send(result)
+        except Exception as e:
+            await ctx.send(e)
+
     # Command for synchronize client slash commands with server commands
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
