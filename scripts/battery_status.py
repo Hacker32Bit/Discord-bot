@@ -120,7 +120,6 @@ while True:
             call("sudo shutdown -h now", shell=True)
 
     output_result += "----------------------------------------" + "\n"
-    output_result += call("pwd", shell=True)
 
     f = open("/tmp/battery_status", "w")
     f.write(output_result)
