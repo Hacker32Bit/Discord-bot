@@ -25,7 +25,7 @@ class BotActivity(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Bot activity\" cog is ready!")
         status = discord.CustomActivity(name="I'm free...")
-        await self.bot.change_presence(status=discord.Status.idle, activity=status)
+        await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game(name="Counter-Strike 2"))
 
     async def join_voice_channel(self):
         try:
@@ -57,18 +57,6 @@ class BotActivity(commands.Cog):
 
         if message.author == self.bot.user:
             return
-
-        if user_message.lower() == "game":
-            try:
-                top_games_url = "https://steamdb.info/stats/trendingfollowers/"
-                r = requests.get(top_games_url)
-                while r.status_code == 429:
-                    print("Page is not loaded! Retrying after 10 seconds...")
-                    sleep(10)
-                    r = requests.get(top_games_url)
-
-            except Exception as err:
-                print(err)
 
         # # Setting `Playing ` status
         # await bot.change_presence(activity=discord.Game(name="a game"))
