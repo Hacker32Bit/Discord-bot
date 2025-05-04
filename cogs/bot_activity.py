@@ -18,9 +18,9 @@ class BotActivity(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Bot activity\" cog is ready!")
-        status = discord.CustomActivity(name="I'm waiting you in \"〔📷〕Streams\" channel:)")
+        status = discord.CustomActivity(name="I'm free...")
         await self.bot.change_presence(status=discord.Status.idle, activity=status)
-        voice_channel = await self.bot.get_channel(STREAMS_VOICE_CHANNEL_ID)
+        voice_channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
         await voice_channel.connect()
 
     @commands.Cog.listener()

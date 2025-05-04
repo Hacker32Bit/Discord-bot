@@ -12,7 +12,7 @@ from discord import File
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
-time = datetime.time(hour=6, minute=0, second=0, tzinfo=utc)
+time = datetime.time(hour=2, minute=0, second=0, tzinfo=utc)
 
 ACTIVITY_GIVEAWAY_CHANNEL_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_CHANNEL_ID")
 ACTIVITY_GIVEAWAY_MESSAGE_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_MESSAGE_ID")
