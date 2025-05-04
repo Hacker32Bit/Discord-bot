@@ -15,11 +15,11 @@ STREAMS_VOICE_CHANNEL_ID: Final[str] = os.getenv("STREAMS_VOICE_CHANNEL_ID")
 class BotActivity(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.voice_monitor_task = None
 
     async def cog_load(self):
         # Called automatically when the cog is loaded
-        self.bot.loop.create_task(self.join_voice_channel())
-        self.bot.loop.create_task(self.monitor_connection())
+        self.voice_monitor_task = asyncio.create_task(self.monitor_connection())
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -28,32 +28,24 @@ class BotActivity(commands.Cog):
         await self.bot.change_presence(status=discord.Status.idle, activity=status)
 
     async def join_voice_channel(self):
-        await self.bot.wait_until_ready()
         try:
             channel = self.bot.get_channel(STREAMS_VOICE_CHANNEL_ID)
             if channel is None:
                 channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
+
             if isinstance(channel, discord.VoiceChannel):
-                if not channel.guild.voice_client:
+                vc = channel.guild.voice_client
+                if vc is None or not vc.is_connected():
                     await channel.connect()
-                    print(f"Connected to {channel.name}")
+                    print(f"✅ Connected to {channel.name}")
         except Exception as e:
-            print(f"Failed to join voice channel: {e}")
+            print(f"❌ Failed to join voice channel: {e}")
 
     async def monitor_connection(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            channel = self.bot.get_channel(STREAMS_VOICE_CHANNEL_ID)
-            if channel is None:
-                channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
-            if isinstance(channel, discord.VoiceChannel):
-                vc = channel.guild.voice_client
-                if not vc or not vc.is_connected():
-                    try:
-                        await channel.connect()
-                    except Exception as e:
-                        print(f"Reconnect failed: {e}")
-            await asyncio.sleep(60)  # check every minute
+            await self.join_voice_channel()
+            await asyncio.sleep(60)  # Check every 60 seconds
 
     @commands.Cog.listener()
     async def on_message(self, message) -> None:
