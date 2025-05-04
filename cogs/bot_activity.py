@@ -4,8 +4,9 @@ from typing import Final
 import discord
 import requests
 from time import sleep
-from discord.ext import commands, tasks
+from discord.ext import commands
 from dotenv import load_dotenv
+import asyncio
 
 load_dotenv()
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
@@ -16,6 +17,7 @@ class BotActivity(commands.Cog):
         self.bot = bot
         self.voice_client = None
         self.bot.loop.create_task(self.join_voice_channel())
+        self.bot.loop.create_task(self.monitor_connection())
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -29,6 +31,19 @@ class BotActivity(commands.Cog):
         if isinstance(channel, discord.VoiceChannel):
             if not channel.guild.voice_client:
                 self.voice_client = await channel.connect()
+
+    async def monitor_connection(self):
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
+            if isinstance(channel, discord.VoiceChannel):
+                vc = channel.guild.voice_client
+                if not vc or not vc.is_connected():
+                    try:
+                        await channel.connect()
+                    except Exception as e:
+                        print(f"Reconnect failed: {e}")
+            await asyncio.sleep(60)  # check every minute
 
     @commands.Cog.listener()
     async def on_message(self, message) -> None:
