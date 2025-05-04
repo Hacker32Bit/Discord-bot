@@ -1,6 +1,0 @@
-HOME=/home/gektor
-PATH=/usr/bin
-*/5 * * * * /usr/bin/bash $HOME/Discord-bot/scripts/wifi_watchdog.sh;
-@reboot mkdir -p /tmp/terminal_logs;
-@reboot /usr/bin/python $HOME/Discord-bot/scripts/battery_status.py;
-@reboot /usr/bin/bash $HOME/Discord-bot/LinuxAutorun.sh > /tmp/terminal_logs/$(date '+\%Y-\%m-\%d \%H:\%M:\%S').log; sleep 30; sudo reboot
