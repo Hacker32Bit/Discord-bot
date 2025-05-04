@@ -25,7 +25,8 @@ class BotActivity(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Bot activity\" cog is ready!")
         status = discord.CustomActivity(name="I'm free...")
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Something secret...", url="https://www.youtube.com/watch?v=PvHU3dV-WNA"))
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Something secret...", url="https://www.youtube.com/watch?v=PvHU3dV-WNA"),
+                                       status=discord.Status.dnd)
 
     async def join_voice_channel(self):
         try:
