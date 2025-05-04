@@ -40,7 +40,7 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def shutdown(self, ctx):
-        print("[INFO] Shutting down!")
+        print("[INFO] Shutting down...")
         try:
             # Write intent for backup script
             with open("/tmp/bot_action", "w") as f:
@@ -52,11 +52,11 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-    # Command for reboot system (restart bot)
+    # Command for reboot system (restart system)
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def reboot(self, ctx):
-        print("[INFO] Restarting...")
+        print("[INFO] Rebooting...")
         try:
             # Write intent for backup script
             with open("/tmp/bot_action", "w") as f:
@@ -68,7 +68,7 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-    # Command for reboot system (restart bot)
+    # Command for update system
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def update(self, ctx):
