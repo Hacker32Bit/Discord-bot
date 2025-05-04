@@ -15,7 +15,9 @@ STREAMS_VOICE_CHANNEL_ID: Final[str] = os.getenv("STREAMS_VOICE_CHANNEL_ID")
 class BotActivity(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.voice_client = None
+
+    async def cog_load(self):
+        # Called automatically when the cog is loaded
         self.bot.loop.create_task(self.join_voice_channel())
         self.bot.loop.create_task(self.monitor_connection())
 
@@ -27,15 +29,23 @@ class BotActivity(commands.Cog):
 
     async def join_voice_channel(self):
         await self.bot.wait_until_ready()
-        channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
-        if isinstance(channel, discord.VoiceChannel):
-            if not channel.guild.voice_client:
-                self.voice_client = await channel.connect()
+        try:
+            channel = self.bot.get_channel(STREAMS_VOICE_CHANNEL_ID)
+            if channel is None:
+                channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
+            if isinstance(channel, discord.VoiceChannel):
+                if not channel.guild.voice_client:
+                    await channel.connect()
+                    print(f"Connected to {channel.name}")
+        except Exception as e:
+            print(f"Failed to join voice channel: {e}")
 
     async def monitor_connection(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
+            channel = self.bot.get_channel(STREAMS_VOICE_CHANNEL_ID)
+            if channel is None:
+                channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
             if isinstance(channel, discord.VoiceChannel):
                 vc = channel.guild.voice_client
                 if not vc or not vc.is_connected():
