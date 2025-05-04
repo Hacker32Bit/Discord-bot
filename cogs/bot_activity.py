@@ -4,7 +4,7 @@ from typing import Final
 import discord
 import requests
 from time import sleep
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,14 +14,21 @@ STREAMS_VOICE_CHANNEL_ID: Final[str] = os.getenv("STREAMS_VOICE_CHANNEL_ID")
 class BotActivity(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.voice_client = None
+        self.bot.loop.create_task(self.join_voice_channel())
 
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Bot activity\" cog is ready!")
         status = discord.CustomActivity(name="I'm free...")
         await self.bot.change_presence(status=discord.Status.idle, activity=status)
-        voice_channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
-        await voice_channel.connect()
+
+    async def join_voice_channel(self):
+        await self.bot.wait_until_ready()
+        channel = await self.bot.fetch_channel(STREAMS_VOICE_CHANNEL_ID)
+        if isinstance(channel, discord.VoiceChannel):
+            if not channel.guild.voice_client:
+                self.voice_client = await channel.connect()
 
     @commands.Cog.listener()
     async def on_message(self, message) -> None:
