@@ -103,10 +103,10 @@ class AdminCommands(commands.Cog):
     async def connection_status(self, ctx):
         try:
             result = ""
-            scan = check_output(["/bin/nmcli", "device wifi rescan"]).strip().decode("utf-8")
-            result += check_output(["/bin/nmcli", "device wifi list"]).strip().decode("utf-8")
+            scan = check_output(["/bin/nmcli", "device", "wifi", "rescan"]).strip().decode("utf-8")
+            result += check_output(["/bin/nmcli", "device", "wifi", "list"]).strip().decode("utf-8")
             result += 89 * "-" + "\n"
-            result += check_output(["/bin/nmcli", "connection show"]).strip().decode("utf-8")
+            result += check_output(["/bin/nmcli", "connection", "show"]).strip().decode("utf-8")
             await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
