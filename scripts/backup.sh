@@ -6,7 +6,6 @@ set -e
 timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
 WORK_DIR="/home/gektor/Discord-bot"
 GDRIVE_PATH="gdrive:/Discord-bot"
-PYTHON_PID_FILE="/tmp/discord_bot.pid"
 
 echo "[INFO] Backup started at $timestamp" | tee -a "$LOGFILE"
 
@@ -20,7 +19,7 @@ else
 fi
 
 if rclone copy "$WORK_DIR/assets/images/rank_cards/" "$GDRIVE_PATH/backups/assets/images/rank_cards/"; then
-  echo "cards uploaded successfully."
+  echo "Ranks cards uploaded successfully."
 else
   echo "Failed to upload cards." >&2
 fi
@@ -43,6 +42,8 @@ else
     echo "[ERROR] Backup failed!" | tee -a "$LOGFILE"
     exit 1
 fi
+
+sleep 5
 
 # Reboot or shutdown
 ACTION=$(cat /tmp/bot_action 2>/dev/null || echo "none")
