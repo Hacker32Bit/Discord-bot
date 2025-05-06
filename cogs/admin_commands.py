@@ -75,7 +75,7 @@ class AdminCommands(commands.Cog):
         print("[INFO] Updating project...")
         try:
             result = check_output(["git", "pull"]).strip().decode("utf-8")
-            await ctx.send(result)
+            await ctx.send(f"```{result}```")
         except Exception as e:
             await ctx.send(e)
 
@@ -85,7 +85,7 @@ class AdminCommands(commands.Cog):
     async def battery_status(self, ctx):
         try:
             f = open("/tmp/battery_status", "r")
-            await ctx.send(f.read())
+            await ctx.send(f"```{f.read()}```")
         except FileNotFoundError as e:
             await ctx.send(e)
 
@@ -93,7 +93,9 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def temp_status(self, ctx):
         try:
+            result = "```"
             result = check_output(["/usr/bin/bash", "scripts/my_pi_temp.sh"]).strip().decode("utf-8")
+            result += "```"
             await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
@@ -102,11 +104,12 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def connection_status(self, ctx):
         try:
-            result = ""
+            result = "```"
             scan = check_output(["/bin/nmcli", "device", "wifi", "rescan"]).strip().decode("utf-8")
             result += check_output(["/bin/nmcli", "device", "wifi", "list"]).strip().decode("utf-8")
-            result += 89 * "-" + "\n"
+            result += "\n" + 89 * "-" + "\n"
             result += check_output(["/bin/nmcli", "connection", "show"]).strip().decode("utf-8")
+            result += "```"
             await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
@@ -125,6 +128,7 @@ class AdminCommands(commands.Cog):
         descending = "DELETE FROM invites WHERE user_id = ?"
         cursor.execute(descending, (user_id,))
         database.commit()
+        await ctx.send(f"Referrer <@{user_id}> removed from db")
 
     # Remove data from activity_giveaway table
     @commands.command()
@@ -133,6 +137,7 @@ class AdminCommands(commands.Cog):
         descending = "DELETE FROM activity_giveaway"
         cursor.execute(descending)
         database.commit()
+        await ctx.send(f"Activity giveaway was reset!")
 
     # Add exp to user_id
     @commands.command()
@@ -146,6 +151,8 @@ class AdminCommands(commands.Cog):
             cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
                            f"VALUES({user_id}, {ctx.guild.id}, {int(add_exp)}, 0, 0)")
             database.commit()
+
+            await ctx.send(f"Set {add_exp} exp to <@{user_id}>")
         else:
             user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
 
@@ -159,6 +166,8 @@ class AdminCommands(commands.Cog):
                 f"guild_id = {guild_id}")
             database.commit()
 
+            await ctx.send(f"Added {add_exp} exp to <@{user_id}>. Now he have {exp} exp.")
+
     # Reduce exp to user_id
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
@@ -171,6 +180,8 @@ class AdminCommands(commands.Cog):
             cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
                            f"VALUES({user_id}, {ctx.guild.id}, 0, 0, 0)")
             database.commit()
+
+            await ctx.send(f"<@{user_id}> have 0 exp.")
         else:
             user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
 
@@ -185,6 +196,8 @@ class AdminCommands(commands.Cog):
                 f"UPDATE activity_giveaway SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
                 f"guild_id = {guild_id}")
             database.commit()
+
+            await ctx.send(f"Reduced {reduce_exp} exp to <@{user_id}>. Now he have {exp} exp.")
 
     # Command for send message from Bot
     @commands.command()

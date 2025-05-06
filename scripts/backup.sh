@@ -18,7 +18,7 @@ else
   echo "Failed to upload logs." >&2
 fi
 
-if rclone copy "$WORK_DIR/assets/images/rank_cards/" "$GDRIVE_PATH/backups/assets/images/rank_cards/"; then
+if rclone copy "$WORK_DIR/assets/images/rank_cards/" "$GDRIVE_PATH/backups/assets/images/rank_cards/" --copy-links; then
   echo "Ranks cards uploaded successfully."
 else
   echo "Failed to upload cards." >&2
