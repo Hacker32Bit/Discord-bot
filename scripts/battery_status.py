@@ -92,7 +92,7 @@ while True:
     if GPIO.input(4) == GPIO.LOW:
         output_result += "Power Adapter Plug In" + "\n"
         if read_capacity(bus) < 5:
-            output_result += "----------------------------------------" + "\n"
+            output_result += "-----------------------------------" + "\n"
             output_result += "read_capacity(bus) < 5!" + "\n"
 
             f = open("/tmp/battery_status", "w")
@@ -107,7 +107,7 @@ while True:
     if GPIO.input(4) == GPIO.HIGH:
         output_result += "Power Adapter Unplug" + "\n"
         if read_capacity(bus) < 10:
-            output_result += "----------------------------------------" + "\n"
+            output_result += "-----------------------------------" + "\n"
             output_result += "read_capacity(bus) < 10!" + "\n"
 
             f = open("/tmp/battery_status", "w")
@@ -118,8 +118,6 @@ while True:
             call("cp -R /tmp/logs /home/gektor/Discord-bot/logs/", shell=True)
             call("cp -R /tmp/terminal_logs /home/gektor/Discord-bot/logs/", shell=True)
             call("sudo shutdown -h now", shell=True)
-
-    output_result += "----------------------------------------" + "\n"
 
     f = open("/tmp/battery_status", "w")
     f.write(output_result)

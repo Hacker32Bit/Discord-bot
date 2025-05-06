@@ -94,7 +94,7 @@ class AdminCommands(commands.Cog):
     async def temp_status(self, ctx):
         try:
             result = "```"
-            result = check_output(["/usr/bin/bash", "scripts/my_pi_temp.sh"]).strip().decode("utf-8")
+            result += check_output(["/usr/bin/bash", "scripts/my_pi_temp.sh"]).strip().decode("utf-8")
             result += "```"
             await ctx.send(result)
         except Exception as e:
