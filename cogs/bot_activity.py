@@ -20,28 +20,31 @@ class BotActivity(commands.Cog):
         self.voice_monitor_task = None
 
     async def cog_load(self):
+        pass
         # Called automatically when the cog is loaded
-        self.voice_monitor_task = asyncio.create_task(self.monitor_connection())
+        # self.voice_monitor_task = asyncio.create_task(self.monitor_connection())
 
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Bot activity\" cog is ready!")
         status = discord.CustomActivity(name="I'm free...")
-        text = """Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."""
+        await self.bot.change_presence(status=discord.Status.idle, activity=status)
 
-        text_length = len(text)
-        current_time = datetime.datetime.now(datetime.timezone.utc)
-        tomorrow = current_time.date() + datetime.timedelta(days=1)
-        target_datetime = datetime.datetime.combine(tomorrow, datetime.time(2, 0, 0, tzinfo=datetime.timezone.utc))
-        total_seconds = (target_datetime - current_time).total_seconds()
-        print(total_seconds)
-        timeout = total_seconds / text_length
-
-        for letter in text:
-            await asyncio.sleep(timeout)
-            await self.bot.change_presence(
-                activity=discord.Activity(type=discord.ActivityType.watching, name=format(ord(letter), '08b')),
-                status=discord.Status.idle)
+        # text = """Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."""
+        #
+        # text_length = len(text)
+        # current_time = datetime.datetime.now(datetime.timezone.utc)
+        # tomorrow = current_time.date() + datetime.timedelta(days=1)
+        # target_datetime = datetime.datetime.combine(tomorrow, datetime.time(2, 0, 0, tzinfo=datetime.timezone.utc))
+        # total_seconds = (target_datetime - current_time).total_seconds()
+        # print(total_seconds)
+        # timeout = total_seconds / text_length
+        #
+        # for letter in text:
+        #     await asyncio.sleep(timeout)
+        #     await self.bot.change_presence(
+        #         activity=discord.Activity(type=discord.ActivityType.watching, name=format(ord(letter), '08b')),
+        #         status=discord.Status.idle)
 
     async def join_voice_channel(self):
         try:
