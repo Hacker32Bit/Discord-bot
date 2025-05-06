@@ -30,7 +30,7 @@ else
   echo "Failed to upload terminal logs." >&2
 fi
 
-if rclone copyto "$WORK_DIR/database.sqlite" "$GDRIVE_PATH/backups/databases/${timestamp}.sqlite"; then
+if rclone copyto --ignore-times "$WORK_DIR/database.sqlite" "$GDRIVE_PATH/backups/databases/${timestamp}.sqlite"; then
   echo "Database uploaded successfully."
 else
   echo "Failed to upload database." >&2
