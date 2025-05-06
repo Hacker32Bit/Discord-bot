@@ -18,6 +18,12 @@ else
   echo "Failed to upload logs." >&2
 fi
 
+if rclone copyto --ignore-times "$WORK_DIR/database.sqlite" "$GDRIVE_PATH/backups/databases/${timestamp}.sqlite"; then
+  echo "Database uploaded successfully."
+else
+  echo "Failed to upload database." >&2
+fi
+
 if rclone copy "$WORK_DIR/assets/images/rank_cards/" "$GDRIVE_PATH/backups/assets/images/rank_cards/" --copy-links; then
   echo "Ranks cards uploaded successfully."
 else
@@ -28,12 +34,6 @@ if rclone copyto "/tmp/terminal_log.log" "$GDRIVE_PATH/backups/terminal_logs/${t
   echo "Terminal logs uploaded successfully."
 else
   echo "Failed to upload terminal logs." >&2
-fi
-
-if rclone copyto --ignore-times "$WORK_DIR/database.sqlite" "$GDRIVE_PATH/backups/databases/${timestamp}.sqlite"; then
-  echo "Database uploaded successfully."
-else
-  echo "Failed to upload database." >&2
 fi
 
 if [ $? -eq 0 ]; then
