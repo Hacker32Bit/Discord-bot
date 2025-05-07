@@ -6,6 +6,8 @@ import RPi.GPIO as GPIO
 from subprocess import check_output, call
 import datetime
 
+from anyio import sleep
+
 CW2015_ADDRESS = 0X62
 CW2015_REG_MODE = 0X0A
 
@@ -65,6 +67,8 @@ def shutdown():
     # Write intent for backup script
     with open("/tmp/bot_action", "w") as f:
         f.write("shutdown")
+
+    sleep(3)
 
     call("/bin/bash /home/gektor/Discord-bot/scripts/backup.sh")
 
