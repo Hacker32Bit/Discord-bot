@@ -61,6 +61,14 @@ f = open("/tmp/battery_status", "w")
 f.write(output_result)
 f.close()
 
+def shutdown():
+    # Write intent for backup script
+    with open("/tmp/bot_action", "w") as f:
+        f.write("shutdown")
+
+    call("/bin/bash /home/gektor/Discord-bot/scripts/backup.sh")
+
+
 while True:
     output_result = ""
     throttled_output = check_output(GET_THROTTLED_CMD, shell=True).strip().decode("utf-8")
@@ -99,11 +107,8 @@ while True:
             f.write(output_result)
             f.close()
 
-            call("cp /tmp/battery_status /home/gektor/Discord-bot/logs/battery_status", shell=True)
-            call("cp -R /tmp/logs /home/gektor/Discord-bot/logs/", shell=True)
-            call("cp -R /tmp/terminal_logs /home/gektor/Discord-bot/logs/", shell=True)
-            call("cp -R /tmp/terminal_logs /home/gektor/Discord-bot/logs/", shell=True)
-            call("sudo shutdown -h now", shell=True)
+            shutdown()
+
     if GPIO.input(4) == GPIO.HIGH:
         output_result += "Power Adapter Unplug" + "\n"
         if read_capacity(bus) < 10:
@@ -114,10 +119,7 @@ while True:
             f.write(output_result)
             f.close()
 
-            call("cp /tmp/battery_status /home/gektor/Discord-bot/logs/battery_status", shell=True)
-            call("cp -R /tmp/logs /home/gektor/Discord-bot/logs/", shell=True)
-            call("cp -R /tmp/terminal_logs /home/gektor/Discord-bot/logs/", shell=True)
-            call("sudo shutdown -h now", shell=True)
+            shutdown()
 
     f = open("/tmp/battery_status", "w")
     f.write(output_result)
