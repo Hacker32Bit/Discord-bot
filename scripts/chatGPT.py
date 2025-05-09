@@ -57,10 +57,9 @@ def main():
     messages = get_user_messages(args.uid)
     messages.append({"role": "user", "content": args.text})
 
-
     response = client.chat.completions.create(
         model=default,
-        messages=[{"role": "user", "content": args.text}],
+        messages=messages,
     )
 
     answer = response.choices[0].message.content
