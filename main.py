@@ -1,28 +1,26 @@
 import asyncio
 import sys
-
-import discord
-from discord.ext import commands
-from typing import Final
-from dotenv import load_dotenv
 import os
 import logging
 from time import strftime
 
+import discord
+from discord.ext import commands
+from dotenv import load_dotenv
+
 load_dotenv()
-TOKEN: Final[str] = os.getenv("DISCORD_TOKEN")
-APPLICATION_ID: Final[str] = os.getenv("APPLICATION_ID")
+TOKEN = os.getenv("DISCORD_TOKEN")
+APPLICATION_ID = os.getenv("APPLICATION_ID")
 
 # Bot setup
-intents: discord.Intents = discord.Intents.default()
-intents.message_content = True  # NOQA
-intents.members = True  # NOQA
-intents.voice_states = True  # NOQA
-intents.guilds = True  # NOQA
-intents.presences = True  # NOQA
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
+intents.voice_states = True
+intents.guilds = True
+intents.presences = True
 
 client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
-
 
 async def load_extensions():
     cogs_path = os.path.join(os.path.dirname(__file__), "cogs")
@@ -36,40 +34,39 @@ async def load_extensions():
             except Exception as err:
                 print(f"Failed to load {filename}: {err}")
 
-
 @client.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print(f'Logged in as {client.user} (ID: {client.user.id})')
 
+async def run_bot():
+    await load_extensions()
+    log_dir = os.path.join(os.sep, "tmp", "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    handler = logging.FileHandler(
+        filename=os.path.join(log_dir, f"{strftime('%Y-%m-%d %H:%M:%S')}.log"),
+        encoding='utf-8',
+        mode="a")
+    discord.utils.setup_logging(level=logging.INFO, root=False, handler=handler)
 
-async def main():
-    try:
-        await load_extensions()
-        handler = logging.FileHandler(
-            filename=os.path.join(os.sep, "tmp", "logs", f"{strftime('%Y-%m-%d %H:%M:%S')}.log"),
-            encoding='utf-8',
-            mode="a")
-        discord.utils.setup_logging(level=logging.DEBUG, root=False, handler=handler)
-        await client.start(TOKEN)
+    while True:
+        try:
+            await client.start(TOKEN)
+        except (discord.ConnectionClosed, discord.GatewayNotFound, discord.DiscordServerError) as e:
+            print(f"[WARN] Connection lost: {e}. Retrying in 10 seconds...")
+            await asyncio.sleep(10)
+        except Exception as e:
+            print(f"[ERROR] Unexpected error: {e}")
+            break
 
-    except discord.HTTPException as e:
-        if e.status == 429:
-            print("The Discord servers denied the connection for making too many requests")
-        else:
-            raise e
-
+async def shutdown():
+    print("Shutting down gracefully...")
+    await client.close()
 
 if __name__ == "__main__":
-    # asyncio.run(main())
     try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
+        asyncio.run(run_bot())
     except KeyboardInterrupt:
-        print("Received Ctrl+C. Stopping gracefully...")
-        # Cancel all running tasks
-        for task in asyncio.Task.all_tasks():
-            task.cancel()
-        # Optionally: Close any open resources (sockets, files, etc.)
-        # Cleanup code here
+        print("Received Ctrl+C. Exiting...")
     finally:
-        loop.close()
+        # No need to cancel tasks manually, asyncio.run handles cleanup
+        pass
