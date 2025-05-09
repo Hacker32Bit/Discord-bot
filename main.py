@@ -54,8 +54,14 @@ async def run_bot():
         except (discord.ConnectionClosed, discord.GatewayNotFound, discord.DiscordServerError) as e:
             print(f"[WARN] Connection lost: {e}. Retrying in 10 seconds...")
             await asyncio.sleep(10)
+        except KeyboardInterrupt:
+            print("Bot stopped by keyboard interrupt")
+            break
         except Exception as e:
-            print(f"[ERROR] Unexpected error: {e}")
+            print(f"[ERROR] Fatal error: {e}")
+            break
+        else:
+            print("[INFO] client.start() exited cleanly (manual logout?)")
             break
 
 async def shutdown():
