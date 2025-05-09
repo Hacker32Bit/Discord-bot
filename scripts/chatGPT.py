@@ -61,5 +61,4 @@ def main():
     #
     # print(response.choices[0].message.content, flush=True, end="")
 
-if __name__ == "__main__":
-    main()
+main()
