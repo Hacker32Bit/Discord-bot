@@ -185,7 +185,7 @@ class AdminCommands(commands.Cog):
         else:
             user_id, guild_id, exp, level, last_lvl = activity_giveaway_result
 
-            # Give 150 XP for invite
+            # Reduce XP
             exp_gained = int(reduce_exp)
             exp -= exp_gained
             if exp < 0:
