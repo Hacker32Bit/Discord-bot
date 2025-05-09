@@ -1,3 +1,5 @@
+import datetime
+
 from discord.ext import commands
 from responses import get_response
 
@@ -16,7 +18,7 @@ class Message(commands.Cog):
         user_message: str = message.content
         channel: str = str(message.channel)
 
-        print(f"[{channel}] {username}: {user_message}")
+        print(f"[{datetime.datetime.now()}][{channel}] {username}: {user_message}")
 
         if message.author == self.client.user:
             return

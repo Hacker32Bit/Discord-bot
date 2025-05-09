@@ -9,6 +9,7 @@ from PIL.ImageDraw import Draw
 from discord.ext import commands, tasks
 from discord.errors import NotFound
 from discord import File
+import discord
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
@@ -37,6 +38,14 @@ class AutoTask(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Auto Task\" cog is ready!")
+        description = f"```Bot was logged in```"
+        embed = discord.Embed(
+            description=description,
+            color=0xcddc39,
+            timestamp=datetime.datetime.now()
+        )
+        channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
+        await channel.send(embed=embed)
 
     @tasks.loop(time=time)
     async def my_task(self):
