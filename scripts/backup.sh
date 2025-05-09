@@ -30,8 +30,14 @@ else
   echo "Failed to upload cards." >&2
 fi
 
-if rclone copyto "/tmp/terminal_log.log" "$GDRIVE_PATH/backups/terminal_logs/${timestamp}.log"; then
-  echo "Terminal logs uploaded successfully."
+if rclone copyto "/tmp/terminal_stderr.log" "$GDRIVE_PATH/backups/terminal_stderr/${timestamp}.log"; then
+  echo "Terminal stderr uploaded successfully."
+else
+  echo "Failed to upload terminal logs." >&2
+fi
+
+if rclone copyto "/tmp/terminal_stdout.log" "$GDRIVE_PATH/backups/terminal_stdout/${timestamp}.log"; then
+  echo "Terminal stdout uploaded successfully."
 else
   echo "Failed to upload terminal logs." >&2
 fi

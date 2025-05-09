@@ -29,8 +29,8 @@ Restart=on-failure
 Environment=PYTHONUNBUFFERED=1
 Environment=VIRTUAL_ENV=/home/gektor/Discord-bot/.venv
 Environment=PATH=/home/gektor/Discord-bot/.venv/bin:/usr/bin:/bin
-StandardOutput=append:/tmp/terminal_log.log
-StandardError=append:/tmp/terminal_log.log
+StandardOutput=append:/tmp/terminal_stdout.log
+StandardError=append:/tmp/terminal_stderr.log
 
 [Install]
 WantedBy=multi-user.target
