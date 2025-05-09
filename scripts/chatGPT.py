@@ -35,7 +35,7 @@ def store_message(user_id, role, message):
 
 def get_user_messages(user_id):
     cursor.execute("""
-        SELECT role, message, created_at FROM messages
+        SELECT role, message, created_at FROM gpt_messages
         WHERE user_id = ?
         ORDER BY created_at DESC
     """, (user_id,))
@@ -44,7 +44,7 @@ def get_user_messages(user_id):
 def delete_expired_messages():
     one_year_ago = datetime.utcnow() - timedelta(days=365)
     cursor.execute("""
-        DELETE FROM messages WHERE created_at < ?
+        DELETE FROM gpt_messages WHERE created_at < ?
     """, (one_year_ago,))
     conn.commit()
 
@@ -61,4 +61,5 @@ def main():
     #
     # print(response.choices[0].message.content, flush=True, end="")
 
-main()
+if __name__ == "__main__":
+    main()
