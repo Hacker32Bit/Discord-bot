@@ -15,6 +15,8 @@ STREAMS_VOICE_CHANNEL_ID: Final[str] = os.getenv("STREAMS_VOICE_CHANNEL_ID")
 MUSIC_VOICE_CHANNEL_ID: Final[str] = os.getenv("MUSIC_VOICE_CHANNEL_ID")
 AFK_VOICE_CHANNEL_ID: Final[str] = os.getenv("AFK_VOICE_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
+HACKER_BOT_ID: Final[str] = os.getenv("HACKER_BOT_ID")
+HACKER_ID: Final[str] = os.getenv("HACKER_ID")
 
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
@@ -36,7 +38,7 @@ class ActivityGiveaway(commands.Cog):
     # Message listener for give 1-20XP
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.bot:
+        if message.author.bot or message.author.id in [HACKER_ID]:
             return
 
         if str(message.channel.id) not in [GENERAL_TEXT_CHANNEL_ID, GENERAL_VOICE_CHANNEL_ID]:
@@ -68,6 +70,8 @@ class ActivityGiveaway(commands.Cog):
     # Listener for give 1XP every 10 minutes
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
+        if member.id in [HACKER_ID, HACKER_BOT_ID]:
+            return
         if after.channel and after.channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
                                                   AFK_VOICE_CHANNEL_ID]:
             # print("inside first if")
