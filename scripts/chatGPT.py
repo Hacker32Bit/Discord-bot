@@ -28,7 +28,7 @@ conn.commit()
 
 def store_message(user_id, role, message):
     cursor.execute("""
-        INSERT INTO messages (user_id, role, message, created_at)
+        INSERT INTO gpt_messages (user_id, role, message, created_at)
         VALUES (?, ?, ?, ?)
     """, (user_id, role, message, datetime.utcnow()))
     conn.commit()
