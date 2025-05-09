@@ -10,7 +10,7 @@ load_dotenv()
 PROJECT_PATH: Final[str] = os.getenv("PROJECT_PATH")
 
 
-async def get_response(user_input: str, selected_chat: discord.TextChannel, is_private: bool = False) -> str:
+async def get_response(user_input: str, user_id, selected_chat: discord.TextChannel, is_private: bool = False) -> str:
     lowered: str = user_input.lower()
 
     tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
@@ -24,7 +24,7 @@ async def get_response(user_input: str, selected_chat: discord.TextChannel, is_p
             for i in tell_to_bot:
                 lowered = lowered.replace(i, "")
 
-            result = subprocess.check_output([PROJECT_PATH + "/.venv/bin/python", "scripts/chatGPT.py", "--text",
+            result = subprocess.check_output([PROJECT_PATH + "/.venv/bin/python", "scripts/chatGPT.py", "--uid", user_id, "--text",
                                               lowered])
 
             if result:

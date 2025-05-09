@@ -35,7 +35,7 @@ async def send_message(message, user_message: str) -> None:
 
     try:
         selected_chat = message.author if is_private else message.channel
-        response: str = await get_response(user_message, selected_chat, is_private)
+        response: str = await get_response(user_message, message.author.id, selected_chat, is_private)
         if response:
             await message.author.send(response) if is_private else await message.channel.send(response)
     except Exception as e:
