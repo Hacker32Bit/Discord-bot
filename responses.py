@@ -10,7 +10,7 @@ load_dotenv()
 PROJECT_PATH: Final[str] = os.getenv("PROJECT_PATH")
 
 
-async def get_response(user_input: str, user_id, selected_chat: discord.TextChannel, is_private: bool = False) -> str:
+async def get_response(user_input: str, user_id: str, selected_chat: discord.TextChannel, is_private: bool = False) -> str:
     lowered: str = user_input.lower()
 
     tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
