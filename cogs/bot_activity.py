@@ -72,8 +72,6 @@ class BotActivity(commands.Cog):
         user_message: str = message.content
         channel: str = str(message.channel)
 
-        print(f"[{channel}] {username}: {user_message}")
-
         if message.author == self.bot.user:
             return
 
