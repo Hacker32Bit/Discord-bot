@@ -69,7 +69,7 @@ def main():
         store_message(args.uid, "user", args.text)
         store_message(args.uid, "assistant", answer)
 
-    print(f"<@{args.uid}>,\n```{answer}```", flush=True, end="")
+    print(f"<@{args.uid}>,\n> {answer}", flush=True, end="")
 
 if __name__ == "__main__":
     main()
