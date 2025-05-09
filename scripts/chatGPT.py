@@ -52,14 +52,20 @@ def main():
     client = Client()
 
     messages = get_user_messages(args.uid)
-    print(messages, flush=True, end="")
+    messages.append({"role": "user", "content": args.text})
 
-    # response = client.chat.completions.create(
-    #     model=default,
-    #     messages=[{"role": "user", "content": args.text}],
-    # )
-    #
-    # print(response.choices[0].message.content, flush=True, end="")
+    response = client.chat.completions.create(
+        model=default,
+        messages=[{"role": "user", "content": args.text}],
+    )
+
+    answer = response.choices[0].message.content
+
+    if answer:
+        store_message(args.uid, "user", args.text)
+        store_message(args.uid, "assistant", answer)
+
+    print(answer, flush=True, end="")
 
 if __name__ == "__main__":
     main()
