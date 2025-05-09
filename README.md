@@ -22,13 +22,28 @@ Wants=network-online.target
 Type=simple
 User=gektor
 WorkingDirectory=/home/gektor/Discord-bot
+
+# Kill any previous stuck bot processes safely before starting
+ExecStartPre=/usr/bin/bash -c '/usr/bin/pkill -u gektor -f "/home/gektor/Discord-bot/main.py" || true'
+
+# Restore environment or config if needed
 ExecStartPre=/home/gektor/Discord-bot/scripts/restore.sh
+
+# Main bot start
 ExecStart=/home/gektor/Discord-bot/.venv/bin/python /home/gektor/Discord-bot/main.py
+
+# Backup on stop
 ExecStopPost=/home/gektor/Discord-bot/scripts/backup.sh
-Restart=on-failure
+
+# Restart only on abnormal crashes (not clean exits or manual stops)
+Restart=on-abnormal
+
+# Environment variables
 Environment=PYTHONUNBUFFERED=1
 Environment=VIRTUAL_ENV=/home/gektor/Discord-bot/.venv
 Environment=PATH=/home/gektor/Discord-bot/.venv/bin:/usr/bin:/bin
+
+# Combined stdout/stderr log
 StandardOutput=append:/tmp/terminal_log.log
 StandardError=append:/tmp/terminal_log.log
 
