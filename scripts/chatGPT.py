@@ -37,7 +37,7 @@ def get_user_messages(user_id):
     cursor.execute("""
         SELECT role, message, created_at FROM gpt_messages
         WHERE user_id = ?
-        ORDER BY created_at DESC
+        ORDER BY created_at ASC
     """, (user_id,))
     data = cursor.fetchall()
     formatted = [{"role": role, "content": content} for role, content, _ in data]
