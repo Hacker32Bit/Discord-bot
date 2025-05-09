@@ -39,7 +39,10 @@ def get_user_messages(user_id):
         WHERE user_id = ?
         ORDER BY created_at DESC
     """, (user_id,))
-    return cursor.fetchall()
+    data = cursor.fetchall()
+    formatted = [{"role": role, "content": content} for role, content, _ in data]
+    return formatted
+
 
 def delete_expired_messages():
     one_year_ago = datetime.utcnow() - timedelta(days=365)
