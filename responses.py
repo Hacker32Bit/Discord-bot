@@ -1,5 +1,5 @@
 from random import randint
-import subprocess
+import asyncio
 
 import discord
 from dotenv import load_dotenv
@@ -10,7 +10,8 @@ load_dotenv()
 PROJECT_PATH: Final[str] = os.getenv("PROJECT_PATH")
 
 
-async def get_response(user_input: str, user_id: str, selected_chat: discord.TextChannel, is_private: bool = False) -> str:
+async def get_response(user_input: str, user_id: str, selected_chat: discord.TextChannel,
+                       is_private: bool = False) -> str:
     lowered: str = user_input.lower()
 
     tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
@@ -24,13 +25,24 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
             for i in tell_to_bot:
                 lowered = lowered.replace(i, "")
 
-            result = subprocess.check_output([PROJECT_PATH + "/.venv/bin/python", "scripts/chatGPT.py", "--uid", user_id, "--text",
-                                              lowered])
+            # Run the subprocess asynchronously (non-blocking)
+            process = await asyncio.create_subprocess_exec(
+                PROJECT_PATH + "/.venv/bin/python",
+                "scripts/chatGPT.py",
+                "--uid", str(user_id),
+                "--text", lowered,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
 
-            if result:
-                return result.decode("utf-8")
+            stdout, stderr = await process.communicate()
 
-            return "I don't know what happen with me :("
+            if stdout:
+                return stdout.decode("utf-8")
+            elif stderr:
+                return f"⚠️ Error: {stderr.decode('utf-8')}"
+            else:
+                return "I don't know what happened to me :("
     elif lowered == "":
         return "Well you\'re awfully silent..."
     elif "hello" in lowered:
