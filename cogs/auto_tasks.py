@@ -41,7 +41,7 @@ class AutoTask(commands.Cog):
         description = f"```Bot was logged in```"
         embed = discord.Embed(
             description=description,
-            color=0xcddc39,
+            color=0x1B5E20, # GREEN 900
             timestamp=datetime.datetime.now()
         )
         channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
@@ -61,9 +61,15 @@ class AutoTask(commands.Cog):
             with open("/tmp/bot_action", "w") as f:
                 f.write("reboot")
 
-            await channel.send("Daily reboot initiated. Backing up and restarting...")
+            description = f"```Daily reboot initiated. Backing up and restarting...```"
+            embed = discord.Embed(
+                description=description,
+                color=0x1B5E20,  # GREEN 900
+                timestamp=datetime.datetime.now()
+            )
+
+            await channel.send(embed=embed)
             await self.bot.close()
-            self.bot.clear()
         except Exception as e:
             await channel.send(e)
 

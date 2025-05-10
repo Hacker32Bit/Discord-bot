@@ -138,7 +138,7 @@ class WelcomeAndGoodbye(commands.Cog):
         if inviter and invited_by:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!\nReferred by **{inviter}**!",
-                color=0x9C27B0,
+                color=0x9C27B0, # PURPLE 500
                 timestamp=datetime.datetime.now()
             )
             await channel.send(embed=embed)
@@ -225,7 +225,7 @@ class WelcomeAndGoodbye(commands.Cog):
         else:
             embed = discord.Embed(
                 description=f":wave: Welcome to server **{member.mention}**!",
-                color=0x4caf50,
+                color=0x4caf50, # GREEN 500
                 timestamp=datetime.datetime.now()
             )
             await channel.send(embed=embed)
@@ -240,7 +240,7 @@ class WelcomeAndGoodbye(commands.Cog):
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
         embed = discord.Embed(
             description=f"<:hmm2:1240238779181174825> **{member.mention}** leaved from this server!",
-            color=0xff9800,
+            color=0xff9800, # ORANGE 500
             timestamp=datetime.datetime.now()
         )
         await channel.send(embed=embed)

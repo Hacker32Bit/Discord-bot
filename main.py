@@ -68,4 +68,6 @@ if __name__ == "__main__":
         # Optionally: Close any open resources (sockets, files, etc.)
         # Cleanup code here
     finally:
+        loop.run_until_complete(client.close())  # Ensure discord aiohttp session is closed
+        loop.run_until_complete(loop.shutdown_asyncgens())  # Shutdown generators
         loop.close()

@@ -34,7 +34,6 @@ class AdminCommands(commands.Cog):
         print("[INFO] logging out...")
         await ctx.send("Goodbye. You can wake me up from Raspberry PI(Or wait for auto reboot)")
         await self.client.close()
-        self.client.clear()
 
     # Command for shutdown system
     @commands.command()
@@ -48,7 +47,6 @@ class AdminCommands(commands.Cog):
 
             await ctx.send("Shutdown initiated. Backing up and turning off...")
             await self.client.close()
-            self.client.clear()
         except Exception as e:
             await ctx.send(e)
 
@@ -64,7 +62,6 @@ class AdminCommands(commands.Cog):
 
             await ctx.send("Reboot initiated. Backing up and restarting...")
             await self.client.close()
-            self.client.clear()
         except Exception as e:
             await ctx.send(e)
 
