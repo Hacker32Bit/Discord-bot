@@ -77,7 +77,9 @@ class BotActivity(commands.Cog):
             return
 
         if message.lowered() in ["чат", "watch", "follow", "gpt", "chat"]:
-            if self.bot.status == discord.Status.online:
+            activity = getattr(self.bot, "current_activity", None)
+
+            if activity == "I'm ready to discuss":
                 status = discord.CustomActivity(name="I'm free...")
                 await self.bot.change_presence(status=discord.Status.dnd, activity=status)
             else:

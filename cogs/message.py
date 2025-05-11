@@ -27,7 +27,7 @@ class Message(commands.Cog):
         activity = getattr(self.client, "current_activity", None)
         print(activity)
 
-        await send_message(message, user_message, self.client.status == discord.Status.online)
+        await send_message(message, user_message, activity == "I'm ready to discuss")
         # await self.client.process_commands(message)
 
 
@@ -41,7 +41,7 @@ async def send_message(message, user_message: str, bot_active: bool = False) -> 
 
     try:
         selected_chat = message.author if is_private else message.channel
-        response: str = await get_response(user_message, str(message.author.id), selected_chat, is_private)
+        response: str = await get_response(user_message, str(message.author.id), selected_chat, is_private, bot_active)
         if response:
             await message.author.send(response) if is_private else await message.channel.send(response)
     except Exception as e:
