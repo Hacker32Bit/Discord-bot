@@ -1,5 +1,6 @@
 import datetime
 
+import discord
 from discord.ext import commands
 from responses import get_response
 
@@ -23,11 +24,13 @@ class Message(commands.Cog):
         if message.author == self.client.user:
             return
 
-        await send_message(message, user_message)
+        print(self.client.activity)
+
+        await send_message(message, user_message, self.client.status == discord.Status.online)
         # await self.client.process_commands(message)
 
 
-async def send_message(message, user_message: str) -> None:
+async def send_message(message, user_message: str, bot_active: bool = False) -> None:
     if not user_message:
         print("(Message was empty because intents were not enabled probably)")
         return

@@ -11,7 +11,7 @@ PROJECT_PATH: Final[str] = os.getenv("PROJECT_PATH")
 
 
 async def get_response(user_input: str, user_id: str, selected_chat: discord.TextChannel,
-                       is_private: bool = False) -> str:
+                       is_private: bool = False, bot_active: bool = False) -> str:
     lowered: str = user_input.lower()
 
     tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
@@ -25,12 +25,15 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
             for i in tell_to_bot:
                 lowered = lowered.replace(i, "")
 
+            lowered = lowered.strip()
+            text = user_input[len(user_input) - len(lowered)]
+
             # Run the subprocess asynchronously (non-blocking)
             process = await asyncio.create_subprocess_exec(
                 PROJECT_PATH + "/.venv/bin/python",
                 "scripts/chatGPT.py",
                 "--uid", str(user_id),
-                "--text", lowered,
+                "--text", text,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
@@ -42,7 +45,27 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
             elif stderr:
                 return f"⚠️ Error: {stderr.decode('utf-8')}"
             else:
-                return "I don't know what happened to me :("
+                return "I don't know what happened with me :("
+    elif bot_active and len(user_input) > 2 and user_input[0] != "!":
+        async with selected_chat.typing():
+            # Run the subprocess asynchronously (non-blocking)
+            process = await asyncio.create_subprocess_exec(
+                PROJECT_PATH + "/.venv/bin/python",
+                "scripts/chatGPT.py",
+                "--uid", str(selected_chat.id),
+                "--text", user_input,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+
+            stdout, stderr = await process.communicate()
+
+            if stdout:
+                return stdout.decode("utf-8")
+            elif stderr:
+                return f"⚠️ Error: {stderr.decode('utf-8')}"
+            else:
+                return "I don't know what happened with me :("
     elif lowered == "":
         return "Well you\'re awfully silent..."
     elif "hello" in lowered:
