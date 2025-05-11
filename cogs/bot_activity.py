@@ -82,9 +82,11 @@ class BotActivity(commands.Cog):
             if activity == "I'm ready to discuss":
                 status = discord.CustomActivity(name="I'm free...")
                 await self.bot.change_presence(status=discord.Status.dnd, activity=status)
+                self.bot.current_activity = status
             else:
                 status = discord.CustomActivity(name="I'm ready to discuss")
                 await self.bot.change_presence(status=discord.Status.online, activity=status)
+                self.bot.current_activity = status
 
         # # Setting `Playing ` status
         # await bot.change_presence(activity=discord.Game(name="a game"))
