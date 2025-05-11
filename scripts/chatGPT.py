@@ -7,6 +7,7 @@ from datetime import timedelta
 
 # Define the parser
 parser = argparse.ArgumentParser(description='Short sample app')
+parser.add_argument('--user', action=argparse.BooleanOptionalAction)
 parser.add_argument('--text', action="store", dest='text', default="")
 parser.add_argument('--uid', action="store", dest='uid', default="")
 args = parser.parse_args()
@@ -68,7 +69,10 @@ def main():
         store_message(args.uid, "user", args.text)
         store_message(args.uid, "assistant", answer)
 
-    print(f"<@{args.uid}>,\n> {answer}", flush=True, end="")
+    if args.user:
+        print(f"<@{args.uid}>,\n{answer}", flush=True, end="")
+    else:
+        print(f"{answer}", flush=True, end="")
 
 if __name__ == "__main__":
     main()

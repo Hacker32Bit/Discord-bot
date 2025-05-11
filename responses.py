@@ -32,6 +32,7 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
             process = await asyncio.create_subprocess_exec(
                 PROJECT_PATH + "/.venv/bin/python",
                 "scripts/chatGPT.py",
+                "--user",
                 "--uid", str(user_id),
                 "--text", text,
                 stdout=asyncio.subprocess.PIPE,
@@ -52,6 +53,7 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
             process = await asyncio.create_subprocess_exec(
                 PROJECT_PATH + "/.venv/bin/python",
                 "scripts/chatGPT.py",
+                "--no-user",
                 "--uid", str(selected_chat.id),
                 "--text", user_input,
                 stdout=asyncio.subprocess.PIPE,
