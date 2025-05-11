@@ -76,7 +76,7 @@ class BotActivity(commands.Cog):
         if message.author == self.bot.user:
             return
 
-        if message.lowered() in ["чат", "watch", "follow", "gpt", "chat"]:
+        if user_message.lower() in ["чат", "watch", "follow", "gpt", "chat"]:
             activity = getattr(self.bot, "current_activity", None)
 
             if activity == "I'm ready to discuss":
