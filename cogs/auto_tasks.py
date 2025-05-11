@@ -39,13 +39,9 @@ class AutoTask(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Auto Task\" cog is ready!")
         description = f"```Bot was logged in```"
-        embed = discord.Embed(
-            description=description,
-            color=0x1B5E20, # GREEN 900
-            timestamp=datetime.datetime.now()
-        )
+
         channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
-        await channel.send(embed=embed)
+        await channel.send(description)
 
     @tasks.loop(time=time)
     async def my_task(self):
@@ -62,13 +58,8 @@ class AutoTask(commands.Cog):
                 f.write("reboot")
 
             description = f"```Daily reboot initiated. Backing up and restarting...```"
-            embed = discord.Embed(
-                description=description,
-                color=0x1B5E20,  # GREEN 900
-                timestamp=datetime.datetime.now()
-            )
 
-            await channel.send(embed=embed)
+            await channel.send(description)
             await self.bot.close()
         except Exception as e:
             await channel.send(e)
