@@ -24,7 +24,8 @@ class Message(commands.Cog):
         if message.author == self.client.user:
             return
 
-        print(self.client.activity)
+        activity = getattr(self.client, "current_activity", None)
+        print(activity)
 
         await send_message(message, user_message, self.client.status == discord.Status.online)
         # await self.client.process_commands(message)
