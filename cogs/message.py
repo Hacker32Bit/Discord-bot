@@ -25,7 +25,6 @@ class Message(commands.Cog):
             return
 
         activity = getattr(self.client, "current_activity", None)
-        print(activity)
 
         await send_message(message, user_message, str(activity) == "I'm ready to discuss")
         # await self.client.process_commands(message)
