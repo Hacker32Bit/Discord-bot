@@ -9,7 +9,7 @@ from PIL.ImageDraw import Draw
 from discord.ext import commands, tasks
 from discord.errors import NotFound
 from discord import File
-import discord
+import sys
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
@@ -61,6 +61,7 @@ class AutoTask(commands.Cog):
 
             await channel.send(description)
             await self.bot.close()
+            sys.exit(0)
         except Exception as e:
             await channel.send(e)
 

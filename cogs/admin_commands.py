@@ -2,7 +2,7 @@ import math
 import random
 import sqlite3
 import time
-
+import sys
 import discord
 from discord.ext import commands
 import datetime
@@ -34,6 +34,7 @@ class AdminCommands(commands.Cog):
         print("[INFO] logging out...")
         await ctx.send("Goodbye. You can wake me up from Raspberry PI(Or wait for auto reboot)")
         await self.client.close()
+        sys.exit(0)
 
     # Command for shutdown system
     @commands.command()
@@ -47,6 +48,7 @@ class AdminCommands(commands.Cog):
 
             await ctx.send("Shutdown initiated. Backing up and turning off...")
             await self.client.close()
+            sys.exit(0)
         except Exception as e:
             await ctx.send(e)
 
@@ -62,6 +64,7 @@ class AdminCommands(commands.Cog):
 
             await ctx.send("Reboot initiated. Backing up and restarting...")
             await self.client.close()
+            sys.exit(0)
         except Exception as e:
             await ctx.send(e)
 
