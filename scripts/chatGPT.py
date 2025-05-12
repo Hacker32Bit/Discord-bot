@@ -1,3 +1,4 @@
+from anyio.pytest_plugin import anyio_backend
 from g4f.models import default
 from g4f.client import Client
 import argparse
@@ -65,14 +66,22 @@ def main():
 
     answer = response.choices[0].message.content
 
+    if answer[:16] == "New g4f version:":
+        try:
+            answer = answer.split("pip install -U g4f")[1]
+        except IndexError:
+            answer = None
+
+
     if answer:
         store_message(args.uid, "user", args.text)
         store_message(args.uid, "assistant", answer)
-
-    if args.user:
-        print(f"<@{args.uid}>,\n{answer}", flush=True, end="")
+        if args.user:
+            print(f"<@{args.uid}>,\n{answer}", flush=True, end="")
+        else:
+            print(f"{answer}", flush=True, end="")
     else:
-        print(f"{answer}", flush=True, end="")
+        print("I dont received answer from server. Try again.")
 
 if __name__ == "__main__":
     main()
