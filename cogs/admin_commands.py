@@ -9,7 +9,8 @@ import datetime
 from dotenv import load_dotenv
 from typing import Final
 import os
-from subprocess import check_output, Popen
+from subprocess import check_output
+import asyncio
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
@@ -23,6 +24,10 @@ class AdminCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    async def shutdown(self):
+        await self.client.close()
+        sys.exit(0)
+
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Admin Commands\" cog is ready!")
@@ -33,8 +38,10 @@ class AdminCommands(commands.Cog):
     async def logout(self, ctx):
         print("[INFO] logging out...")
         await ctx.send("Goodbye. You can wake me up from Raspberry PI(Or wait for auto reboot)")
-        await self.client.close()
-        sys.exit(0)
+
+        # Shutdown outside of task loop to avoid hanging
+        loop = asyncio.get_running_loop()
+        loop.call_soon(asyncio.create_task, self.shutdown())
 
     # Command for shutdown system
     @commands.command()
@@ -47,8 +54,9 @@ class AdminCommands(commands.Cog):
                 f.write("shutdown")
 
             await ctx.send("Shutdown initiated. Backing up and turning off...")
-            await self.client.close()
-            sys.exit(0)
+            # Shutdown outside of task loop to avoid hanging
+            loop = asyncio.get_running_loop()
+            loop.call_soon(asyncio.create_task, self.shutdown())
         except Exception as e:
             await ctx.send(e)
 
@@ -63,8 +71,9 @@ class AdminCommands(commands.Cog):
                 f.write("reboot")
 
             await ctx.send("Reboot initiated. Backing up and restarting...")
-            await self.client.close()
-            sys.exit(0)
+            # Shutdown outside of task loop to avoid hanging
+            loop = asyncio.get_running_loop()
+            loop.call_soon(asyncio.create_task, self.shutdown())
         except Exception as e:
             await ctx.send(e)
 

@@ -10,6 +10,7 @@ from discord.ext import commands, tasks
 from discord.errors import NotFound
 from discord import File
 import sys
+import asyncio
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
@@ -34,6 +35,10 @@ class AutoTask(commands.Cog):
         self.my_task.cancel()
         self.update_activity_giveaways_tables.cancel()
         self.reboot.cancel()
+
+    async def shutdown(self):
+        await self.bot.close()
+        sys.exit(0)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -60,8 +65,11 @@ class AutoTask(commands.Cog):
             description = f"```Daily reboot initiated. Backing up and restarting...```"
 
             await channel.send(description)
-            await self.bot.close()
-            sys.exit(0)
+
+            # Shutdown outside of task loop to avoid hanging
+            loop = asyncio.get_running_loop()
+            loop.call_soon(asyncio.create_task, self.shutdown())
+
         except Exception as e:
             await channel.send(e)
 
