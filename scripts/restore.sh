@@ -39,6 +39,12 @@ if rclone lsf "$GDRIVE_PATH" | grep -q "^database.sqlite$"; then
 else
     echo "No database.sqlite found on Google Drive — skipping restore."
 fi
+if rclone lsf "$GDRIVE_PATH" | grep -q "^chats.sqlite$"; then
+    echo "Found chats.sqlite on Google Drive, restoring..."
+    rclone move "$GDRIVE_PATH/chats.sqlite" "$WORK_DIR/"
+else
+    echo "No chats.sqlite found on Google Drive — skipping restore."
+fi
 rclone copy "$GDRIVE_PATH/.env" "$WORK_DIR/"
 rclone copy "$GDRIVE_PATH/backups/assets/" "$WORK_DIR/assets/" --copy-links
 

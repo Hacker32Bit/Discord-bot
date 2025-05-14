@@ -24,6 +24,12 @@ else
   echo "Failed to upload database." >&2
 fi
 
+if rclone copyto --ignore-times "$WORK_DIR/chats.sqlite" "$GDRIVE_PATH/backups/chats/${timestamp}.sqlite"; then
+  echo "Chats uploaded successfully."
+else
+  echo "Failed to upload chats." >&2
+fi
+
 if rclone copy "$WORK_DIR/assets/images/rank_cards/" "$GDRIVE_PATH/backups/assets/images/rank_cards/" --copy-links; then
   echo "Ranks cards uploaded successfully."
 else
