@@ -16,9 +16,9 @@ done
 cd "$WORK_DIR"
 
 {
-    git pull
+    timeout 20s git pull
 } || {
-    echo "[WARNING] git pull failed but continuing anyway."
+    echo "[WARNING] git pull failed or timed out. Continuing anyway."
 }
 
 # 3. Upgrade dependencies
