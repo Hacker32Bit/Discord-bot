@@ -160,11 +160,13 @@ cython_debug/
 .idea/
 
 database.sqlite
+chats.sqlite
 WindowsAutorun.bat
 discord.log
 terminal_logs/
 logs/
 backups/
+har_and_cookies/
 
 assets/images/rank_cards/*
 !assets/images/rank_cards/.gitkeep
