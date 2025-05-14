@@ -34,6 +34,49 @@ class Leveling(commands.Cog):
 
     data = dict()
 
+    def cog_load(self):
+        guild = self.bot.get_guild(GUILD_ID)
+        vc_channels = guild.voice_channels
+        print(vc_channels)
+
+        for channel in vc_channels:
+            if vc_channels[channel].id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
+                                           AFK_VOICE_CHANNEL_ID]:
+                continue
+            users = vc_channels[channel].members
+            for user in users:
+                user_id = users[user].id
+                self.data[user_id] = time.time()
+
+        print(self.data)
+
+    def cog_unload(self):
+        for member_id in self.data:
+            cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
+                           f"{member_id} and guild_id = {GUILD_ID}")
+            result = cursor.fetchone()
+
+            # print(result)
+
+            if result is None:
+                cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl) "
+                               f"VALUES({member_id}, {GUILD_ID}, 0, 0, 0)")
+                database.commit()
+
+            minutes_per_point = (time.time() - self.data[member_id]) // 600
+
+            user_id, guild_id, exp, level, last_lvl = result
+
+            # print(minutes_per_point)
+
+            exp_gained = minutes_per_point + 1
+            exp += exp_gained
+            level = 0.1 * (math.sqrt(exp))
+
+            cursor.execute(f"UPDATE levels SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                           f"guild_id = {guild_id}")
+            database.commit()
+
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Leveling\" cog is ready!")
@@ -221,7 +264,7 @@ class Leveling(commands.Cog):
     async def rank_card_setting(self, interaction: discord.Interaction, image: discord.Attachment = None,
                                 color: str = None, reset: app_commands.Choice[int] = 0):
         # Make timelimit more than 3 sec for slash commands
-        await interaction.response.defer() # NOQA
+        await interaction.response.defer()  # NOQA
 
         if image is None and color is None and reset == 0:
             await interaction.followup.send(f"Please, provide at least one argument.")
@@ -390,7 +433,7 @@ class Leveling(commands.Cog):
         if result is None:
             message = ("You dont have any XP, because you dont have activity.\nPlease type some messages in "
                        "\"〔💬〕general \" channel or join in voice channel at least 10 minutes.")
-            await interaction.response.send_message(message) # NOQA
+            await interaction.response.send_message(message)  # NOQA
             return
 
         exp, level, last_lvl, background = result
@@ -411,7 +454,7 @@ class Leveling(commands.Cog):
             'bg_image': background_link if int(background) else None,  # Background image link
             'profile_image': user.display_avatar.url,  # User profile picture link
             'level': int(level),  # User current level
-            'current_xp': int(level)**2 * 100,  # Current level minimum xp
+            'current_xp': int(level) ** 2 * 100,  # Current level minimum xp
             'user_xp': exp,  # User current xp
             'next_xp': next_lvl_xp,  # xp required for next level
             'user_position': rank,  # User position in leaderboard
@@ -423,7 +466,7 @@ class Leveling(commands.Cog):
         image = Generator().generate_profile(**args)
         file = discord.File(fp=image, filename='image.png')
 
-        await interaction.response.send_message(file=file) # NOQA
+        await interaction.response.send_message(file=file)  # NOQA
 
 
 async def setup(bot):

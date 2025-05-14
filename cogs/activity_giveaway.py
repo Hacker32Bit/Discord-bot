@@ -31,6 +31,49 @@ class ActivityGiveaway(commands.Cog):
 
     data = dict()
 
+    def cog_load(self):
+        guild = self.bot.get_guild(GUILD_ID)
+        vc_channels = guild.voice_channels
+        print(vc_channels)
+
+        for channel in vc_channels:
+            if vc_channels[channel].id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
+                                           AFK_VOICE_CHANNEL_ID]:
+                continue
+            users = vc_channels[channel].members
+            for user in users:
+                user_id = users[user].id
+                self.data[user_id] = time.time()
+
+        print(self.data)
+
+    def cog_unload(self):
+        for member_id in self.data:
+            cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
+                           f"{member_id} and guild_id = {GUILD_ID}")
+            result = cursor.fetchone()
+
+            # print(result)
+
+            if result is None:
+                cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
+                               f"VALUES({member_id}, {GUILD_ID}, 0, 0, 0)")
+                database.commit()
+
+            minutes_per_point = (time.time() - self.data[member_id]) // 600
+
+            user_id, guild_id, exp, level, last_lvl = result
+
+            # print(minutes_per_point)
+
+            exp_gained = minutes_per_point + 1
+            exp += exp_gained
+            level = 0.1 * (math.sqrt(exp))
+
+            cursor.execute(f"UPDATE activity_giveaway SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
+                           f"guild_id = {guild_id}")
+            database.commit()
+
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Activity Giveaway\" cog is ready!")
