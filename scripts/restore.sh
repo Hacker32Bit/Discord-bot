@@ -14,7 +14,12 @@ done
 
 # 2. Update project
 cd "$WORK_DIR"
-git pull
+
+{
+    git pull
+} || {
+    echo "[WARNING] git pull failed but continuing anyway."
+}
 
 # 3. Upgrade dependencies
 source "$WORK_DIR/.venv/bin/activate"
