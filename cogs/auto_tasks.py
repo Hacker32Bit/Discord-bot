@@ -36,7 +36,7 @@ class AutoTask(commands.Cog):
         self.update_activity_giveaways_tables.cancel()
         self.reboot.cancel()
 
-    async def shutdown(self):
+    async def perform_shutdown(self):
         await self.bot.close()
         sys.exit(0)
 
@@ -68,7 +68,7 @@ class AutoTask(commands.Cog):
 
             # Shutdown outside of task loop to avoid hanging
             loop = asyncio.get_running_loop()
-            loop.call_soon(asyncio.create_task, self.shutdown())
+            loop.call_soon(asyncio.create_task, self.perform_shutdown())
 
         except Exception as e:
             await channel.send(e)

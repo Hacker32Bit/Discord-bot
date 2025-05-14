@@ -24,7 +24,7 @@ class AdminCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    async def shutdown(self):
+    async def perform_shutdown(self):
         await self.client.close()
         sys.exit(0)
 
@@ -41,7 +41,7 @@ class AdminCommands(commands.Cog):
 
         # Shutdown outside of task loop to avoid hanging
         loop = asyncio.get_running_loop()
-        loop.call_soon(asyncio.create_task, self.shutdown())
+        loop.call_soon(asyncio.create_task, self.perform_shutdown())
 
     # Command for shutdown system
     @commands.command()
@@ -56,7 +56,7 @@ class AdminCommands(commands.Cog):
             await ctx.send("Shutdown initiated. Backing up and turning off...")
             # Shutdown outside of task loop to avoid hanging
             loop = asyncio.get_running_loop()
-            loop.call_soon(asyncio.create_task, self.shutdown())
+            loop.call_soon(asyncio.create_task, self.perform_shutdown())
         except Exception as e:
             await ctx.send(e)
 
@@ -73,7 +73,7 @@ class AdminCommands(commands.Cog):
             await ctx.send("Reboot initiated. Backing up and restarting...")
             # Shutdown outside of task loop to avoid hanging
             loop = asyncio.get_running_loop()
-            loop.call_soon(asyncio.create_task, self.shutdown())
+            loop.call_soon(asyncio.create_task, self.perform_shutdown())
         except Exception as e:
             await ctx.send(e)
 
