@@ -79,9 +79,6 @@ class Leveling(commands.Cog):
                 continue
 
             for member in voice_channel.members:
-                if member.bot or str(member.id) in [HACKER_ID, HACKER_BOT_ID]:
-                    continue
-
                 self.data[member.id] = time.time()
                 print(f"[INIT] Tracking member {member.display_name} in voice channel {voice_channel.name}")
 
