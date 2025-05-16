@@ -24,6 +24,9 @@ class AutoChannel(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Auto Channel\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Auto Channel\" was unloaded!")
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if before and before.channel is not None:

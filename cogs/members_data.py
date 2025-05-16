@@ -35,6 +35,9 @@ class MembersData(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Members Data\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Members Data\" was unloaded!")
+
     # Add info about Member
     @staticmethod
     async def about_update_function(interaction: discord.Interaction, name: str = None, surname: str = None,

@@ -29,6 +29,9 @@ class MembersGiveaway(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Members Giveaway\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Members Giveaway\" was unloaded!")
+
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
         channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)

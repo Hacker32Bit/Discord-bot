@@ -36,6 +36,9 @@ class WelcomeAndGoodbye(commands.Cog):
             # Adding each guild's invites to our dict
             self.invites[guild.id] = await guild.invites()
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Welcome & Goodbye\" was unloaded!")
+
     @staticmethod
     def find_invite_by_code(invite_list, code):
         # Simply looping through each invite in an

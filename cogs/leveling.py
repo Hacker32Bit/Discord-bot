@@ -65,6 +65,8 @@ class Leveling(commands.Cog):
                            f"guild_id = {guild_id}")
             database.commit()
 
+        print("[INFO] Cog \"Leveling\" was unloaded!")
+
     async def initialize_active_voice_members(self):
         await self.bot.wait_until_ready()
 

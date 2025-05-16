@@ -31,15 +31,6 @@ class AutoTask(commands.Cog):
         self.update_activity_giveaways_tables.start()
         self.reboot.start()
 
-    def cog_unload(self):
-        self.my_task.cancel()
-        self.update_activity_giveaways_tables.cancel()
-        self.reboot.cancel()
-
-    async def perform_shutdown(self):
-        await self.bot.close()
-        sys.exit(0)
-
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Auto Task\" cog is ready!")
@@ -47,6 +38,16 @@ class AutoTask(commands.Cog):
 
         channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
         await channel.send(description)
+
+    def cog_unload(self):
+        self.my_task.cancel()
+        self.update_activity_giveaways_tables.cancel()
+        self.reboot.cancel()
+        print("[INFO] Cog \"Auto Task\" was unloaded!")
+
+    async def perform_shutdown(self):
+        await self.bot.close()
+        sys.exit(0)
 
     @tasks.loop(time=time)
     async def my_task(self):

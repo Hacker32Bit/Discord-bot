@@ -24,13 +24,16 @@ class AdminCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    async def perform_shutdown(self):
-        await self.client.close()
-        sys.exit(0)
-
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Admin Commands\" cog is ready!")
+
+    def cog_unload(self):
+        print("[INFO] Cog \"Admin Commands\" was unloaded!")
+
+    async def perform_shutdown(self):
+        await self.client.close()
+        sys.exit(0)
 
     # Command for logout bot (logout bot)
     @commands.command()

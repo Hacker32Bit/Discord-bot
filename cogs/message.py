@@ -13,6 +13,9 @@ class Message(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Message\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Message\" was unloaded!")
+
     @commands.Cog.listener()
     async def on_message(self, message) -> None:
         username: str = str(message.author)

@@ -19,11 +19,6 @@ class BotActivity(commands.Cog):
         self.bot = bot
         self.voice_monitor_task = None
 
-    async def cog_load(self):
-        pass
-        # Called automatically when the cog is loaded
-        # self.voice_monitor_task = asyncio.create_task(self.monitor_connection())
-
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Bot activity\" cog is ready!")
@@ -46,6 +41,14 @@ class BotActivity(commands.Cog):
         #     await self.bot.change_presence(
         #         activity=discord.Activity(type=discord.ActivityType.watching, name=format(ord(letter), '08b')),
         #         status=discord.Status.idle)
+
+    async def cog_load(self):
+        # Called automatically when the cog is loaded
+        # self.voice_monitor_task = asyncio.create_task(self.monitor_connection())
+        print("[INFO] Cog \"Bot Activity\" was loaded!")
+
+    def cog_unload(self):
+        print("[INFO] Cog \"Bot Activity\" was unloaded!")
 
     async def join_voice_channel(self):
         try:

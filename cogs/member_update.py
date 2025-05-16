@@ -18,6 +18,9 @@ class MemberUpdate(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Member Update\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Member Update\" was unloaded!")
+
     # Called when member update
     @commands.Cog.listener()
     async def on_member_update(self, before, after):

@@ -25,6 +25,9 @@ class CaseOpening(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Case Opening\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Case Opening\" was unloaded!")
+
     # Command for open case event
     @commands.command()
     @commands.has_any_role("Owner", "Admin")

@@ -47,6 +47,9 @@ class GameRoles(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Game Roles\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Game Roles\" was unloaded!")
+
     @app_commands.command(name="game_roles", description="Add game role")
     async def game_roles(self, interaction: discord.Interaction):
         print(interaction)

@@ -9,6 +9,9 @@ class Ping(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Ping\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Ping\" was unloaded!")
+
     @commands.command()
     @commands.has_any_role("Admin", "Owner")
     async def ping(self, ctx):

@@ -16,10 +16,12 @@ class BanAndMute(commands.Cog):
     async def on_ready(self):
         print("[INFO] \"Ban & Mute\" cog is ready!")
 
+    def cog_unload(self):
+        print("[INFO] Cog \"Ban & Mute\" was unloaded!")
+
     @commands.Cog.listener()
     async def on_member_ban(self):
-
-        print("test")
+        print("BANNED!")
 
 
 async def setup(client):
