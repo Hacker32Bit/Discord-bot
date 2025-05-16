@@ -28,24 +28,23 @@ exp INTEGER, level INTEGER, last_lvl INTEGER, PRIMARY KEY("user_id"));""")
 class ActivityGiveaway(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.data = dict()
 
-    data = dict()
+    async def cog_load(self):
+        await self.bot.wait_until_ready()  # ✅ Wait until bot is ready
 
-    def cog_load(self):
         guild = self.bot.get_guild(GUILD_ID)
-        vc_channels = guild.voice_channels
-        print(vc_channels)
+        if not guild:
+            print(f"[ERROR] Guild with ID {GUILD_ID} not found.")
+            return
 
-        for channel in vc_channels:
-            if vc_channels[channel].id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
-                                           AFK_VOICE_CHANNEL_ID]:
+        for channel in guild.voice_channels:
+            if channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID, AFK_VOICE_CHANNEL_ID]:
                 continue
-            users = vc_channels[channel].members
-            for user in users:
-                user_id = users[user].id
-                self.data[user_id] = time.time()
+            for member in channel.members:
+                self.data[member.id] = time.time()
 
-        print(self.data)
+        print(f"[INFO] Initial voice channel tracking data: {self.data}")
 
     def cog_unload(self):
         for member_id in self.data:
