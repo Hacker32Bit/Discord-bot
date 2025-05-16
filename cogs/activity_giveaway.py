@@ -30,21 +30,10 @@ class ActivityGiveaway(commands.Cog):
         self.bot = bot
         self.data = dict()
 
-    # async def cog_load(self):
-    #     await self.bot.wait_until_ready()  # ✅ Wait until bot is ready
-    #
-    #     guild = self.bot.get_guild(GUILD_ID)
-    #     if not guild:
-    #         print(f"[ERROR] Guild with ID {GUILD_ID} not found.")
-    #         return
-    #
-    #     for channel in guild.voice_channels:
-    #         if channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID, AFK_VOICE_CHANNEL_ID]:
-    #             continue
-    #         for member in channel.members:
-    #             self.data[member.id] = time.time()
-    #
-    #     print(f"[INFO] Initial voice channel tracking data: {self.data}")
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print("[INFO] \"Activity Giveaway\" cog is ready!")
+        await self.initialize_active_voice_members()
 
     def cog_unload(self):
         for member_id in self.data:
@@ -73,9 +62,25 @@ class ActivityGiveaway(commands.Cog):
                            f"guild_id = {guild_id}")
             database.commit()
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print("[INFO] \"Activity Giveaway\" cog is ready!")
+    async def initialize_active_voice_members(self):
+        await self.bot.wait_until_ready()
+
+        guild = self.bot.get_guild(int(GUILD_ID))
+        if not guild:
+            print(f"[ERROR] Guild with ID {GUILD_ID} not found")
+            return
+
+        for voice_channel in guild.voice_channels:
+            # Skip excluded channels
+            if str(voice_channel.id) in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID, AFK_VOICE_CHANNEL_ID]:
+                continue
+
+            for member in voice_channel.members:
+                if member.bot or str(member.id) in [HACKER_ID, HACKER_BOT_ID]:
+                    continue
+
+                self.data[member.id] = time.time()
+                print(f"[INIT] Tracking member {member.display_name} in voice channel {voice_channel.name}")
 
     # Message listener for give 1-20XP
     @commands.Cog.listener()
