@@ -31,9 +31,9 @@ class AdminCommands(commands.Cog):
     def cog_unload(self):
         print("[INFO] Cog \"Admin Commands\" was unloaded!")
 
-    async def perform_shutdown(self):
+    async def perform_shutdown(self, code):
         await self.client.close()
-        sys.exit(0)
+        sys.exit(code)
 
     # Command for logout bot (logout bot)
     @commands.command()
@@ -44,7 +44,7 @@ class AdminCommands(commands.Cog):
 
         # Shutdown outside of task loop to avoid hanging
         loop = asyncio.get_running_loop()
-        loop.call_soon(asyncio.create_task, self.perform_shutdown())
+        loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
 
     # Command for shutdown system
     @commands.command()
@@ -59,11 +59,11 @@ class AdminCommands(commands.Cog):
             await ctx.send("Shutdown initiated. Backing up and turning off...")
             # Shutdown outside of task loop to avoid hanging
             loop = asyncio.get_running_loop()
-            loop.call_soon(asyncio.create_task, self.perform_shutdown())
+            loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
         except Exception as e:
             await ctx.send(e)
 
-    # Command for reboot system (restart system)
+    # Command for reboot system (reboot system)
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def reboot(self, ctx):
@@ -76,7 +76,7 @@ class AdminCommands(commands.Cog):
             await ctx.send("Reboot initiated. Backing up and restarting...")
             # Shutdown outside of task loop to avoid hanging
             loop = asyncio.get_running_loop()
-            loop.call_soon(asyncio.create_task, self.perform_shutdown())
+            loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
         except Exception as e:
             await ctx.send(e)
 
@@ -88,6 +88,20 @@ class AdminCommands(commands.Cog):
         try:
             result = check_output(["git", "pull"]).strip().decode("utf-8")
             await ctx.send(f"```{result}```")
+        except Exception as e:
+            await ctx.send(e)
+
+    # Command for update and restart bot
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def restart(self, ctx):
+        await self.update(ctx)
+
+        await ctx.send("Shutting down cleanly...")
+        try:
+            # Shutdown outside of task loop to avoid hanging
+            loop = asyncio.get_running_loop()
+            loop.call_soon(asyncio.create_task, self.perform_shutdown(1)) # Error code for Restart=on-failure
         except Exception as e:
             await ctx.send(e)
 
