@@ -65,6 +65,8 @@ class Leveling(commands.Cog):
                            f"guild_id = {guild_id}")
             database.commit()
 
+            del self.data[user_id]
+
         print("[INFO] Cog \"Leveling\" was unloaded!")
 
     async def initialize_active_voice_members(self):
@@ -190,6 +192,8 @@ class Leveling(commands.Cog):
             cursor.execute(f"UPDATE levels SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
                            f"guild_id = {guild_id}")
             database.commit()
+
+            del self.data[member.id]
 
             if int(level) > last_lvl:
                 cursor.execute(f"UPDATE levels SET last_lvl = {int(level)} WHERE user_id = {user_id} AND "

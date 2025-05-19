@@ -61,6 +61,9 @@ class ActivityGiveaway(commands.Cog):
             cursor.execute(f"UPDATE activity_giveaway SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
                            f"guild_id = {guild_id}")
             database.commit()
+
+            del self.data[user_id]
+
         print("[INFO] Cog \"Activity Giveaway\" was unloaded!")
 
     async def initialize_active_voice_members(self):
@@ -153,6 +156,7 @@ class ActivityGiveaway(commands.Cog):
             cursor.execute(f"UPDATE activity_giveaway SET exp = {exp}, level = {level} WHERE user_id = {user_id} AND "
                            f"guild_id = {guild_id}")
             database.commit()
+            del self.data[member.id]
 
     # Method for calculate XP on message
     @staticmethod

@@ -97,7 +97,7 @@ class AdminCommands(commands.Cog):
     async def restart(self, ctx):
         await self.update(ctx)
 
-        await ctx.send("Shutting down cleanly...")
+        await ctx.send("```Shutting down cleanly...```")
         try:
             # Shutdown outside of task loop to avoid hanging
             loop = asyncio.get_running_loop()
