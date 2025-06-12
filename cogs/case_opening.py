@@ -65,7 +65,7 @@ class CaseOpening(commands.Cog):
 
                 current_line += f" [{case_name_ru}](<{base_url + case_name}>) [[EN](<{base_url + case_name }?l=english>)] | {case_code}\n"
 
-                if len(current_line) + len(content) > 4000:
+                if len(current_line) + len(content) > 2000:
                     await ctx.send(content=content)
                     content = ""
                 content += current_line
