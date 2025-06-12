@@ -63,7 +63,9 @@ class CaseOpening(commands.Cog):
                 else:
                     current_line += f"{danger} | {danger} | {danger} |"
 
-                current_line += f" [{case_name_ru}](<{base_url + case_name}>) [[EN](<{base_url + case_name }?l=english>)] | {case_code}\n"
+                formated_case_name = case_name.replace(" ", "%20")
+
+                current_line += f" [[EN](<{base_url + formated_case_name}?l=english>)] [{case_name_ru}](<{base_url + formated_case_name}>) | {case_code}\n"
 
                 if len(current_line) + len(content) > 2000:
                     await ctx.send(content=content)
