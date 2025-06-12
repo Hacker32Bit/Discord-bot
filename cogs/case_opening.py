@@ -55,11 +55,11 @@ class CaseOpening(commands.Cog):
                 if os.path.isdir('assets/images/cases/' + case_code):
                     if os.path.exists(os.path.join('assets/images/cases/' + case_code, 'case.png')):
                         if os.path.exists(os.path.join('assets/images/cases/' + case_code, 'key.png')):
-                            current_line += f"{good} | {good} | {good}"
+                            current_line += f"{good} | {good} | {good} |"
                         else:
-                            current_line += f"{warning} | {good} | {danger}"
+                            current_line += f"{warning} | {good} | {danger} |"
                     else:
-                        current_line += f"{warning} | {danger} | {danger}"
+                        current_line += f"{warning} | {danger} | {danger} |"
                 else:
                     current_line += f"{danger} | {danger} | {danger} |"
 
