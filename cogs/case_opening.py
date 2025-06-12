@@ -32,7 +32,7 @@ class CaseOpening(commands.Cog):
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
     async def show_cases(self, ctx: discord.ext.commands.context.Context) -> None:
-        with open('assets/json/cases_data.json') as f:
+        with open('assets/jsons/cases_data.json') as f:
             cases_data = json.load(f)
             await ctx.send(content="Available cases and keys:\n" + "\n".join(cases_data.keys()))
 
