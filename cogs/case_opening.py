@@ -28,6 +28,13 @@ class CaseOpening(commands.Cog):
     def cog_unload(self):
         print("[INFO] Cog \"Case Opening\" was unloaded!")
 
+    # Command for show available cases and keys
+    @commands.command()
+    @commands.has_any_role("Owner", "Admin")
+    async def show_cases(self, ctx: discord.ext.commands.context.Context) -> None:
+        cases_data = json.loads("assets/json/cases_data.json")
+        await ctx.send(content="Available cases and keys:\n" + "\n".join(cases_data.keys()))
+
     # Command for open case event
     @commands.command()
     @commands.has_any_role("Owner", "Admin")
@@ -130,7 +137,6 @@ class CaseOpening(commands.Cog):
             item_image = item_image.resize((509, 382))
             image.paste(item_image, (0, 60), item_image.convert("RGBA"))
 
-
             # Get case image and paste
             case_image = Image.open(f"assets/images/cases/{case_name}/case.png")
             image.paste(case_image, (528, 14), case_image.convert("RGBA"))
@@ -151,7 +157,6 @@ class CaseOpening(commands.Cog):
 
             avatar = Image.composite(img, background, mask)
             image.paste(avatar, (678, 478), avatar.convert("RGBA"))
-
 
             draw = Draw(image)
             is_star = "★" in drop_name
