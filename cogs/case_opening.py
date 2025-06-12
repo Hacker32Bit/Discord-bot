@@ -34,7 +34,39 @@ class CaseOpening(commands.Cog):
     async def show_cases(self, ctx: discord.ext.commands.context.Context) -> None:
         with open('assets/jsons/cases_data.json') as f:
             cases_data = json.load(f)
-            await ctx.send(content="Available cases and keys:\n" + "\n".join(cases_data.keys()))
+            cases_codes = sorted(cases_data.keys())
+
+            content = "Available cases and keys:\nFolder | Case | Key | Name | Code\n"
+
+            # Emojis
+            danger = "<:utility8:1240238844033372261>"
+            warning = "<:utility5:1240238848362020926>"
+            good = "<:utility12:1240238842431279166>"
+
+            base_url = "https://steamcommunity.com/market/listings/730/"
+
+            for case_code in cases_codes:
+                current_line = ""
+                case_data = cases_data[case_code]
+                case_name = case_data["name_en"]
+                case_name_ru = case_data["name_ru"]
+
+                # Check folder is existed?
+                if os.path.isdir('assets/images/cases/' + case_code):
+                    if os.path.exists(os.path.join('assets/images/cases/' + case_code, 'case.png')):
+                        if os.path.exists(os.path.join('assets/images/cases/' + case_code, 'key.png')):
+                            current_line += f"{good} | {good} | {good}"
+                        else:
+                            current_line += f"{warning} | {good} | {danger}"
+                    else:
+                        current_line += f"{warning} | {danger} | {danger}"
+                else:
+                    current_line += f"{danger} | {danger} | {danger} |"
+
+                current_line += f" [{case_name_ru}](<{base_url + case_name}>) [[EN](<{base_url + case_name }?l=english>)] | {case_code}\n"
+                content += current_line
+
+            await ctx.send(content=content)
 
     # Command for open case event
     @commands.command()
