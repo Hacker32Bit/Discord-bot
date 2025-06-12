@@ -3,27 +3,27 @@
     "name_en": "Gallery Case",
     "name_ru": "Галерейный кейс"
   },
-  "gamma":  {
+  "gamma": {
     "name_en": "Gamma Case",
     "name_ru": "Гамма-кейс"
   },
-  "gamma_2":  {
+  "gamma_2": {
     "name_en": "Gamma 2 Case",
     "name_ru": "Гамма-кейс #2"
   },
-  "recoil":  {
+  "recoil": {
     "name_en": "Recoil Case",
     "name_ru": "Гремучий кейс"
   },
-  "esports_2013_winter":  {
+  "esports_2013_winter": {
     "name_en": "eSports 2013 Winter Case",
     "name_ru": "Зимний кейс eSports 2013"
   },
-  "cs20":  {
+  "cs20": {
     "name_en": "CS20 Case",
     "name_ru": "Кейс CS20"
   },
-  "esports_2013":  {
+  "esports_2013": {
     "name_en": "eSports 2013 Case",
     "name_ru": "Кейс eSports 2013"
   },
@@ -166,5 +166,17 @@
   "chroma": {
     "name_en": "Chroma Case",
     "name_ru": "Хромированный оружейный кейс"
+  },
+  "community_sticker_capsule_1": {
+    "name_en": "Community Sticker Capsule 1",
+    "name_ru": "Капсула с наклейкой сообщества 1"
+  },
+  "sticker_capsule": {
+    "name_en": "Sticker Capsule",
+    "name_ru": "Капсула с наклейкой"
+  },
+  "sticker_capsule_2": {
+    "name_en": "Sticker Capsule 2",
+    "name_ru": "Капсула с наклейкой 2"
   }
 }

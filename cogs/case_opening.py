@@ -58,6 +58,8 @@ class CaseOpening(commands.Cog):
                             current_line += f"{good} | {good} | {good} |"
                         else:
                             current_line += f"{warning} | {good} | {danger} |"
+                    elif os.path.exists(os.path.join('assets/images/cases/' + case_code, 'key.png')):
+                        current_line += f"{warning} | {danger} | {good} |"
                     else:
                         current_line += f"{warning} | {danger} | {danger} |"
                 else:
