@@ -29,7 +29,7 @@ class CaseOpening(commands.Cog):
         print("[INFO] Cog \"Case Opening\" was unloaded!")
 
     # Command for show available cases and keys
-    @commands.command()
+    @commands.command(help="show_cases", description="Show available cases and keys",)
     @commands.has_any_role("Owner", "Admin")
     async def show_cases(self, ctx: discord.ext.commands.context.Context) -> None:
         with open('assets/jsons/cases_data.json') as f:
@@ -77,7 +77,7 @@ class CaseOpening(commands.Cog):
             await ctx.send(content=content)
 
     # Command for open case event
-    @commands.command()
+    @commands.command(help="open_cs_case", description="Command for open case event")
     @commands.has_any_role("Owner", "Admin")
     async def open_cs_case(self, ctx: discord.ext.commands.context.Context, user_id: str, case_name: str,
                            drop_url: str) -> None:

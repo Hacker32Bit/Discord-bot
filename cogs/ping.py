@@ -12,7 +12,8 @@ class Ping(commands.Cog):
     def cog_unload(self):
         print("[INFO] Cog \"Ping\" was unloaded!")
 
-    @commands.command()
+    # Ping
+    @commands.command(help="ping", description="Returns bot latency")
     @commands.has_any_role("Admin", "Owner")
     async def ping(self, ctx):
         bot_latency = round(self.client.latency * 1000)

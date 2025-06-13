@@ -119,7 +119,7 @@ class MembersGiveaway(commands.Cog):
             return image
 
     # Command for create giveaway message
-    @commands.command()
+    @commands.command(help="create_giveaway", description="Create giveaway message")
     @commands.has_any_role("Owner", "Admin")
     async def create_giveaway(self, ctx: discord.ext.commands.context.Context, count: int,
                               drop_url: str) -> None:

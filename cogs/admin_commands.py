@@ -36,7 +36,7 @@ class AdminCommands(commands.Cog):
         sys.exit(code)
 
     # Command for logout bot (logout bot)
-    @commands.command()
+    @commands.command(help="logout", description="Command for logout bot (logout bot)")
     @commands.has_any_role("Owner", "Admin")
     async def logout(self, ctx):
         print("[INFO] logging out...")
@@ -47,7 +47,7 @@ class AdminCommands(commands.Cog):
         loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
 
     # Command for shutdown system
-    @commands.command()
+    @commands.command(help="shutdown", description="Command for shutdown system")
     @commands.has_any_role("Owner", "Admin")
     async def shutdown(self, ctx):
         print("[INFO] Shutting down...")
@@ -63,8 +63,8 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-    # Command for reboot system (reboot system)
-    @commands.command()
+    # Command for reboot system (reboot Raspberry PI)
+    @commands.command(help="reboot", description="Command for reboot system (reboot Raspberry PI)")
     @commands.has_any_role("Owner", "Admin")
     async def reboot(self, ctx):
         print("[INFO] Rebooting...")
@@ -81,7 +81,7 @@ class AdminCommands(commands.Cog):
             await ctx.send(e)
 
     # Command for update system
-    @commands.command()
+    @commands.command(help="update", description="Command for update system")
     @commands.has_any_role("Owner", "Admin")
     async def update(self, ctx):
         print("[INFO] Updating project...")
@@ -92,7 +92,7 @@ class AdminCommands(commands.Cog):
             await ctx.send(e)
 
     # Command for update and restart bot
-    @commands.command()
+    @commands.command(help="restart", description="Command for update and restart bot")
     @commands.has_any_role("Owner", "Admin")
     async def restart(self, ctx):
         await self.update(ctx)
@@ -105,8 +105,8 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-    # Command for get server state
-    @commands.command()
+    # Command for get server battery status
+    @commands.command(help="battery_status", description="Command for get server battery status")
     @commands.has_any_role("Owner", "Admin")
     async def battery_status(self, ctx):
         try:
@@ -115,7 +115,8 @@ class AdminCommands(commands.Cog):
         except FileNotFoundError as e:
             await ctx.send(e)
 
-    @commands.command()
+    # Command for get server temperature status
+    @commands.command(help="temp_status", description="Command for get server temperature status")
     @commands.has_any_role("Owner", "Admin")
     async def temp_status(self, ctx):
         try:
@@ -126,7 +127,8 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-    @commands.command()
+    # Command for get server connection status
+    @commands.command(help="connection_status", description="Command for get server connection status")
     @commands.has_any_role("Owner", "Admin")
     async def connection_status(self, ctx):
         try:
@@ -141,14 +143,14 @@ class AdminCommands(commands.Cog):
             await ctx.send(e)
 
     # Command for synchronize client slash commands with server commands
-    @commands.command()
+    @commands.command(help="sync", description="Command for synchronize client slash commands with server commands")
     @commands.has_any_role("Owner", "Admin")
     async def sync(self, ctx) -> None:
         fmt = await ctx.bot.tree.sync(guild=discord.Object(GUILD_ID))
         await ctx.send(f"synced {len(fmt)} commands")
 
     # Remove referrer from DB by ID
-    @commands.command()
+    @commands.command(help="remove_referrer", description="Remove referrer from DB by ID")
     @commands.has_any_role("Owner", "Admin")
     async def remove_referrer(self, ctx: discord.ext.commands.context.Context, user_id: str) -> None:
         descending = "DELETE FROM invites WHERE user_id = ?"
@@ -157,7 +159,7 @@ class AdminCommands(commands.Cog):
         await ctx.send(f"Referrer <@{user_id}> removed from db")
 
     # Remove data from activity_giveaway table
-    @commands.command()
+    @commands.command(help="reset_activity_giveaway", description="Remove data from activity_giveaway table")
     @commands.has_any_role("Owner", "Admin")
     async def reset_activity_giveaway(self, ctx: discord.ext.commands.context.Context) -> None:
         descending = "DELETE FROM activity_giveaway"
@@ -166,7 +168,7 @@ class AdminCommands(commands.Cog):
         await ctx.send(f"Activity giveaway was reset!")
 
     # Add exp to user_id
-    @commands.command()
+    @commands.command(help="add_exp", description="Add exp to user_id")
     @commands.has_any_role("Owner", "Admin")
     async def add_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, add_exp: str) -> None:
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
@@ -195,7 +197,7 @@ class AdminCommands(commands.Cog):
             await ctx.send(f"Added {add_exp} exp to <@{user_id}>. Now he have {exp} exp.")
 
     # Reduce exp to user_id
-    @commands.command()
+    @commands.command(help="reduce_exp", description="Reduce exp to user_id")
     @commands.has_any_role("Owner", "Admin")
     async def reduce_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, reduce_exp: str) -> None:
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
@@ -226,7 +228,7 @@ class AdminCommands(commands.Cog):
             await ctx.send(f"Reduced {reduce_exp} exp to <@{user_id}>. Now he have {exp} exp.")
 
     # Command for send message from Bot
-    @commands.command()
+    @commands.command(help="send_message", description="Command for send message from Bot")
     @commands.has_any_role("Owner", "Admin")
     async def send_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str) -> None:
         channel = await self.client.fetch_channel(channel_id)
@@ -235,7 +237,7 @@ class AdminCommands(commands.Cog):
         await channel.send(content=message)
 
     # Command for send file from Bot
-    @commands.command()
+    @commands.command(help="send_file", description="Command for send file from Bot")
     @commands.has_any_role("Owner", "Admin")
     async def send_file(self, ctx: discord.ext.commands.context.Context, channel_id: str,
                         file: discord.Attachment) -> None:
@@ -245,7 +247,7 @@ class AdminCommands(commands.Cog):
         await channel.send(file=await file.to_file())
 
     # Command for send message with file from Bot
-    @commands.command()
+    @commands.command(help="send_embed_message", description="Command for send message with file from Bot")
     @commands.has_any_role("Owner", "Admin")
     async def send_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str,
                                  file: discord.Attachment) -> None:
@@ -253,7 +255,7 @@ class AdminCommands(commands.Cog):
         await channel.send(content=message, file=await file.to_file())
 
     # Command for edit file in message from Bot
-    @commands.command()
+    @commands.command(help="edit_file", description="Command for edit file in message from Bot")
     @commands.has_any_role("Owner", "Admin")
     async def edit_file(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str) -> None:
 
@@ -268,7 +270,7 @@ class AdminCommands(commands.Cog):
         await message.edit(attachments=files)
 
     # Command for edit message from Bot
-    @commands.command()
+    @commands.command(help="edit_message", description="Command for edit message from Bot")
     @commands.has_any_role("Owner", "Admin")
     async def edit_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
                            message_text: str) -> None:
@@ -278,7 +280,7 @@ class AdminCommands(commands.Cog):
         await message.edit(content=message_text)
 
     # Command for edit message with file from Bot
-    @commands.command()
+    @commands.command(help="edit_embed_message", description="Command for edit message with file from Bot")
     @commands.has_any_role("Owner", "Admin")
     async def edit_embed_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message_id: str,
                                  message_text: str) -> None:
@@ -294,7 +296,7 @@ class AdminCommands(commands.Cog):
         await message.edit(content=message_text, attachments=files)
 
     # Command for add manually join user log in log channel
-    @commands.command()
+    @commands.command(help="join_user", description="Command for add manually join user log in log channel")
     @commands.has_any_role("Owner", "Admin")
     async def join_user(self, member_id, user_id) -> None:
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
@@ -305,8 +307,8 @@ class AdminCommands(commands.Cog):
         )
         await channel.send(embed=embed)
 
-    # Command for get members dict() who reacted on post by message_id
-    @commands.command()
+    # Command for get members dict() by message_id who reacted on post
+    @commands.command(help="get_members_list", description="Command for get members dict() by message_id who reacted on post")
     @commands.has_any_role("Owner", "Admin")
     async def get_members_list(self, ctx, message_id):
         await ctx.message.delete()
@@ -320,7 +322,7 @@ class AdminCommands(commands.Cog):
         return users
 
     # Command for get random winner from message reactions
-    @commands.command()
+    @commands.command(help="giveaway_random", description="Command for get random winner from message reactions")
     @commands.has_any_role("Owner", "Admin")
     async def giveaway_random(self, ctx, count, message_id, message_id2: str = None, repeat: str = None) -> None:
         await ctx.send(f"Participants of the competition.")
