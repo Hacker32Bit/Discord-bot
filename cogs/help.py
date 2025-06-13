@@ -18,8 +18,6 @@ class HelpCog(commands.Cog):
         for command in self.bot.commands:
             if not command.hidden:
                 helptext += f"[2;32m{ctx.prefix}{command.name}[0m - {command.help or 'No description'}\n"
-            else:
-                helptext += f"[2;32m{ctx.prefix}{command.name}[0m - {command.help or 'No description'}\n"
 
         helptext += "```"
         await ctx.send(helptext)
