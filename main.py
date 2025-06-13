@@ -21,7 +21,7 @@ intents.voice_states = True
 intents.guilds = True
 intents.presences = True
 
-client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID, help_command=None)
+client = commands.Bot(command_prefix='!', intents=intents, application_id=APPLICATION_ID)
 
 async def load_extensions():
     cogs_path = os.path.join(os.path.dirname(__file__), "cogs")
