@@ -13,7 +13,7 @@ class HelpCog(commands.Cog):
 
     @commands.command(name="help", description="Returns all commands available")
     @commands.has_any_role("Owner", "Admin")
-    async def help(self, ctx):
+    async def help_command(self, ctx):
         helptext = "```ansi\nAvailable Commands:\n"
         for command in self.bot.commands:
             if not command.hidden:
