@@ -32,7 +32,7 @@ class HelpCog(commands.Cog):
             for cmd in commands_list:
                 name = cmd.name
                 short_help = cmd.help if cmd.help else name
-                lines.append(f"  [2;32m{name:<24} [0m{short_help}")
+                lines.append(f"  [2;32m{ctx.prefix}{name:<23} [0m{short_help}")
 
         await ctx.send(f"```ansi\n{chr(10).join(lines)}\n```")
 
