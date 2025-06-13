@@ -12,7 +12,7 @@ class HelpCog(commands.Cog):
         print("[INFO] Cog \"Help\" was unloaded!")
 
     @commands.command(name="help", help="Shows all available commands")
-    # @commands.has_any_role("Owner", "Admin")
+    @commands.has_any_role("Owner", "Admin")
     async def help_command(self, ctx):
         helptext = "```ansi\nAvailable Commands:\n"
         for command in self.bot.commands:
@@ -22,5 +22,5 @@ class HelpCog(commands.Cog):
         helptext += "```"
         await ctx.send(helptext)
 
-def setup(bot):
-    bot.add_cog(HelpCog(bot))
+async def setup(bot):
+    await bot.add_cog(HelpCog(bot))
