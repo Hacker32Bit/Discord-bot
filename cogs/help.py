@@ -28,7 +28,7 @@ class HelpCog(commands.Cog):
                  "You can also type [2;32m!help category[0m for more info on a category."]
 
         for category, commands_list in categories.items():
-            lines.append(f"{category}:")
+            lines.append(f"\n [1;2m[1;35m{category}[0m:[0m")
             for cmd in commands_list:
                 name = cmd.name
                 short_help = cmd.help if cmd.help else name
