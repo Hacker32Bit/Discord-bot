@@ -105,16 +105,6 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-    # List all commands
-    @commands.command(name="help", description="Returns all commands available")
-    @commands.has_any_role("Owner", "Admin")
-    async def help(self, ctx):
-        helptext = "```"
-        for command in self.client.commands:
-            helptext += f"{command}\n"
-        helptext += "```"
-        await ctx.send(helptext)
-
     # Command for get server state
     @commands.command()
     @commands.has_any_role("Owner", "Admin")

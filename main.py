@@ -42,6 +42,11 @@ async def on_ready():
 async def main():
     await load_extensions()
 
+    x = []
+    for y in client.commands:
+        if y.cog and y.cog.qualified_name == 'Test':
+            x.append(y.name)
+
     log_path = os.path.join(os.sep, "tmp", "logs", f"{strftime('%Y-%m-%d %H:%M:%S')}.log")
     handler = logging.FileHandler(filename=log_path, encoding='utf-8', mode="a")
     discord.utils.setup_logging(level=logging.DEBUG, root=False, handler=handler)
