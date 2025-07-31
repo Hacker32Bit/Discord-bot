@@ -89,7 +89,7 @@ class CaseOpening(commands.Cog):
                 sleep(10)
                 r = requests.get(drop_url + '?l=english')
 
-            json_string = r.text.split('var g_rgAssets = ')[1].split('var g_rgCurrency')[0].strip().replace(';', '')
+            json_string = r.text.split('var g_rgAssets = ')[1].split('var g_nConfType')[0].strip().replace(';', '')
 
             data = json.loads(json_string)
             try:

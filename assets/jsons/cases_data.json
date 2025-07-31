@@ -1,182 +1,182 @@
 {
-  "gallery": {
-    "name_en": "Gallery Case",
-    "name_ru": "Галерейный кейс"
-  },
-  "gamma": {
-    "name_en": "Gamma Case",
-    "name_ru": "Гамма-кейс"
-  },
-  "gamma_2": {
-    "name_en": "Gamma 2 Case",
-    "name_ru": "Гамма-кейс #2"
-  },
-  "recoil": {
-    "name_en": "Recoil Case",
-    "name_ru": "Гремучий кейс"
-  },
-  "esports_2013_winter": {
-    "name_en": "eSports 2013 Winter Case",
-    "name_ru": "Зимний кейс eSports 2013"
-  },
-  "cs20": {
-    "name_en": "CS20 Case",
-    "name_ru": "Кейс CS20"
-  },
-  "esports_2013": {
-    "name_en": "eSports 2013 Case",
-    "name_ru": "Кейс eSports 2013"
-  },
-  "horizon": {
-    "name_en": "Horizon Case",
-    "name_ru": "Кейс «Горизонт»"
-  },
-  "dreams_and_nightmares": {
-    "name_en": "Dreams & Nightmares Case",
-    "name_ru": "Кейс «Грёзы и кошмары»"
-  },
-  "danger_zone": {
-    "name_en": "Danger Zone Case",
-    "name_ru": "Кейс «Запретная зона»"
-  },
-  "snakebite": {
-    "name_en": "Snakebite Case",
-    "name_ru": "Кейс «Змеиный укус»"
-  },
-  "kilowatt": {
-    "name_en": "Kilowatt Case",
-    "name_ru": "Кейс «Киловатт»"
-  },
-  "fever": {
-    "name_en": "Fever Case",
-    "name_ru": "Кейс «Лихорадка»"
-  },
-  "prisma_2": {
-    "name_en": "Prisma 2 Case",
-    "name_ru": "Кейс «Призма 2»"
-  },
-  "prisma": {
-    "name_en": "Prisma Case",
-    "name_ru": "Кейс «Призма»"
-  },
-  "fracture": {
-    "name_en": "Fracture Case",
-    "name_ru": "Кейс «Разлом»"
-  },
-  "shattered_web": {
-    "name_en": "Shattered Web Case",
-    "name_ru": "Кейс «Расколотая сеть»"
-  },
-  "revolution": {
-    "name_en": "Revolution Case",
-    "name_ru": "Кейс «Революция»"
-  },
-  "clutch": {
-    "name_en": "Clutch Case",
-    "name_ru": "Кейс «Решающий момент»"
-  },
-  "spectrum_2": {
-    "name_en": "Spectrum 2 Case",
-    "name_ru": "Кейс «Спектр 2»"
-  },
-  "spectrum": {
-    "name_en": "Spectrum Case",
-    "name_ru": "Кейс «Спектр»"
-  },
-  "falchion": {
-    "name_en": "Falchion Case",
-    "name_ru": "Кейс «Фальшион»"
-  },
-  "operation_bravo": {
-    "name_en": "Operation Bravo Case",
-    "name_ru": "Кейс операции «Браво»"
-  },
-  "operation_hydra": {
-    "name_en": "Operation Hydra Case",
-    "name_ru": "Кейс операции «Гидра»"
-  },
-  "operation_wildfire": {
-    "name_en": "Operation Wildfire Case",
-    "name_ru": "Кейс операции «Дикое пламя»"
-  },
-  "operation_broken_fang": {
-    "name_en": "Operation Broken Fang Case",
-    "name_ru": "Кейс операции «Сломанный клык»"
-  },
-  "operation_riptide": {
-    "name_en": "Operation Riptide Case",
-    "name_ru": "Кейс операции «Хищные воды»"
-  },
-  "esports_2014_summer": {
-    "name_en": "eSports 2014 Summer Case",
-    "name_ru": "Летний кейс eSports 2014"
-  },
-  "csgo_weapon": {
-    "name_en": "CS:GO Weapon Case",
-    "name_ru": "Оружейный кейс CS:GO"
-  },
-  "csgo_weapon_2": {
-    "name_en": "CS:GO Weapon Case 2",
-    "name_ru": "Оружейный кейс CS:GO, тираж #2"
-  },
-  "csgo_weapon_3": {
-    "name_en": "CS:GO Weapon Case 3",
-    "name_ru": "Оружейный кейс CS:GO, тираж #3"
-  },
-  "winter_offensive_weapon": {
-    "name_en": "Winter Offensive Weapon Case",
-    "name_ru": "Оружейный кейс Winter Offensive"
-  },
-  "operation_vanguard_weapon": {
-    "name_en": "Operation Vanguard Weapon Case",
-    "name_ru": "Оружейный кейс операции «Авангард»"
-  },
-  "operation_breakout_weapon": {
-    "name_en": "Operation Breakout Weapon Case",
-    "name_ru": "Оружейный кейс операции «Прорыв»"
-  },
-  "operation_phoenix_weapon": {
-    "name_en": "Operation Phoenix Weapon Case",
-    "name_ru": "Оружейный кейс операции «Феникс»"
-  },
-  "huntsman_weapon": {
-    "name_en": "Huntsman Weapon Case",
-    "name_ru": "Охотничий оружейный кейс"
-  },
-  "glove": {
-    "name_en": "Glove Case",
-    "name_ru": "Перчаточный кейс"
-  },
-  "revolver": {
-    "name_en": "Revolver Case",
-    "name_ru": "Револьверный кейс"
-  },
-  "shadow": {
-    "name_en": "Shadow Case",
-    "name_ru": "Тёмный кейс"
-  },
-  "chroma_2": {
-    "name_en": "Chroma 2 Case",
-    "name_ru": "Хромированный кейс #2"
-  },
-  "chroma_3": {
-    "name_en": "Chroma 3 Case",
-    "name_ru": "Хромированный кейс #3"
-  },
-  "chroma": {
-    "name_en": "Chroma Case",
-    "name_ru": "Хромированный оружейный кейс"
-  },
-  "community_sticker_capsule_1": {
-    "name_en": "Community Sticker Capsule 1",
-    "name_ru": "Капсула с наклейкой сообщества 1"
-  },
-  "sticker_capsule": {
-    "name_en": "Sticker Capsule",
-    "name_ru": "Капсула с наклейкой"
-  },
-  "sticker_capsule_2": {
-    "name_en": "Sticker Capsule 2",
-    "name_ru": "Капсула с наклейкой 2"
-  }
+    "gallery": {
+        "name_en": "Gallery Case",
+        "name_ru": "Галерейный кейс"
+    },
+    "gamma": {
+        "name_en": "Gamma Case",
+        "name_ru": "Гамма-кейс"
+    },
+    "gamma_2": {
+        "name_en": "Gamma 2 Case",
+        "name_ru": "Гамма-кейс #2"
+    },
+    "recoil": {
+        "name_en": "Recoil Case",
+        "name_ru": "Гремучий кейс"
+    },
+    "esports_2013_winter": {
+        "name_en": "eSports 2013 Winter Case",
+        "name_ru": "Зимний кейс eSports 2013"
+    },
+    "cs20": {
+        "name_en": "CS20 Case",
+        "name_ru": "Кейс CS20"
+    },
+    "esports_2013": {
+        "name_en": "eSports 2013 Case",
+        "name_ru": "Кейс eSports 2013"
+    },
+    "horizon": {
+        "name_en": "Horizon Case",
+        "name_ru": "Кейс «Горизонт»"
+    },
+    "dreams_and_nightmares": {
+        "name_en": "Dreams & Nightmares Case",
+        "name_ru": "Кейс «Грёзы и кошмары»"
+    },
+    "danger_zone": {
+        "name_en": "Danger Zone Case",
+        "name_ru": "Кейс «Запретная зона»"
+    },
+    "snakebite": {
+        "name_en": "Snakebite Case",
+        "name_ru": "Кейс «Змеиный укус»"
+    },
+    "kilowatt": {
+        "name_en": "Kilowatt Case",
+        "name_ru": "Кейс «Киловатт»"
+    },
+    "fever": {
+        "name_en": "Fever Case",
+        "name_ru": "Кейс «Лихорадка»"
+    },
+    "prisma_2": {
+        "name_en": "Prisma 2 Case",
+        "name_ru": "Кейс «Призма 2»"
+    },
+    "prisma": {
+        "name_en": "Prisma Case",
+        "name_ru": "Кейс «Призма»"
+    },
+    "fracture": {
+        "name_en": "Fracture Case",
+        "name_ru": "Кейс «Разлом»"
+    },
+    "shattered_web": {
+        "name_en": "Shattered Web Case",
+        "name_ru": "Кейс «Расколотая сеть»"
+    },
+    "revolution": {
+        "name_en": "Revolution Case",
+        "name_ru": "Кейс «Революция»"
+    },
+    "clutch": {
+        "name_en": "Clutch Case",
+        "name_ru": "Кейс «Решающий момент»"
+    },
+    "spectrum_2": {
+        "name_en": "Spectrum 2 Case",
+        "name_ru": "Кейс «Спектр 2»"
+    },
+    "spectrum": {
+        "name_en": "Spectrum Case",
+        "name_ru": "Кейс «Спектр»"
+    },
+    "falchion": {
+        "name_en": "Falchion Case",
+        "name_ru": "Кейс «Фальшион»"
+    },
+    "operation_bravo": {
+        "name_en": "Operation Bravo Case",
+        "name_ru": "Кейс операции «Браво»"
+    },
+    "operation_hydra": {
+        "name_en": "Operation Hydra Case",
+        "name_ru": "Кейс операции «Гидра»"
+    },
+    "operation_wildfire": {
+        "name_en": "Operation Wildfire Case",
+        "name_ru": "Кейс операции «Дикое пламя»"
+    },
+    "operation_broken_fang": {
+        "name_en": "Operation Broken Fang Case",
+        "name_ru": "Кейс операции «Сломанный клык»"
+    },
+    "operation_riptide": {
+        "name_en": "Operation Riptide Case",
+        "name_ru": "Кейс операции «Хищные воды»"
+    },
+    "esports_2014_summer": {
+        "name_en": "eSports 2014 Summer Case",
+        "name_ru": "Летний кейс eSports 2014"
+    },
+    "csgo_weapon": {
+        "name_en": "CS:GO Weapon Case",
+        "name_ru": "Оружейный кейс CS:GO"
+    },
+    "csgo_weapon_2": {
+        "name_en": "CS:GO Weapon Case 2",
+        "name_ru": "Оружейный кейс CS:GO, тираж #2"
+    },
+    "csgo_weapon_3": {
+        "name_en": "CS:GO Weapon Case 3",
+        "name_ru": "Оружейный кейс CS:GO, тираж #3"
+    },
+    "winter_offensive_weapon": {
+        "name_en": "Winter Offensive Weapon Case",
+        "name_ru": "Оружейный кейс Winter Offensive"
+    },
+    "operation_vanguard_weapon": {
+        "name_en": "Operation Vanguard Weapon Case",
+        "name_ru": "Оружейный кейс операции «Авангард»"
+    },
+    "operation_breakout_weapon": {
+        "name_en": "Operation Breakout Weapon Case",
+        "name_ru": "Оружейный кейс операции «Прорыв»"
+    },
+    "operation_phoenix_weapon": {
+        "name_en": "Operation Phoenix Weapon Case",
+        "name_ru": "Оружейный кейс операции «Феникс»"
+    },
+    "huntsman_weapon": {
+        "name_en": "Huntsman Weapon Case",
+        "name_ru": "Охотничий оружейный кейс"
+    },
+    "glove": {
+        "name_en": "Glove Case",
+        "name_ru": "Перчаточный кейс"
+    },
+    "revolver": {
+        "name_en": "Revolver Case",
+        "name_ru": "Револьверный кейс"
+    },
+    "shadow": {
+        "name_en": "Shadow Case",
+        "name_ru": "Тёмный кейс"
+    },
+    "chroma_2": {
+        "name_en": "Chroma 2 Case",
+        "name_ru": "Хромированный кейс #2"
+    },
+    "chroma_3": {
+        "name_en": "Chroma 3 Case",
+        "name_ru": "Хромированный кейс #3"
+    },
+    "chroma": {
+        "name_en": "Chroma Case",
+        "name_ru": "Хромированный оружейный кейс"
+    },
+    "community_sticker_capsule_1": {
+        "name_en": "Community Sticker Capsule 1",
+        "name_ru": "Капсула с наклейкой сообщества 1"
+    },
+    "sticker_capsule": {
+        "name_en": "Sticker Capsule",
+        "name_ru": "Капсула с наклейкой"
+    },
+    "sticker_capsule_2": {
+        "name_en": "Sticker Capsule 2",
+        "name_ru": "Капсула с наклейкой 2"
+    }
 }
