@@ -7,3 +7,5 @@ curl_cffi
 python-dateutil
 phonenumbers
 email_validator
+anyio
+pytest
