@@ -310,7 +310,7 @@ class AdminCommands(commands.Cog):
     # Command for add manually join user log in log channel
     @commands.command(help="ban_user", description="Command for add manually ban user log in log channel")
     @commands.has_any_role("Owner", "Admin")
-    async def join_user(self, member_id, user_id) -> None:
+    async def ban_user(self, member_id, user_id) -> None:
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
         # Send ban message in LOG_CHANNEL
         embed = discord.Embed(
