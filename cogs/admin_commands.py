@@ -302,7 +302,20 @@ class AdminCommands(commands.Cog):
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
         embed = discord.Embed(
             description=f":wave: Welcome to server **<@{user_id}>**!",
-            color=0x4caf50,
+            color=0x4caf50, # GREEN 500
+            timestamp=datetime.datetime.now()
+        )
+        await channel.send(embed=embed)
+
+    # Command for add manually join user log in log channel
+    @commands.command(help="ban_user", description="Command for add manually ban user log in log channel")
+    @commands.has_any_role("Owner", "Admin")
+    async def join_user(self, member_id, user_id) -> None:
+        channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
+        # Send ban message in LOG_CHANNEL
+        embed = discord.Embed(
+            description=f"<:utilitybanhammer:1240238885762633799> **<@{user_id}>** was banned!",
+            color=0xf44336,  # RED 500
             timestamp=datetime.datetime.now()
         )
         await channel.send(embed=embed)

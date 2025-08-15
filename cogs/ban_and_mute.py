@@ -20,8 +20,8 @@ class BanAndMute(commands.Cog):
         print("[INFO] Cog \"Ban & Mute\" was unloaded!")
 
     @commands.Cog.listener()
-    async def on_member_ban(self):
-        print("BANNED!")
+    async def on_member_ban(self, guild, user):
+        print("BANNED!" + guild + " " + user)
 
 
 async def setup(client):

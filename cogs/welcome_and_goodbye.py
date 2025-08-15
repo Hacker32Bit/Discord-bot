@@ -238,14 +238,24 @@ class WelcomeAndGoodbye(commands.Cog):
         # Updates the cache when a user leaves to make sure
         # everything is up to date
         self.invites[member.guild.id] = await member.guild.invites()
-
-        # Send message in LOG_CHANNEL
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
-        embed = discord.Embed(
-            description=f"<:hmm2:1240238779181174825> **{member.mention}** leaved from this server!",
-            color=0xff9800, # ORANGE 500
-            timestamp=datetime.datetime.now()
-        )
+
+        try:
+            await member.guild.fetch_ban(member)
+            # Send ban message in LOG_CHANNEL
+            embed = discord.Embed(
+                description=f"<:utilitybanhammer:1240238885762633799> **{member.mention}** was banned!",
+                color=0xf44336,  # RED 500
+                timestamp=datetime.datetime.now()
+            )
+        except discord.NotFound:
+            # Send leave message in LOG_CHANNEL
+            embed = discord.Embed(
+                description=f"<:hmm2:1240238779181174825> **{member.mention}** leaved from this server!",
+                color=0xff9800, # ORANGE 500
+                timestamp=datetime.datetime.now()
+            )
+
         await channel.send(embed=embed)
 
 
