@@ -93,7 +93,7 @@ class BanAndMute(commands.Cog):
             pm_message += "```"
             reason_messages = reason_messages[:-2]
 
-        await self.client.send_message(member, pm_message)
+        await member.send(pm_message)
         await member.ban(reason=reason)
         end_time = None
 
