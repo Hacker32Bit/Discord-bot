@@ -55,7 +55,7 @@ class BanAndMute(commands.Cog):
         return [float(num) for num in numbers] if numbers else []
 
     async def get_specific_message(self, message_id: int):
-        channel = self.client.get_channel(RULES_TEXT_CHANNEL_ID)  # Get the channel object
+        channel = await self.client.fetch_channel(RULES_TEXT_CHANNEL_ID)  # Get the channel object
         if channel:
             try:
                 message = await channel.fetch_message(message_id)
@@ -83,8 +83,11 @@ class BanAndMute(commands.Cog):
             pm_message += "```"
             reason_messages = ""
             for r in reasons:
+                print(r)
                 message_id = rules[math.floor(r)]
+                print(message_id)
                 text = await self.get_specific_message(message_id)
+                print(text)
                 pm_message += str(r) + text.split(str(r))[1].split('\n')[0] + "\n"
                 reason_messages += f"[{r}](https://discord.com/channels/{GUILD_ID}/{RULES_TEXT_CHANNEL_ID}/{message_id}), "
             pm_message += "```"
