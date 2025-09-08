@@ -100,6 +100,8 @@ class BanAndMute(commands.Cog):
                 reason_messages += f"[{r}](https://discord.com/channels/{GUILD_ID}/{RULES_TEXT_CHANNEL_ID}/{message_id}), "
             pm_message += "```"
             reason_messages = reason_messages[:-2]
+        else:
+            pm_message += f"```{reason}```"
 
         await member.send(pm_message)
         await member.ban(reason=reason)
