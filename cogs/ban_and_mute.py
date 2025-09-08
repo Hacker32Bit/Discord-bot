@@ -49,10 +49,21 @@ class BanAndMute(commands.Cog):
         print("[INFO] Cog \"Ban & Mute\" was unloaded!")
 
     @staticmethod
-    def string_to_array(s: str) -> list[float]:
-        # Find all valid float-like numbers using regex
-        numbers = re.findall(r"-?\d+(?:\.\d+)?", s)
-        return [float(num) for num in numbers] if numbers else []
+    def string_to_array(s: str):
+        # Only numbers (int or float) separated by commas
+        pattern = r'^\s*\d+(\.\d+)?(\s*,\s*\d+(\.\d+)?)*\s*$'
+
+        if not re.match(pattern, s):
+            return []
+
+        result = []
+        for x in s.split(","):
+            x = x.strip()
+            if "." in x:  # float
+                result.append(float(x))
+            else:  # int
+                result.append(int(x))
+        return result
 
     async def get_specific_message(self, message_id: int):
         channel = await self.client.fetch_channel(RULES_TEXT_CHANNEL_ID)  # Get the channel object
