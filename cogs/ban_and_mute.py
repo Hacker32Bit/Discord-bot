@@ -5,11 +5,22 @@ from typing import Final
 import datetime
 import os
 import sqlite3
-
+import re
+import math
 
 load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
+RULES_TEXT_CHANNEL_ID: Final[str] = os.getenv("RULES_TEXT_CHANNEL_ID")
+GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
+rules = {
+    1: 1237305224075542548,
+    2: 1237305310956359710,
+    3: 1237305788817473547,
+    4: 1237305879448260608,
+    5: 1237306073988333608,
+    6: 1237306115709075486,
+}
 
 class BanAndMute(commands.Cog):
     def __init__(self, client):
@@ -37,6 +48,24 @@ class BanAndMute(commands.Cog):
         self.conn.close()
         print("[INFO] Cog \"Ban & Mute\" was unloaded!")
 
+    @staticmethod
+    def string_to_array(s: str) -> list[float]:
+        # Find all valid float-like numbers using regex
+        numbers = re.findall(r"-?\d+(?:\.\d+)?", s)
+        return [float(num) for num in numbers] if numbers else []
+
+    async def get_specific_message(self, message_id: int):
+        channel = self.client.get_channel(RULES_TEXT_CHANNEL_ID)  # Get the channel object
+        if channel:
+            try:
+                message = await channel.fetch_message(message_id)
+                return message.content
+            except discord.NotFound:
+                return "Message not found in that channel."
+            except discord.Forbidden:
+                return "I don't have permission to access that channel."
+        else:
+            return "Channel not found."
 
     @commands.command(name="ban")
     @commands.has_permissions(ban_members=True)
@@ -46,7 +75,22 @@ class BanAndMute(commands.Cog):
         Example: !ban @user 14 Spamming
         """
         channel = await self.client.fetch_channel(1241019624313851969)
+        reasons = self.string_to_array(reason)
 
+        pm_message = "I'm sorry... You have banned for:\n"
+        reason_messages = reason
+        if len(reasons) > 0:
+            pm_message += "```"
+            reason_messages = ""
+            for r in reasons:
+                message_id = rules[math.floor(r)]
+                text = await self.get_specific_message(message_id)
+                pm_message += str(r) + text.split(str(r))[1].split('\n')[0] + "\n"
+                reason_messages += f"[{r}](https://discord.com/channels/{GUILD_ID}/{RULES_TEXT_CHANNEL_ID}/{message_id}), "
+            pm_message += "```"
+            reason_messages = reason_messages[:-2]
+
+        await self.client.send_message(member, pm_message)
         await member.ban(reason=reason)
         end_time = None
 
@@ -60,9 +104,9 @@ class BanAndMute(commands.Cog):
 
         embed = discord.Embed(
             description=f"<:utilitybanhammer:1240238885762633799> **{member.mention}** was banned!\n"
-                        f"**Reason**: {reason}\n"
+                        f"**Reason**: {reason_messages}\n"
                         f"**Duration**: {'Permanent' if length == 0 else f'{length} days'}",
-            color=0xf44336,
+            color=0xB71C1C, #RED 900
             timestamp=datetime.datetime.now()
         )
         await channel.send(embed=embed)
@@ -78,7 +122,7 @@ class BanAndMute(commands.Cog):
 
         embed = discord.Embed(
             description=f"<:utilitybanhammer:1240238885762633799> **{user.mention}** was unbanned!\n**Reason**: {reason}",
-            color=0x4caf50,
+            color=0x1B5E20, #GREEN 900
             timestamp=datetime.datetime.now()
         )
         await channel.send(embed=embed)
@@ -98,8 +142,8 @@ class BanAndMute(commands.Cog):
                     await guild.unban(user, reason="Temporary ban expired")
                     channel = await self.client.fetch_channel(1241019624313851969)
                     embed = discord.Embed(
-                        description=f"✅ <@{user_id}> was automatically unbanned (ban expired)",
-                        color=0x4caf50,
+                        description=f"<:utilitybanhammer:1240238885762633799> **<@{user_id}>** was automatically unbanned (ban expired)",
+                        color=0x1B5E20, #GREEN 900
                         timestamp=datetime.datetime.now()
                     )
                     await channel.send(embed=embed)
