@@ -74,7 +74,7 @@ class BanAndMute(commands.Cog):
         Ban a member. If length > 0, the ban is temporary (in days).
         Example: !ban @user 14 Spamming
         """
-        channel = await self.client.fetch_channel(1241019624313851969)
+        channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
         reasons = self.string_to_array(reason)
 
         pm_message = "I'm sorry... You have banned for:\n"
@@ -83,11 +83,8 @@ class BanAndMute(commands.Cog):
             pm_message += "```"
             reason_messages = ""
             for r in reasons:
-                print(r)
                 message_id = rules[math.floor(r)]
-                print(message_id)
                 text = await self.get_specific_message(message_id)
-                print(text)
                 pm_message += str(r) + text.split(str(r))[1].split('\n')[0] + "\n"
                 reason_messages += f"[{r}](https://discord.com/channels/{GUILD_ID}/{RULES_TEXT_CHANNEL_ID}/{message_id}), "
             pm_message += "```"
@@ -117,8 +114,10 @@ class BanAndMute(commands.Cog):
     @commands.command(name="unban")
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, user: discord.User, *, reason="No reason provided"):
-        channel = await self.client.fetch_channel(1241019624313851969)
+        channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
 
+        pm_message = "You already unbanned from [The lair of Hacker32Bit](https://discord.gg/59JU2yKtCC)"
+        await user.send(pm_message)
         await ctx.guild.unban(user, reason=reason)
         self.cursor.execute("DELETE FROM temp_bans WHERE user_id = ? AND guild_id = ?", (user.id, ctx.guild.id))
         self.conn.commit()
@@ -141,9 +140,12 @@ class BanAndMute(commands.Cog):
             guild = self.client.get_guild(guild_id)
             if guild:
                 user = discord.Object(id=user_id)
+                member = self.client.fetch_user(user_id)
                 try:
                     await guild.unban(user, reason="Temporary ban expired")
-                    channel = await self.client.fetch_channel(1241019624313851969)
+                    channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
+                    pm_message = "You already unbanned from [The lair of Hacker32Bit](https://discord.gg/59JU2yKtCC)"
+                    await member.send(pm_message)
                     embed = discord.Embed(
                         description=f"<:utilitybanhammer:1240238885762633799> **<@{user_id}>** was automatically unbanned (ban expired)",
                         color=0x1B5E20, #GREEN 900
