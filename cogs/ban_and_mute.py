@@ -153,7 +153,7 @@ class BanAndMute(commands.Cog):
             guild = self.client.get_guild(guild_id)
             if guild:
                 user = discord.Object(id=user_id)
-                member = self.client.fetch_user(user_id)
+                member = await self.client.fetch_user(user_id)
                 try:
                     await guild.unban(user, reason="Temporary ban expired")
                     channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
