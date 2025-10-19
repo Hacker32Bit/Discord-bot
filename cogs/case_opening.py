@@ -86,7 +86,7 @@ class CaseOpening(commands.Cog):
             r = requests.get(drop_url + '?l=english')
             while r.status_code == 429:
                 print("Page is not loaded! Retrying after 10 seconds...")
-                sleep(10)
+                sleep(60)
                 r = requests.get(drop_url + '?l=english')
 
             json_string = r.text.split('var g_rgAssets = ')[1].split('var g_nConfType')[0].strip().replace(';', '')

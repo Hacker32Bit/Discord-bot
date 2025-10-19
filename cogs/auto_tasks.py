@@ -11,6 +11,9 @@ from discord.errors import NotFound
 from discord import File
 import sys
 import asyncio
+import requests
+from time import sleep
+import re
 
 utc = datetime.timezone.utc
 # If no tzinfo is given then UTC is assumed.
@@ -18,6 +21,8 @@ time = datetime.time(hour=2, minute=0, second=0, tzinfo=utc)
 
 ACTIVITY_GIVEAWAY_CHANNEL_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_CHANNEL_ID")
 ACTIVITY_GIVEAWAY_MESSAGE_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_MESSAGE_ID")
+ACTIVITY_GIVEAWAY_TABLE_ID: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_TABLE_ID")
+ACTIVITY_GIVEAWAY_ITEM_URL: Final[str] = os.getenv("ACTIVITY_GIVEAWAY_ITEM_URL")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 database = sqlite3.connect("database.sqlite")
@@ -76,7 +81,7 @@ class AutoTask(commands.Cog):
 
     @staticmethod
     async def create_table(client):
-        descending = "SELECT * FROM activity_giveaway WHERE exp ORDER BY exp DESC LIMIT 10"
+        descending = "SELECT * FROM activity_giveaway WHERE exp > 0 ORDER BY exp DESC LIMIT 10"
         cursor.execute(descending)
         result = cursor.fetchall()
 
@@ -84,25 +89,27 @@ class AutoTask(commands.Cog):
         height = 600
 
         with Image.new(mode='RGBA', size=(width, height), color=(0, 0, 0, 0)) as image:
-            notosans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
-                                         'NotoSans-Bold.ttf')  # NOQA
-            notosans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
-                                            'NotoSans-Regular.ttf')  # NOQA
-            rockybilly = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets',
-                                      'Rockybilly.ttf')  # NOQA
+            font_noto_sans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
+                                               'assets',
+                                               'NotoSans-Bold.ttf')
+            font_noto_sans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
+                                                  'assets',
+                                                  'NotoSans-Regular.ttf')
+            # font_rockybilly= os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets', # NOQA: spellcheck
+            #                           'Rockybilly.ttf') # NOQA: spellcheck
 
             # ======== Fonts to use =============
-            font_normal_large = truetype(notosans_bold, 36, encoding='UTF-8')
-            font_normal = truetype(notosans_bold, 24, encoding='UTF-8')
-            font_small_large = truetype(notosans_regular, 36, encoding='UTF-8')
-            font_small = truetype(notosans_regular, 24, encoding='UTF-8')
-            font_signa = truetype(rockybilly, 25, encoding='UTF-8')
+            font_normal_large = truetype(font_noto_sans_bold, 36, encoding='UTF-8')
+            font_normal = truetype(font_noto_sans_bold, 24, encoding='UTF-8')
+            font_small_large = truetype(font_noto_sans_regular, 36, encoding='UTF-8')
+            font_small = truetype(font_noto_sans_regular, 24, encoding='UTF-8')
+            # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
 
             h_pos = 0
             new_height = 40
 
             white = (255, 255, 255, 255)
-            black = (0, 0, 0, 255)
+            # black = (0, 0, 0, 255)
 
             gray_dark = (120, 144, 156, 255)
             gray = (144, 164, 174, 255)
@@ -172,11 +179,43 @@ class AutoTask(commands.Cog):
             image = image.crop((0, 0, width, new_height))
             return image
 
+    @tasks.loop(hours=1, count=1)
+    async def update_activity_giveaways_message(self):
+        channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
+        try:
+            message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
+
+            text = message.content
+
+            r = requests.get(ACTIVITY_GIVEAWAY_ITEM_URL + '?l=english')
+            while r.status_code == 429:
+                print("Page is not loaded! Retrying after 10 seconds...")
+                sleep(60)
+                r = requests.get(ACTIVITY_GIVEAWAY_ITEM_URL + '?l=english')
+
+            html = r.text  # Your HTML
+
+            match = re.search(
+                r'<span\s+class="market_listing_price\s+market_listing_price_with_fee">\s*\$([0-9]+\.[0-9]+)\s*USD',
+                html
+            )
+            if match and int(match.group(1)) > 0:
+                print(match.group(1))  # e.g. "15.89"
+                price = f"${match.group(1)} USD"
+
+                print(price)
+                print(text)
+
+            #TODO
+
+        except NotFound:
+            print("NO MESSAGES in Activity giveaway!")
+
     @tasks.loop(hours=1)
     async def update_activity_giveaways_tables(self):
         channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
         try:
-            message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
+            message = await channel.fetch_message(ACTIVITY_GIVEAWAY_TABLE_ID)
 
             with io.BytesIO() as image_binary:
                 table = await self.create_table(self.bot)
@@ -185,8 +224,8 @@ class AutoTask(commands.Cog):
                 result = File(fp=image_binary, filename="table.png")
                 await message.edit(content="", attachments=[result])
 
-        except NotFound as err:
-            print("NO MESSAGES in Activity giveaway!")
+        except NotFound:
+            print("NO TABLE in Activity giveaway!")
 
 
 async def setup(bot):

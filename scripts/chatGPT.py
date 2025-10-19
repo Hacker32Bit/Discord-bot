@@ -1,10 +1,8 @@
-from anyio.pytest_plugin import anyio_backend
 from g4f.models import default
 from g4f.client import Client
 import argparse
 import sqlite3
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 # Define the parser
 parser = argparse.ArgumentParser(description='Short sample app')
@@ -39,7 +37,7 @@ def get_user_messages(user_id):
     cursor.execute("""
         SELECT role, message, created_at FROM gpt_messages
         WHERE user_id = ?
-        ORDER BY created_at ASC
+        ORDER BY created_at
     """, (user_id,))
     data = cursor.fetchall()
     formatted = [{"role": role, "content": content} for role, content, _ in data]
