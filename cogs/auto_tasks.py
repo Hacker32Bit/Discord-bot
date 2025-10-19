@@ -205,7 +205,8 @@ class AutoTask(commands.Cog):
 
                 print(price)
                 print(text)
-
+            else:
+                print("price not found")
             #TODO
 
         except NotFound:
