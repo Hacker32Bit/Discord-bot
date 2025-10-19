@@ -199,7 +199,7 @@ class AutoTask(commands.Cog):
                 r'<span\s+class="market_listing_price\s+market_listing_price_with_fee">\s*\$([0-9]+\.[0-9]+)\s*USD',
                 html
             )
-            if match and int(match.group(1)) > 0:
+            if match:
                 print(match.group(1))  # e.g. "15.89"
                 price = f"${match.group(1)} USD"
 
