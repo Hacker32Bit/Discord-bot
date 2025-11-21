@@ -325,7 +325,7 @@ class Leveling(commands.Cog):
             background_io = io.BytesIO(img_bytes)
 
             await assets_channel.send(f"User: {interaction.user.mention}, Color: {color}, Reset: {reset}\n"
-                                      f"Background: ", file=img_bytes)
+                                      f"Background: ", file=image)
 
             with Image.open("assets/images/ranked_card_frame.png") as frame:
                 # Set color on frame if user typed color in HEX
