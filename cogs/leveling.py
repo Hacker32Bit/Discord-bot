@@ -321,9 +321,11 @@ class Leveling(commands.Cog):
 
             # fetch, send image to assets channel for store.
             assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
-            image = await image.to_file()
+            img_bytes = await image.read()
+            background_io = io.BytesIO(img_bytes)
+
             await assets_channel.send(f"User: {interaction.user.mention}, Color: {color}, Reset: {reset}\n"
-                                      f"Background: ", file=image)
+                                      f"Background: ", file=img_bytes)
 
             with Image.open("assets/images/ranked_card_frame.png") as frame:
                 # Set color on frame if user typed color in HEX
@@ -341,8 +343,6 @@ class Leveling(commands.Cog):
                 min_width, min_height = 900, 238
                 ratio = min_width / min_height
 
-                background_bytes = image.fp.read()
-                background_io = io.BytesIO(background_bytes)
                 with Image.open(background_io) as background_image:
                     width, height = background_image.size
 
