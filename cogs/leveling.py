@@ -341,7 +341,9 @@ class Leveling(commands.Cog):
                 min_width, min_height = 900, 238
                 ratio = min_width / min_height
 
-                with Image.open(image.fp) as background_image:
+                background_bytes = image.fp.read()
+                background_io = io.BytesIO(background_bytes)
+                with Image.open(background_io) as background_image:
                     width, height = background_image.size
 
                     # check ratio difference for resize by width or height
@@ -357,6 +359,7 @@ class Leveling(commands.Cog):
                     background_image_sized = background_image.resize((new_width, new_height))
 
                     width, height = background_image_sized.size
+
                     if width > min_width:
                         left = round((width - min_width) / 2)
                         right = left + min_width
