@@ -358,20 +358,14 @@ class Leveling(commands.Cog):
 
                     background_image_sized = background_image.resize((new_width, new_height))
 
-                    width, height = background_image_sized.size
+                    # Ensure new image fully covers the target box
+                    new_width, new_height = background_image_sized.size
 
-                    if width > min_width:
-                        left = round((width - min_width) / 2)
-                        right = left + min_width
-                        top = 0
-                        bottom = min_height
-                    elif height > min_height:
-                        left = 0
-                        right = min_width
-                        top = round((height - min_height) / 2)
-                        bottom = top + min_height
-                    else:
-                        left, right, top, bottom = (0, 0, 0, 0)
+                    left = max(0, (new_width - min_width) // 2)
+                    top = max(0, (new_height - min_height) // 2)
+
+                    right = min(new_width, left + min_width)
+                    bottom = min(new_height, top + min_height)
 
                     background_image_sized = background_image_sized.crop((left, top, right, bottom))
 
