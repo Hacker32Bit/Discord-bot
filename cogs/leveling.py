@@ -321,9 +321,7 @@ class Leveling(commands.Cog):
 
             # fetch, send image to assets channel for store.
             assets_channel = await self.bot.fetch_channel(ASSETS_CHANNEL_ID)
-            img_bytes = await image.read()
-            background_io = io.BytesIO(img_bytes)
-
+            image = await image.to_file()
             await assets_channel.send(f"User: {interaction.user.mention}, Color: {color}, Reset: {reset}\n"
                                       f"Background: ", file=image)
 
@@ -343,7 +341,7 @@ class Leveling(commands.Cog):
                 min_width, min_height = 900, 238
                 ratio = min_width / min_height
 
-                with Image.open(background_io) as background_image:
+                with Image.open(image.fp) as background_image:
                     width, height = background_image.size
 
                     # check ratio difference for resize by width or height
