@@ -168,7 +168,7 @@ class AdminCommands(commands.Cog):
         await ctx.send(f"Activity giveaway was reset!")
 
     # Add exp to user_id
-    @commands.command(help="add_exp", description="Add exp to user_id")
+    @commands.command(help="add_exp", description="Add xp to user_id from Activity Giveaway")
     @commands.has_any_role("Owner", "Admin")
     async def add_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, add_exp: str) -> None:
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
@@ -197,7 +197,7 @@ class AdminCommands(commands.Cog):
             await ctx.send(f"Added {add_exp} exp to <@{user_id}>. Now he have {exp} exp.")
 
     # Reduce exp to user_id
-    @commands.command(help="reduce_exp", description="Reduce exp to user_id")
+    @commands.command(help="reduce_exp", description="Reduce xp to user_id from Activity Giveaway")
     @commands.has_any_role("Owner", "Admin")
     async def reduce_exp(self, ctx: discord.ext.commands.context.Context, user_id: str, reduce_exp: str) -> None:
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
