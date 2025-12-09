@@ -1,4 +1,6 @@
 import math
+from random import randint
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -13,6 +15,7 @@ from time import sleep
 import io
 from discord import File
 from discord.errors import NotFound
+import re
 
 load_dotenv()
 GIVEAWAYS_CHANNEL_ID: Final[str] = os.getenv("GIVEAWAYS_CHANNEL_ID")
@@ -124,13 +127,23 @@ class MembersGiveaway(commands.Cog):
     async def create_giveaway(self, ctx: discord.ext.commands.context.Context, count: int,
                               drop_url: str) -> None:
         try:
+            log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+
             r = requests.get(drop_url + '?l=english')
             while r.status_code == 429:
-                print("Page is not loaded! Retrying after 10 seconds...")
-                sleep(10)
+                sleep_time = randint(1800, 3600)
+                await log_channel.send(content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
+                sleep(sleep_time)
                 r = requests.get(drop_url + '?l=english')
 
-            json_string = r.text.split('var g_rgAssets = ')[1].split('var g_rgCurrency')[0].strip().replace(';', '')
+            pattern = r"var\s+g_rgAssets\s*=\s*(\{.*?\});"
+
+            match = re.search(pattern, r.text, flags=re.DOTALL)
+
+            if not match:
+                await log_channel.send(content="g_rgAssets not found")
+
+            json_string = match.group(1)
 
             data = json.loads(json_string)
             try:

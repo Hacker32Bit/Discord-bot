@@ -1,3 +1,4 @@
+from random import randint
 from time import sleep
 import discord
 from PIL import Image
@@ -11,6 +12,7 @@ import requests
 import json
 import io
 from discord import File
+import re
 
 load_dotenv()
 EVENTS_CHANNEL_ID: Final[str] = os.getenv("EVENTS_CHANNEL_ID")
@@ -83,13 +85,23 @@ class CaseOpening(commands.Cog):
                            drop_url: str) -> None:
 
         try:
+            log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+
             r = requests.get(drop_url + '?l=english')
             while r.status_code == 429:
-                print("Page is not loaded! Retrying after 10 seconds...")
-                sleep(60)
+                sleep_time = randint(1800, 3600)
+                await log_channel.send(content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
+                sleep(sleep_time)
                 r = requests.get(drop_url + '?l=english')
 
-            json_string = r.text.split('var g_rgAssets = ')[1].split('var g_nConfType')[0].strip().replace(';', '')
+            pattern = r"var\s+g_rgAssets\s*=\s*(\{.*?\});"
+
+            match = re.search(pattern, r.text, flags=re.DOTALL)
+
+            if not match:
+                await log_channel.send(content="g_rgAssets not found")
+
+            json_string = match.group(1)
 
             data = json.loads(json_string)
             try:
