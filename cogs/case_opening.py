@@ -1,5 +1,5 @@
 from random import randint
-from time import sleep
+import asyncio
 import discord
 from PIL import Image
 from PIL.ImageDraw import Draw
@@ -91,7 +91,7 @@ class CaseOpening(commands.Cog):
             while r.status_code == 429:
                 sleep_time = randint(1800, 3600)
                 await log_channel.send(content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
-                sleep(sleep_time)
+                await asyncio.sleep(sleep_time)
                 r = requests.get(drop_url + '?l=english')
 
             pattern = r"var\s+g_rgAssets\s*=\s*(\{.*?\});"

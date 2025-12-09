@@ -1,6 +1,5 @@
 import math
 from random import randint
-
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -11,7 +10,7 @@ from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
 import json
-from time import sleep
+import asyncio
 import io
 from discord import File
 from discord.errors import NotFound
@@ -133,7 +132,7 @@ class MembersGiveaway(commands.Cog):
             while r.status_code == 429:
                 sleep_time = randint(1800, 3600)
                 await log_channel.send(content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
-                sleep(sleep_time)
+                await asyncio.sleep(sleep_time)
                 r = requests.get(drop_url + '?l=english')
 
             pattern = r"var\s+g_rgAssets\s*=\s*(\{.*?\});"
