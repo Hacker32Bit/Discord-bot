@@ -12,6 +12,8 @@ load_dotenv()
 LOG_CHANNEL_ID: Final[str] = os.getenv("LOG_CHANNEL_ID")
 RULES_TEXT_CHANNEL_ID: Final[str] = os.getenv("RULES_TEXT_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
+ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
+
 
 rules = {
     1: 1237305224075542548,
@@ -145,32 +147,37 @@ class BanAndMute(commands.Cog):
     @tasks.loop(hours=1)
     async def check_bans(self):
         """Check every 1 hour if a temporary ban expired."""
-        now = int(datetime.datetime.utcnow().timestamp())
-        self.cursor.execute("SELECT user_id, guild_id, reason FROM temp_bans WHERE end_time <= ?", (now,))
-        expired_bans = self.cursor.fetchall()
+        log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
-        for user_id, guild_id, reason in expired_bans:
-            guild = self.client.get_guild(guild_id)
-            if guild:
-                user = discord.Object(id=user_id)
-                member = await self.client.fetch_user(user_id)
-                try:
-                    await guild.unban(user, reason="Temporary ban expired")
-                    channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
-                    pm_message = "You already unbanned from [The lair of Hacker32Bit](https://discord.gg/59JU2yKtCC)"
-                    await member.send(pm_message)
-                    embed = discord.Embed(
-                        description=f"<:utilitybanhammer:1240238885762633799> **<@{user_id}>** was automatically unbanned (ban expired)",
-                        color=0x1B5E20, #GREEN 900
-                        timestamp=datetime.datetime.now()
-                    )
-                    await channel.send(embed=embed)
-                except Exception as e:
-                    print(f"[ERROR] Could not unban {user_id} in guild {guild_id}: {e}")
+        try:
+            now = int(datetime.datetime.utcnow().timestamp())
+            self.cursor.execute("SELECT user_id, guild_id, reason FROM temp_bans WHERE end_time <= ?", (now,))
+            expired_bans = self.cursor.fetchall()
 
-            # Remove from DB
-            self.cursor.execute("DELETE FROM temp_bans WHERE user_id = ? AND guild_id = ?", (user_id, guild_id))
-            self.conn.commit()
+            for user_id, guild_id, reason in expired_bans:
+                guild = self.client.get_guild(guild_id)
+                if guild:
+                    user = discord.Object(id=user_id)
+                    member = await self.client.fetch_user(user_id)
+                    try:
+                        await guild.unban(user, reason="Temporary ban expired")
+                        channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
+                        pm_message = "You already unbanned from [The lair of Hacker32Bit](https://discord.gg/59JU2yKtCC)"
+                        await member.send(pm_message)
+                        embed = discord.Embed(
+                            description=f"<:utilitybanhammer:1240238885762633799> **<@{user_id}>** was automatically unbanned (ban expired)",
+                            color=0x1B5E20, #GREEN 900
+                            timestamp=datetime.datetime.now()
+                        )
+                        await channel.send(embed=embed)
+                    except Exception as e:
+                        await log_channel.send(content=f"[ERROR] Could not unban {user_id} in guild {guild_id}: {e}")
+
+                # Remove from DB
+                self.cursor.execute("DELETE FROM temp_bans WHERE user_id = ? AND guild_id = ?", (user_id, guild_id))
+                self.conn.commit()
+        except Exception as e:
+            await log_channel.send(content=f"{e}")
 
     @check_bans.before_loop
     async def before_check_bans(self):
