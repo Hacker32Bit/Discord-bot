@@ -170,6 +170,7 @@ class BanAndMute(commands.Cog):
                             timestamp=datetime.datetime.now()
                         )
                         await channel.send(embed=embed)
+                        await log_channel.send(content=f"{user} was automatically unbanned (ban expired)")
                     except Exception as e:
                         await log_channel.send(content=f"[ERROR] Could not unban {user_id} in guild {guild_id}: {e}")
 
