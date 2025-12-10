@@ -179,38 +179,38 @@ class AutoTask(commands.Cog):
             image = image.crop((0, 0, width, new_height))
             return image
 
-    @tasks.loop(hours=1, count=1)
-    async def update_activity_giveaways_message(self):
-        channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
-        try:
-            message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
-
-            text = message.content
-
-            r = requests.get(ACTIVITY_GIVEAWAY_ITEM_URL + '?l=english')
-            while r.status_code == 429:
-                print("Page is not loaded! Retrying after 10 seconds...")
-                sleep(60)
-                r = requests.get(ACTIVITY_GIVEAWAY_ITEM_URL + '?l=english')
-
-            html = r.text  # Your HTML
-
-            match = re.search(
-                r'<span\s+class="market_listing_price\s+market_listing_price_with_fee">\s*\$([0-9]+\.[0-9]+)\s*USD',
-                html
-            )
-            if match:
-                print(match.group(1))  # e.g. "15.89"
-                price = f"${match.group(1)} USD"
-
-                print(price)
-                print(text)
-            else:
-                print("price not found")
-            #TODO
-
-        except NotFound:
-            print("NO MESSAGES in Activity giveaway!")
+    # @tasks.loop(hours=1, count=1)
+    # async def update_activity_giveaways_message(self):
+    #     channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
+    #     try:
+    #         message = await channel.fetch_message(ACTIVITY_GIVEAWAY_MESSAGE_ID)
+    #
+    #         text = message.content
+    #
+    #         r = requests.get(ACTIVITY_GIVEAWAY_ITEM_URL + '?l=english')
+    #         while r.status_code == 429:
+    #             print("Page is not loaded! Retrying after 10 seconds...")
+    #             sleep(60)
+    #             r = requests.get(ACTIVITY_GIVEAWAY_ITEM_URL + '?l=english')
+    #
+    #         html = r.text  # Your HTML
+    #
+    #         match = re.search(
+    #             r'<span\s+class="market_listing_price\s+market_listing_price_with_fee">\s*\$([0-9]+\.[0-9]+)\s*USD',
+    #             html
+    #         )
+    #         if match:
+    #             print(match.group(1))  # e.g. "15.89"
+    #             price = f"${match.group(1)} USD"
+    #
+    #             print(price)
+    #             print(text)
+    #         else:
+    #             print("price not found")
+    #         #TODO
+    #
+    #     except NotFound:
+    #         print("NO MESSAGES in Activity giveaway!")
 
     @tasks.loop(hours=1)
     async def update_activity_giveaways_tables(self):
