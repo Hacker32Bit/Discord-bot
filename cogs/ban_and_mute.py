@@ -130,19 +130,24 @@ class BanAndMute(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, user: discord.User, *, reason="No reason provided"):
         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
+        log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
-        pm_message = "You already unbanned from [The lair of Hacker32Bit](https://discord.gg/59JU2yKtCC)"
-        await user.send(pm_message)
-        await ctx.guild.unban(user, reason=reason)
-        self.cursor.execute("DELETE FROM temp_bans WHERE user_id = ? AND guild_id = ?", (user.id, ctx.guild.id))
-        self.conn.commit()
+        try:
+            pm_message = "You already unbanned from [The lair of Hacker32Bit](https://discord.gg/59JU2yKtCC)"
 
-        embed = discord.Embed(
-            description=f"<:utilitybanhammer:1240238885762633799> **{user.mention}** was unbanned!\n**Reason**: {reason}",
-            color=0x1B5E20, #GREEN 900
-            timestamp=datetime.datetime.now()
-        )
-        await channel.send(embed=embed)
+            await ctx.guild.unban(user, reason=reason)
+            self.cursor.execute("DELETE FROM temp_bans WHERE user_id = ? AND guild_id = ?", (user.id, ctx.guild.id))
+            self.conn.commit()
+
+            embed = discord.Embed(
+                description=f"<:utilitybanhammer:1240238885762633799> **{user.mention}** was unbanned!\n**Reason**: {reason}",
+                color=0x1B5E20, #GREEN 900
+                timestamp=datetime.datetime.now()
+            )
+            await channel.send(embed=embed)
+            await user.send(pm_message)
+        except Exception as e:
+            await log_channel.send(content=f"```{e}```")
 
     @tasks.loop(hours=1)
     async def check_bans(self):
@@ -163,7 +168,6 @@ class BanAndMute(commands.Cog):
                         await guild.unban(user, reason="Temporary ban expired")
                         channel = await self.client.fetch_channel(LOG_CHANNEL_ID)
 
-
                         # Remove from DB
                         self.cursor.execute("DELETE FROM temp_bans WHERE user_id = ? AND guild_id = ?",
                                             (user_id, guild_id))
@@ -176,7 +180,7 @@ class BanAndMute(commands.Cog):
                             timestamp=datetime.datetime.now()
                         )
                         await channel.send(embed=embed)
-                        await log_channel.send(content=f"```<@{user_id}> was automatically unbanned (ban expired)```")
+                        await log_channel.send(content=f"<@{user_id}> was automatically unbanned (ban expired)")
                         await member.send(pm_message)
                     except Exception as e:
                         await log_channel.send(content=f"```[ERROR] Could not unban <@{user_id}> in guild {guild_id}: {e}```")

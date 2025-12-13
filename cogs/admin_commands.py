@@ -40,11 +40,14 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def logout(self, ctx):
         print("[INFO] logging out...")
-        await ctx.send("Goodbye. You can wake me up from Raspberry PI(Or wait for auto reboot)")
+        try:
+            await ctx.send("Goodbye. You can wake me up from Raspberry PI(Or wait for auto reboot)")
 
-        # Shutdown outside of task loop to avoid hanging
-        loop = asyncio.get_running_loop()
-        loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
+            # Shutdown outside of task loop to avoid hanging
+            loop = asyncio.get_running_loop()
+            loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
+        except Exception as e:
+            await ctx.send(f"```{e}```")
 
     # Command for shutdown system
     @commands.command(help="shutdown", description="Command for shutdown system")
@@ -61,7 +64,7 @@ class AdminCommands(commands.Cog):
             loop = asyncio.get_running_loop()
             loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(f"```{e}```")
 
     # Command for reboot system (reboot Raspberry PI)
     @commands.command(help="reboot", description="Command for reboot system (reboot Raspberry PI)")
@@ -78,7 +81,7 @@ class AdminCommands(commands.Cog):
             loop = asyncio.get_running_loop()
             loop.call_soon(asyncio.create_task, self.perform_shutdown(0))
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(f"```{e}```")
 
     # Command for update system
     @commands.command(help="update", description="Command for update system")
@@ -89,7 +92,7 @@ class AdminCommands(commands.Cog):
             result = check_output(["git", "pull"]).strip().decode("utf-8")
             await ctx.send(f"```{result}```")
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(f"```{e}```")
 
     # Command for update and restart bot
     @commands.command(help="restart", description="Command for update and restart bot")
@@ -97,13 +100,13 @@ class AdminCommands(commands.Cog):
     async def restart(self, ctx):
         await self.update(ctx)
 
-        await ctx.send("```Shutting down cleanly...```")
+        await ctx.send("Shutting down cleanly...")
         try:
             # Shutdown outside of task loop to avoid hanging
             loop = asyncio.get_running_loop()
             loop.call_soon(asyncio.create_task, self.perform_shutdown(1)) # Error code for Restart=on-failure
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(f"```{e}```")
 
     # Command for get server battery status
     @commands.command(help="battery_status", description="Command for get server battery status")
@@ -113,7 +116,7 @@ class AdminCommands(commands.Cog):
             f = open("/tmp/battery_status", "r")
             await ctx.send(f"```{f.read()}```")
         except FileNotFoundError as e:
-            await ctx.send(e)
+            await ctx.send(f"```{e}```")
 
     # Command for get server temperature status
     @commands.command(help="temp_status", description="Command for get server temperature status")
@@ -125,7 +128,7 @@ class AdminCommands(commands.Cog):
             result += "```"
             await ctx.send(result)
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(f"```{e}```")
 
     # Command for get server connection status
     @commands.command(help="connection_status", description="Command for get server connection status")
@@ -140,14 +143,14 @@ class AdminCommands(commands.Cog):
             result += "```"
             await ctx.send(result)
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(f"```{e}```")
 
     # Command for synchronize client slash commands with server commands
     @commands.command(help="sync", description="Command for synchronize client slash commands with server commands")
     @commands.has_any_role("Owner", "Admin")
     async def sync(self, ctx) -> None:
         fmt = await ctx.bot.tree.sync(guild=discord.Object(GUILD_ID))
-        await ctx.send(f"synced {len(fmt)} commands")
+        await ctx.send(f"Synced {len(fmt)} commands")
 
     # Remove referrer from DB by ID
     @commands.command(help="remove_referrer", description="Remove referrer from DB by ID")
@@ -232,8 +235,6 @@ class AdminCommands(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def send_message(self, ctx: discord.ext.commands.context.Context, channel_id: str, message: str) -> None:
         channel = await self.client.fetch_channel(channel_id)
-        print("channel_id: ", channel_id)
-        print("message: ", message)
         await channel.send(content=message)
 
     # Command for send file from Bot
@@ -242,8 +243,6 @@ class AdminCommands(commands.Cog):
     async def send_file(self, ctx: discord.ext.commands.context.Context, channel_id: str,
                         file: discord.Attachment) -> None:
         channel = await self.client.fetch_channel(channel_id)
-        print("channel_id: ", channel_id)
-        print("file: ", file)
         await channel.send(file=await file.to_file())
 
     # Command for send message with file from Bot

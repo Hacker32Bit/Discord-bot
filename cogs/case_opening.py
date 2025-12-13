@@ -83,10 +83,9 @@ class CaseOpening(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def open_cs_case(self, ctx: discord.ext.commands.context.Context, user_id: str, case_name: str,
                            drop_url: str) -> None:
+        log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
         try:
-            log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-
             r = requests.get(drop_url + '?l=english')
             while r.status_code == 429:
                 sleep_time = randint(1800, 3600)
@@ -108,11 +107,12 @@ class CaseOpening(commands.Cog):
                 for _ in range(3):
                     data = data[next(iter(data))]
             except Exception as err:
-                print(err)
+                await log_channel.send(content=f"```{err}```")
+
                 try:
                     data = data[0][0]
                 except Exception as err2:
-                    print(err2)
+                    await log_channel.send(content=f"```{err2}```")
 
             name = data["name"]
             quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
@@ -141,13 +141,11 @@ class CaseOpening(commands.Cog):
                 ansi_color = '[2;37m'
                 rarity = "consumer_grade"
             else:
-                channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-                await channel.send(content="RARITY detection error!")
+                await log_channel.send(content="RARITY detection error!")
                 return
 
         except Exception as err:
-            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-            await channel.send(content=str(err))
+            await log_channel.send(content=f"```{err}```")
             return
 
         # Everything ok!

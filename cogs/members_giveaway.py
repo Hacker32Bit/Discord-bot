@@ -37,6 +37,8 @@ class MembersGiveaway(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
         channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)
+        log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+
         try:
             message = await channel.fetch_message(GIVEAWAYS_MESSAGE_ID)
             image_message = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
@@ -53,11 +55,14 @@ class MembersGiveaway(commands.Cog):
                 await image_message.edit(content="", attachments=[result])
 
         except NotFound as err:
-            print("NO MESSAGES in Activity giveaway!")
+            await log_channel.send(content="NO MESSAGES in Activity giveaway!")
+
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member) -> None:
         channel = await self.client.fetch_channel(GIVEAWAYS_CHANNEL_ID)
+        log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+
         try:
             message = await channel.fetch_message(GIVEAWAYS_MESSAGE_ID)
             image_message = await channel.fetch_message(GIVEAWAYS_MESSAGE_IMAGE_ID)
@@ -74,7 +79,8 @@ class MembersGiveaway(commands.Cog):
                 await image_message.edit(content="", attachments=[result])
 
         except NotFound as err:
-            print("NO MESSAGES in Activity giveaway!")
+            await log_channel.send(content="NO MESSAGES in Activity giveaway!")
+
 
     @staticmethod
     async def update_image(image, members_count, limit):
@@ -125,9 +131,9 @@ class MembersGiveaway(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def create_giveaway(self, ctx: discord.ext.commands.context.Context, count: int,
                               drop_url: str) -> None:
-        try:
-            log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+        log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
+        try:
             r = requests.get(drop_url + '?l=english')
             while r.status_code == 429:
                 sleep_time = randint(1800, 3600)
@@ -149,11 +155,11 @@ class MembersGiveaway(commands.Cog):
                 for _ in range(3):
                     data = data[next(iter(data))]
             except Exception as err:
-                print(err)
+                await log_channel.send(content=f"```{err}```")
                 try:
                     data = data[0][0]
                 except Exception as err2:
-                    print(err2)
+                    await log_channel.send(content=f"```{err2}```")
 
             name = data["name"]
             quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
@@ -176,13 +182,11 @@ class MembersGiveaway(commands.Cog):
             elif "consumer grade" in rarity:
                 rarity = "consumer_grade"
             else:
-                channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-                await channel.send(content="RARITY detection error!")
+                await log_channel.send(content="RARITY detection error!")
                 return
 
         except Exception as err:
-            channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-            await channel.send(content=str(err))
+            await log_channel.send(content=f"```{err}```")
             return
 
         # Everything ok!

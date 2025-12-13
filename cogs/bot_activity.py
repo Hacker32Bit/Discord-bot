@@ -12,6 +12,7 @@ import asyncio
 load_dotenv()
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 STREAMS_VOICE_CHANNEL_ID: Final[str] = os.getenv("STREAMS_VOICE_CHANNEL_ID")
+ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 
 
 class BotActivity(commands.Cog):
@@ -51,6 +52,8 @@ class BotActivity(commands.Cog):
         print("[INFO] Cog \"Bot Activity\" was unloaded!")
 
     async def join_voice_channel(self):
+        log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+
         try:
             channel = self.bot.get_channel(STREAMS_VOICE_CHANNEL_ID)
             if channel is None:
@@ -60,9 +63,9 @@ class BotActivity(commands.Cog):
                 vc = channel.guild.voice_client
                 if vc is None or not vc.is_connected():
                     await channel.connect()
-                    print(f"✅ Connected to {channel.name}")
+                    await log_channel.send(content=f"✅ Connected to {channel.name}")
         except Exception as e:
-            print(f"❌ Failed to join voice channel: {e}")
+            await log_channel.send(content=f"❌ Failed to join voice channel: \n```{e}```")
 
     async def monitor_connection(self):
         await self.bot.wait_until_ready()

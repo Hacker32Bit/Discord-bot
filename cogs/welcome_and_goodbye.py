@@ -42,7 +42,7 @@ class WelcomeAndGoodbye(commands.Cog):
     @staticmethod
     def find_invite_by_code(invite_list, code):
         # Simply looping through each invite in an
-        # invite list which we will get using guild.invites()
+        # Invitation list which we will get using guild.invites()
         for inv in invite_list:
             # Check if the invite code in this element
             # of the list is the one we're looking for

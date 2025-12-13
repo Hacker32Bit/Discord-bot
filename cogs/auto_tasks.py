@@ -39,7 +39,7 @@ class AutoTask(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("[INFO] \"Auto Task\" cog is ready!")
-        description = f"```Bot was logged in```"
+        description = f"Bot was logged in"
 
         channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)  # admin log channel
         await channel.send(description)
@@ -215,6 +215,7 @@ class AutoTask(commands.Cog):
     @tasks.loop(hours=1)
     async def update_activity_giveaways_tables(self):
         channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
+        log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
         try:
             message = await channel.fetch_message(ACTIVITY_GIVEAWAY_TABLE_ID)
 
@@ -226,7 +227,7 @@ class AutoTask(commands.Cog):
                 await message.edit(content="", attachments=[result])
 
         except NotFound:
-            print("NO TABLE in Activity giveaway!")
+            await log_channel.send(f"NO TABLE in Activity giveaway!")
 
 
 async def setup(bot):

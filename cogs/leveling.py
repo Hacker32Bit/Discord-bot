@@ -20,6 +20,8 @@ MUSIC_VOICE_CHANNEL_ID: Final[str] = os.getenv("MUSIC_VOICE_CHANNEL_ID")
 AFK_VOICE_CHANNEL_ID: Final[str] = os.getenv("AFK_VOICE_CHANNEL_ID")
 ASSETS_CHANNEL_ID: Final[str] = os.getenv("ASSETS_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
+ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
+
 
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
@@ -44,8 +46,6 @@ class Leveling(commands.Cog):
                            f"{member_id} and guild_id = {GUILD_ID}")
             result = cursor.fetchone()
 
-            # print(result)
-
             if result is None:
                 cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl) "
                                f"VALUES({member_id}, {GUILD_ID}, 0, 0, 0)")
@@ -54,8 +54,6 @@ class Leveling(commands.Cog):
             minutes_per_point = (time.time() - self.data[member_id]) // 600
 
             user_id, guild_id, exp, level, last_lvl = result
-
-            # print(minutes_per_point)
 
             exp_gained = minutes_per_point + 1
             exp += exp_gained
@@ -71,10 +69,11 @@ class Leveling(commands.Cog):
 
     async def initialize_active_voice_members(self):
         await self.bot.wait_until_ready()
+        log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
         guild = self.bot.get_guild(int(GUILD_ID))
         if not guild:
-            print(f"[ERROR] Guild with ID {GUILD_ID} not found")
+            await log_channel.send(content=f"[ERROR] Guild with ID {GUILD_ID} not found")
             return
 
         for voice_channel in guild.voice_channels:
@@ -84,7 +83,8 @@ class Leveling(commands.Cog):
 
             for member in voice_channel.members:
                 self.data[member.id] = time.time()
-                print(f"[INIT] Tracking member {member.display_name} in voice channel {voice_channel.name}")
+                await log_channel.send(content=f"[INIT] Tracking member {member.display_name} in voice channel {voice_channel.name}")
+
 
     # Message listener for give 1-20XP
     @commands.Cog.listener()
@@ -161,14 +161,11 @@ class Leveling(commands.Cog):
     async def on_voice_state_update(self, member, before, after):
         if after.channel and after.channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
                                                   AFK_VOICE_CHANNEL_ID]:
-            # print("inside first if")
             return
 
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM levels WHERE user_id = "
                        f"{member.id} and guild_id = {member.guild.id}")
         result = cursor.fetchone()
-
-        # print(result)
 
         if result is None:
             cursor.execute(f"INSERT INTO levels(user_id, guild_id, exp, level, last_lvl, background) "
@@ -182,8 +179,6 @@ class Leveling(commands.Cog):
             minutes_per_point = (time.time() - self.data[member.id]) // 600
 
             user_id, guild_id, exp, level, last_lvl = result
-
-            # print(minutes_per_point)
 
             exp_gained = minutes_per_point
             exp += exp_gained
@@ -447,10 +442,6 @@ class Leveling(commands.Cog):
 
         background_link = os.path.join(os.path.dirname(__file__), os.path.pardir, 'assets', 'images', 'rank_cards',
                                        f'{interaction.user.id}.png')
-        # try:
-        #     user_picture = user.avatar.url
-        # except AttributeError:
-        #     user_picture = f'https://cdn.discordapp.com/embed/avatars/{random.randrange(5)}.png'
 
         args = {
             'bg_image': background_link if int(background) else None,  # Background image link

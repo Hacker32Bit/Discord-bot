@@ -32,29 +32,22 @@ class AutoChannel(commands.Cog):
         if before and before.channel is not None:
             if str(before.channel.id) in [GENERAL_VOICE_CHANNEL_ID, STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
                                           AFK_VOICE_CHANNEL_ID, MEETING_VOICE_CHANNEL_ID]:
-                # print("Leaved from(Do nothing): ", before.channel.name)
                 pass
             else:
-                # print("Leaved from: ", before.channel.name)
                 if not len(before.channel.members):
-                    # print("Remove channel: ", before.channel.name)
                     await before.channel.delete(reason="Channel was empty")
 
         if after and after.channel and str(after.channel.category_id) in [VOICE_CHANNELS_GROUP_ID,
                                                                           STAFF_CHANNELS_GROUP_ID]:
             if after.channel.name == "〔🤝〕Face-to-Face":
-                # print("Joined to: ", after.channel.name)
-
                 # Get channels from category_id
                 category = discord.utils.get(member.guild.categories, id=after.channel.category_id)
                 channels = category.channels
-                # print("channels: ", channels)
 
                 # Filter channels and get channel_numbers
                 channel_numbers = []
                 channel_id = 1
                 for channel in channels:
-                    # print(channel.name.split()[0])
                     if channel.name in ["〔💬〕chat", "〔🔊〕General", "〔📷〕Streams", "〔🎵〕Music", "〔💤〕AFK",
                                         "〔🤝〕Face-to-Face", "〔📁〕assets", "〔📁〕logs", "〔🤖〕commands",
                                         "〔💬〕general", "〔🦜〕spam", "〔🤝〕Meeting"]:
@@ -62,7 +55,6 @@ class AutoChannel(commands.Cog):
                     elif channel.name.split()[1][1:]:
                         channel_numbers.append(int(channel.name.split()[1][1:]))
 
-                # print(channel_numbers)
                 if channel_numbers:
                     channel_numbers.sort(reverse=False)
 
@@ -98,12 +90,9 @@ class AutoChannel(commands.Cog):
         else:
             # Create new channel when joined on empty channel.
             if after and after.channel and after.channel.name == "〔🎮〕Create lobby!":
-                # print("Joined to: ", after.channel.name)
-
                 # Get channels from category_id
                 category = discord.utils.get(member.guild.categories, id=after.channel.category_id)
                 channels = category.channels
-                # print("channels: ", channels)
 
                 # Filter channels and get channel_numbers
                 channel_numbers = []
@@ -116,7 +105,6 @@ class AutoChannel(commands.Cog):
                     elif channel.name.split()[1][1:]:
                         channel_numbers.append(int(channel.name.split()[1][1:]))
 
-                # print(channel_numbers)
                 if channel_numbers:
                     channel_numbers.sort(reverse=False)
 
@@ -166,7 +154,6 @@ class AutoChannel(commands.Cog):
 
                     except asyncio.TimeoutError:
                         await after.channel.delete(reason="Timed!")
-                        # print("Timeout!")  # returning after timeout
                         return
 
                     try:

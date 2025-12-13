@@ -12,6 +12,8 @@ from email_validator import validate_email, EmailNotValidError
 
 load_dotenv()
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
+ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
+
 
 database = sqlite3.connect("database.sqlite")
 cursor = database.cursor()
@@ -45,6 +47,7 @@ class MembersData(commands.Cog):
                                     languages: str = None, info: str = None, phone: str = None, email: str = None,
                                     steam_trade_url: str = None, is_admin: bool = False,
                                     mention: discord.Member = None):
+
         # Set user_id from Interaction or from mention(If admin)
         user_id = interaction.user.id
         if mention:
@@ -151,7 +154,7 @@ class MembersData(commands.Cog):
                 "country": country, "languages": languages, "info": info, "phone": phone, "email": email,
                 "steam_trade_url": steam_trade_url}
 
-        print("Initial data: ", data)
+        print(f"Initial data: \n{data}")
 
         # If first time. Insert
         if result is None:

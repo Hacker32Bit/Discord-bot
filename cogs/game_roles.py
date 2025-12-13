@@ -52,7 +52,6 @@ class GameRoles(commands.Cog):
 
     @app_commands.command(name="game_roles", description="Add game role")
     async def game_roles(self, interaction: discord.Interaction):
-        print(interaction)
         await interaction.response.send_message(view=ButtonView()) # NOQA
 
 

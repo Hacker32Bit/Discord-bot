@@ -41,8 +41,6 @@ class ActivityGiveaway(commands.Cog):
                            f"{member_id} and guild_id = {GUILD_ID}")
             result = cursor.fetchone()
 
-            # print(result)
-
             if result is None:
                 cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
                                f"VALUES({member_id}, {GUILD_ID}, 0, 0, 0)")
@@ -51,8 +49,6 @@ class ActivityGiveaway(commands.Cog):
             minutes_per_point = (time.time() - self.data[member_id]) // 600
 
             user_id, guild_id, exp, level, last_lvl = result
-
-            # print(minutes_per_point)
 
             exp_gained = minutes_per_point + 1
             exp += exp_gained
@@ -84,7 +80,6 @@ class ActivityGiveaway(commands.Cog):
                     continue
 
                 self.data[member.id] = time.time()
-                print(f"[INIT] Tracking member {member.display_name} in voice channel {voice_channel.name}")
 
     # Message listener for give 1-20XP
     @commands.Cog.listener()
@@ -125,14 +120,11 @@ class ActivityGiveaway(commands.Cog):
             return
         if after.channel and after.channel.id in [STREAMS_VOICE_CHANNEL_ID, MUSIC_VOICE_CHANNEL_ID,
                                                   AFK_VOICE_CHANNEL_ID]:
-            # print("inside first if")
             return
 
         cursor.execute(f"SELECT user_id, guild_id, exp, level, last_lvl FROM activity_giveaway WHERE user_id = "
                        f"{member.id} and guild_id = {member.guild.id}")
         result = cursor.fetchone()
-
-        # print(result)
 
         if result is None:
             cursor.execute(f"INSERT INTO activity_giveaway(user_id, guild_id, exp, level, last_lvl) "
@@ -146,8 +138,6 @@ class ActivityGiveaway(commands.Cog):
             minutes_per_point = (time.time() - self.data[member.id]) // 600
 
             user_id, guild_id, exp, level, last_lvl = result
-
-            # print(minutes_per_point)
 
             exp_gained = minutes_per_point
             exp += exp_gained
