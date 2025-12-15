@@ -28,14 +28,16 @@ class HelpCog(commands.Cog):
             lines = ["\nType [2;32m!help command[0m for more info on a command.",
                      "You can also type [2;32m!help category[0m for more info on a category."]
 
+            await ctx.send(f"```\n{chr(10).join(lines)}\n```")
+
             for category, commands_list in categories.items():
+                lines.clear()
                 lines.append(f"\n [1;2m[1;35m{category}[0m:[0m")
                 for cmd in commands_list:
                     name = cmd.name
                     short_help = cmd.help if cmd.help else name
                     lines.append(f"  [2;32m{ctx.prefix}{name:<23} [0m{short_help}")
-
-            await ctx.send(f"```ansi\n{chr(10).join(lines)}\n```")
+                await ctx.send(f"```ansi\n{chr(10).join(lines)}\n```")
         else:
             # Try to find command
             command = self.bot.get_command(arg)
