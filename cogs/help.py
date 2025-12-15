@@ -28,7 +28,7 @@ class HelpCog(commands.Cog):
             lines = ["\nType [2;32m!help command[0m for more info on a command.",
                      "You can also type [2;32m!help category[0m for more info on a category."]
 
-            await ctx.send(f"```\n{chr(10).join(lines)}\n```")
+            await ctx.send(f"```ansi\n{chr(10).join(lines)}\n```")
 
             for category, commands_list in categories.items():
                 lines.clear()
