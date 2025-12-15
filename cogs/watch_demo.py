@@ -9,19 +9,6 @@ load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
 FACEIT_API_KEY: Final[str] = os.getenv("FACEIT_API_KEY")
 
-# Example data (replace with real Steam profiles)
-STEAM_PROFILES = [
-    {"name": "Profile 1", "steam_id": "76561199234124671"},
-    {"name": "Profile 2", "steam_id": "76561198812258436"},
-    {"name": "Profile 3", "steam_id": "76561199527201188"},
-    {"name": "Profile 4", "steam_id": "76561199231739701"},
-    {"name": "Profile 5", "steam_id": "76561198981314495"},
-    {"name": "Profile 6", "steam_id": "76561199519970864"},
-    {"name": "Profile 7", "steam_id": "76561199027104248"},
-    {"name": "Profile 8", "steam_id": "76561199245723353"},
-    {"name": "Profile 9", "steam_id": "76561199555592308"},
-    {"name": "Profile 10", "steam_id": "76561198176135483"},
-]
 
 class ProfileToggleView(discord.ui.View):
     def __init__(self, author: discord.User, profiles: list[dict]):
@@ -115,17 +102,6 @@ class WatchDemoCog(commands.Cog):
     def cog_unload(self):
         print("[INFO] Cog \"Watch Demo\" was unloaded!")
 
-    @commands.command(help="watch_demo_test", description="Test feature")
-    @commands.has_any_role("Owner", "Admin")
-    async def watch_demo_test(self, ctx: commands.Context):
-        """Show Steam profiles with checkbox buttons"""
-        view = ProfileToggleView(ctx.author, STEAM_PROFILES)
-
-        await ctx.send(
-            "Select Steam profiles:",
-            view=view
-        )
-
     @commands.command(help="watch_demo", description="Analyze cs2 demo")
     @commands.has_any_role("Owner", "Admin")
     async def watch_demo(self, ctx, demo_url: str = ""):
@@ -133,8 +109,41 @@ class WatchDemoCog(commands.Cog):
 
         parser = DemoParser(path)
         players = parser.parse_player_info()
+        steam_profiles = []
+
+        for i, (_, row) in enumerate(
+                players.sort_values("team_number", ascending=False).iterrows(),
+                start=2
+        ):
+            steam_profiles.append({
+                "index": i,
+                "name": row["name"],
+                "steam_id": row["steamid"]
+            })
 
         await ctx.send(f"Current url: {demo_url}\nDemo info:\n```{players}```")
+
+        # Example data (replace with real Steam profiles)
+        # STEAM_PROFILES = [
+        #     {"name": "Profile 1", "steam_id": "76561199234124671"},
+        #     {"name": "Profile 2", "steam_id": "76561198812258436"},
+        #     {"name": "Profile 3", "steam_id": "76561199527201188"},
+        #     {"name": "Profile 4", "steam_id": "76561199231739701"},
+        #     {"name": "Profile 5", "steam_id": "76561198981314495"},
+        #     {"name": "Profile 6", "steam_id": "76561199519970864"},
+        #     {"name": "Profile 7", "steam_id": "76561199027104248"},
+        #     {"name": "Profile 8", "steam_id": "76561199245723353"},
+        #     {"name": "Profile 9", "steam_id": "76561199555592308"},
+        #     {"name": "Profile 10", "steam_id": "76561198176135483"},
+        # ]
+
+        # Show Steam profiles with checkbox buttons
+        view = ProfileToggleView(ctx.author, steam_profiles)
+
+        await ctx.send(
+            "Select Steam profiles:",
+            view=view
+        )
 
 
 
