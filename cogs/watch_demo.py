@@ -1,7 +1,13 @@
 from discord.ext import commands
 import discord
 from demoparser2 import DemoParser
+from dotenv import load_dotenv
+from typing import Final
+import os
 
+load_dotenv()
+STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
+FACEIT_API_KEY: Final[str] = os.getenv("FACEIT_API_KEY")
 
 # Example data (replace with real Steam profiles)
 STEAM_PROFILES = [
@@ -46,6 +52,7 @@ class ProfileToggleButton(discord.ui.Button):
         super().__init__(
             label=profile["name"],
             style=discord.ButtonStyle.secondary,
+            emoji="🔇",
             row=index // 5
         )
         self.profile = profile
@@ -62,7 +69,7 @@ class ProfileToggleButton(discord.ui.Button):
             discord.ButtonStyle.success if enabled
             else discord.ButtonStyle.secondary
         )
-        self.emoji = "✅" if enabled else "⬜"
+        self.emoji = "🔊" if enabled else "🔇"
 
         await interaction.response.edit_message(view=view)
 
