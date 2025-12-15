@@ -12,7 +12,7 @@ class WatchDemoCog(commands.Cog):
     def cog_unload(self):
         print("[INFO] Cog \"Watch Demo\" was unloaded!")
 
-    @commands.command(name="watch_demo", help="Analyze cs2 demo")
+    @commands.command(help="watch_demo", description="Analyze cs2 demo")
     @commands.has_any_role("Owner", "Admin")
     async def watch_demo(self, ctx, demo_url: str = ""):
         path = "/home/gektor/demo.dem"
