@@ -74,12 +74,21 @@ class DoneButton(discord.ui.Button):
         view: ProfileToggleView = self.view  # type: ignore
 
         selected = [
-            steam_id for steam_id, enabled in view.state.items() if enabled
+            f"{p['name']} — {p['steam_id']}"
+            for p in view.profiles
+            if view.state.get(p["steam_id"])
         ]
 
-        # Send result (or save to DB / cache)
+        if not selected:
+            await interaction.response.send_message(
+                "❌ No players selected.",
+                ephemeral=True
+            )
+            return
+
         await interaction.response.send_message(
-            f"✅ Selected Steam IDs:\n" + "\n".join(selected),
+            "📤 Done!\n\n"
+            "✅ Selected players:\n" + "\n".join(selected),
             ephemeral=True
         )
 
