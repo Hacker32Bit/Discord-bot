@@ -37,7 +37,7 @@ class ProfileToggleView(discord.ui.View):
 class ProfileToggleButton(discord.ui.Button):
     def __init__(self, profile: dict, index: int):
         super().__init__(
-            label=profile["name"],
+            label=f"{profile['side']} {profile['name']}",
             style=discord.ButtonStyle.secondary,
             emoji="🔇",
             row=index // 5
@@ -74,7 +74,7 @@ class DoneButton(discord.ui.Button):
         view: ProfileToggleView = self.view  # type: ignore
 
         selected = [
-            f"{p['name']} — {p['steam_id']}"
+            f"{p['side']} {p['name']} — {p['steam_id']}"
             for p in view.profiles
             if view.state.get(p["steam_id"])
         ]
@@ -127,24 +127,12 @@ class WatchDemoCog(commands.Cog):
             steam_profiles.append({
                 "index": i,
                 "name": row["name"],
-                "steam_id": row["steamid"]
+                "steam_id": row["steamid"],
+                "side": "[T]" if row["team_number"] % 2 else "[CT]",
             })
 
-        await ctx.send(f"Current url: {demo_url}\nDemo info:\n```{players}```")
 
-        # Example data (replace with real Steam profiles)
-        # STEAM_PROFILES = [
-        #     {"name": "Profile 1", "steam_id": "76561199234124671"},
-        #     {"name": "Profile 2", "steam_id": "76561198812258436"},
-        #     {"name": "Profile 3", "steam_id": "76561199527201188"},
-        #     {"name": "Profile 4", "steam_id": "76561199231739701"},
-        #     {"name": "Profile 5", "steam_id": "76561198981314495"},
-        #     {"name": "Profile 6", "steam_id": "76561199519970864"},
-        #     {"name": "Profile 7", "steam_id": "76561199027104248"},
-        #     {"name": "Profile 8", "steam_id": "76561199245723353"},
-        #     {"name": "Profile 9", "steam_id": "76561199555592308"},
-        #     {"name": "Profile 10", "steam_id": "76561198176135483"},
-        # ]
+        await ctx.send(f"Current url: {demo_url}\nDemo info:\n```{steam_profiles}```")
 
         # Show Steam profiles with checkbox buttons
         view = ProfileToggleView(ctx.author, steam_profiles)
