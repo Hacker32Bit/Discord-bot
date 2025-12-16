@@ -236,10 +236,10 @@ class WatchDemoCog(commands.Cog):
 
                 profiles = []
                 for p in teams['faction1']['roster']:
-                    avatar_url = p["avatar"] if p["avatar"] else steam_index[p["steamid"]]["avatarfull"]
+                    avatar_url = p["avatar"] if p["avatar"] else steam_index[p["game_player_id"]]["avatarfull"]
                     profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]", "avatar_url": avatar_url})
                 for p in teams['faction2']['roster']:
-                    avatar_url = p["avatar"] if p["avatar"] else steam_index[p["steamid"]]["avatarfull"]
+                    avatar_url = p["avatar"] if p["avatar"] else steam_index[p["game_player_id"]]["avatarfull"]
                     profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]", "avatar_url": avatar_url})
 
                 await interaction.edit_original_response(
