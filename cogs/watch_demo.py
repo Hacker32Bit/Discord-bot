@@ -163,21 +163,29 @@ class WatchDemoCog(commands.Cog):
 
             # draw.text((15, 2), f"{profiles[0]['name']}", white, font=font_normal)
 
-            headers = {
-                "Authorization": f"Bearer {FACEIT_API_KEY}"
-            }
-
             log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
             for p in profiles[:5]:
+                if p["faceit_avatar_url"]:
+                    await log_channel.send(p['faceit_avatar_url'])
 
-                await log_channel.send(p['avatar_url'])
+                    try:
+                        response = requests.get(p['faceit_avatar_url'])
+                        await log_channel.send(response.status_code)
 
-                response = requests.get(p['avatar_url'],
-                                        headers=headers)
-                response.raise_for_status()
-
-                await log_channel.send(response.status_code)
+                        response.raise_for_status()
+                    except Exception as e:
+                        try:
+                            response = requests.get(p['steam_avatar_url'])
+                            await log_channel.send(response.status_code)
+                        except Exception as e:
+                            await log_channel.send("Images not fetched!")
+                else:
+                    try:
+                        response = requests.get(p['steam_avatar_url'])
+                        await log_channel.send(response.status_code)
+                    except Exception as e:
+                        await log_channel.send("Images not fetched!")
 
                 avatar = Image.open(io.BytesIO(response.content))
                 avatar.resize((158, 158))
@@ -248,11 +256,13 @@ class WatchDemoCog(commands.Cog):
 
                 profiles = []
                 for p in teams['faction1']['roster']:
-                    avatar_url = p["avatar"] if p["avatar"] else steam_index[p["game_player_id"]]["avatarfull"]
-                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]", "avatar_url": avatar_url})
+                    faceit_avatar_url = p["avatar"]
+                    steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
+                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]", "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
                 for p in teams['faction2']['roster']:
-                    avatar_url = p["avatar"] if p["avatar"] else steam_index[p["game_player_id"]]["avatarfull"]
-                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]", "avatar_url": avatar_url})
+                    faceit_avatar_url = p["avatar"]
+                    steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
+                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]", "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
 
                 await interaction.edit_original_response(
                     content="💾 Downloading demo..."
