@@ -167,32 +167,22 @@ class WatchDemoCog(commands.Cog):
 
             for p in profiles[:5]:
                 if p["faceit_avatar_url"]:
-                    await log_channel.send(p['faceit_avatar_url'])
-
                     try:
                         response = requests.get(p['faceit_avatar_url'])
-                        await log_channel.send(response.status_code)
-
                         response.raise_for_status()
                     except Exception as e:
                         try:
-                            await log_channel.send(p['steam_avatar_url'])
-
                             response = requests.get(p['steam_avatar_url'])
-                            await log_channel.send(response.status_code)
                         except Exception as e:
-                            await log_channel.send("Images not fetched!")
+                            await log_channel.send("FaceIt + Steam images not fetched!")
                 else:
                     try:
-                        await log_channel.send(p['steam_avatar_url'])
-
                         response = requests.get(p['steam_avatar_url'])
-                        await log_channel.send(response.status_code)
                     except Exception as e:
-                        await log_channel.send("Images not fetched!")
+                        await log_channel.send("Steam images not fetched!")
 
                 avatar = Image.open(io.BytesIO(response.content))
-                avatar.resize((158, 158))
+                avatar = avatar.resize((158, 158), Image.LANCZOS)
                 bordered_avatar = ImageOps.expand(avatar, border=1, fill=gray_transparent)
 
                 image.paste(bordered_avatar, (w_pos, 0))
