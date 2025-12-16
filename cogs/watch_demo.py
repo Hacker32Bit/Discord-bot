@@ -213,7 +213,7 @@ class WatchDemoCog(commands.Cog):
             game_player_ids = [
                 player["game_player_id"]
                 for faction in ("faction1", "faction2")
-                for player in faceit_data[faction]["roster"]
+                for player in teams[faction]["roster"]
             ]
 
             try:
