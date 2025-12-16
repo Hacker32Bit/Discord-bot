@@ -230,7 +230,7 @@ class WatchDemoCog(commands.Cog):
                 image.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="match.png")
-                await interaction.edit_original_response(f"Current url: {demo_url}\nDemo info:\n```{profiles}```", attachments=[result])
+                await interaction.edit_original_response(content=f"Current url: {demo_url}\nDemo info:\n```{profiles}```", attachments=[result])
 
             # Show profiles with checkbox buttons
             view = ProfileToggleView(interaction.author, profiles)
