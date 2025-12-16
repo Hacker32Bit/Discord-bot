@@ -197,7 +197,7 @@ class WatchDemoCog(commands.Cog):
                     except Exception as e:
                         await log_channel.send("Steam images not fetched!")
 
-                avatar = Image.open(io.BytesIO(response.content).convert("RGBA"))
+                avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
                 avatar = avatar.resize((158, 158), Image.LANCZOS)
 
                 image.paste(avatar, (w_pos, 0), avatar)
