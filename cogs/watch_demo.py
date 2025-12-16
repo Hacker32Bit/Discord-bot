@@ -176,12 +176,16 @@ class WatchDemoCog(commands.Cog):
                         response.raise_for_status()
                     except Exception as e:
                         try:
+                            await log_channel.send(p['steam_avatar_url'])
+
                             response = requests.get(p['steam_avatar_url'])
                             await log_channel.send(response.status_code)
                         except Exception as e:
                             await log_channel.send("Images not fetched!")
                 else:
                     try:
+                        await log_channel.send(p['steam_avatar_url'])
+
                         response = requests.get(p['steam_avatar_url'])
                         await log_channel.send(response.status_code)
                     except Exception as e:
@@ -300,7 +304,7 @@ class WatchDemoCog(commands.Cog):
                     image_binary.seek(0)
                     result = File(fp=image_binary, filename="match.png")
                     await interaction.edit_original_response(
-                        content=f"Current url: {demo_url}\nDemo info:\n```{profiles}```\n", attachments=[result],
+                        content=f"Current url: {demo_url}\n", attachments=[result],
                         view=view)
 
 
