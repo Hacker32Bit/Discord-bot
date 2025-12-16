@@ -157,7 +157,7 @@ class WatchDemoCog(commands.Cog):
 
             # ======== Fonts to use =============
             font_normal_large = truetype(font_noto_sans_bold, 36, encoding='UTF-8')
-            font_normal = truetype(font_noto_sans_bold, 24, encoding='UTF-8')
+            font_normal = truetype(font_noto_sans_bold, 18, encoding='UTF-8')
             font_small_large = truetype(font_noto_sans_regular, 36, encoding='UTF-8')
             font_small = truetype(font_noto_sans_regular, 24, encoding='UTF-8')
             # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
@@ -220,11 +220,11 @@ class WatchDemoCog(commands.Cog):
                 text = p["name"]
                 fitted = await self.fit_text(draw, text, font_normal)
 
-                draw.text((w_pos + 10, h_pos + 10), fitted, fill=white, font=font_normal)
+                draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_normal)
 
                 if w_pos < 640:
                     w_pos = w_pos + 158
-                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 30)], fill=gray_transparent, width=2)
+                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 40)], fill=gray_transparent, width=2)
                     w_pos = w_pos + 2
 
             h_pos = h_pos + 40
