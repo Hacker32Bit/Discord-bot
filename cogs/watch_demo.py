@@ -165,13 +165,13 @@ class WatchDemoCog(commands.Cog):
 
     @commands.command(help="watch_demo", description="Analyze cs2 demo")
     @commands.has_any_role("Owner", "Admin")
-    async def watch_demo(self, ctx, demo_url: str = ""):
+    async def watch_demo(self, interaction: discord.Interaction[], demo_url: str = ""):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
         path = "/home/gektor/demo.dem"
 
-        await ctx.response.defer()
+        await interaction.response.defer()
 
-        await ctx.edit_original_response(
+        await interaction.edit_original_response(
             content="🔍 Searching demo..."
         )
 
@@ -198,12 +198,12 @@ class WatchDemoCog(commands.Cog):
             for p in teams['faction2']['roster']:
                 profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]"})
 
-            await ctx.edit_original_response(
+            await interaction.edit_original_response(
                 content="💾 Downloading demo..."
             )
             await asyncio.sleep(5)
 
-            await ctx.edit_original_response(
+            await interaction.edit_original_response(
                 content="🕵️ Analyzing demo..."
             )
 
@@ -229,12 +229,12 @@ class WatchDemoCog(commands.Cog):
                 image.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="match.png")
-                await ctx.edit_original_response(f"Current url: {demo_url}\nDemo info:\n```{profiles}```", attachments=[result])
+                await interaction.edit_original_response(f"Current url: {demo_url}\nDemo info:\n```{profiles}```", attachments=[result])
 
             # Show profiles with checkbox buttons
-            view = ProfileToggleView(ctx.author, profiles)
+            view = ProfileToggleView(interaction.author, profiles)
 
-            await ctx.send(
+            await interaction.send(
                 "Select Steam profiles:",
                 view=view
             )
