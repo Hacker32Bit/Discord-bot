@@ -225,6 +225,8 @@ class WatchDemoCog(commands.Cog):
                 for p in profiles
             ]
 
+            view = ProfileToggleView(interaction.user, profiles)
+
             with io.BytesIO() as image_binary:
                 image = await self.create_image(self, profiles=profiles, faceit_data=match)
                 image.save(image_binary, 'PNG')
@@ -233,9 +235,8 @@ class WatchDemoCog(commands.Cog):
                 await interaction.edit_original_response(content=f"Current url: {demo_url}\nDemo info:\n```{profiles}```", attachments=[result])
 
             # Show profiles with checkbox buttons
-            view = ProfileToggleView(interaction.author, profiles)
 
-            await interaction.send(
+            await interaction.response.send_message(
                 "Select Steam profiles:",
                 view=view
             )
