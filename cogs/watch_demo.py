@@ -1,3 +1,4 @@
+from random import randint
 from discord import app_commands
 from discord.ext import commands
 import discord
@@ -6,12 +7,13 @@ from dotenv import load_dotenv
 from typing import Final
 import os
 import asyncio
-from PIL import Image
+from PIL import Image, ImageOps
 from PIL.ImageFont import truetype
 from PIL.ImageDraw import Draw
 import requests
 from discord import File
 import io
+
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -146,7 +148,7 @@ class WatchDemoCog(commands.Cog):
             # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
 
             h_pos = 0
-            new_height = 40
+            w_pos = 0
 
             white = (255, 255, 255, 255)
             # black = (0, 0, 0, 255)
@@ -161,6 +163,21 @@ class WatchDemoCog(commands.Cog):
 
             draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
             draw.text((15, 2), f"{profiles[0]['name']}", white, font=font_normal)
+
+
+            for p in profiles[:5]:
+                response = requests.get(p['avatar_url'])
+                avatar = Image.open(io.BytesIO(response.content))
+                avatar.resize((158, 158))
+                bordered_avatar = ImageOps.expand(avatar, border=1, fill=gray_transparent)
+
+                image.paste(bordered_avatar, (w_pos, 0))
+                w_pos = w_pos + 160
+
+            w_pos = 0
+            h_pos = 160
+
+            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=1)
 
             return image
 
@@ -189,50 +206,85 @@ class WatchDemoCog(commands.Cog):
             )
             r.raise_for_status()
 
-            match = r.json()
-            demo_urls = match["demo_url"]  # or "demos"
-            teams = match["teams"]
+            faceit_data = r.json()
+            demo_urls = faceit_data["demo_url"]  # or "demos"
+            teams = faceit_data["teams"]
 
-            profiles = []
-            for p in teams['faction1']['roster']:
-                profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]"})
-            for p in teams['faction2']['roster']:
-                profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]"})
-
-            await interaction.edit_original_response(
-                content="💾 Downloading demo..."
-            )
-            await asyncio.sleep(5)
-
-            await interaction.edit_original_response(
-                content="🕵️ Analyzing demo..."
-            )
-
-            parser = DemoParser(path)
-            df = parser.parse_player_info()
-
-            # build lookup: steamid -> df_index + 2
-            index_map = {
-                str(steamid): idx + 2
-                for idx, steamid in df["steamid"].items()
-            }
-
-            profiles = [
-                {
-                    "index": index_map.get(p["steam_id"]),
-                    **p
-                }
-                for p in profiles
+            game_player_ids = [
+                player["game_player_id"]
+                for faction in ("faction1", "faction2")
+                for player in faceit_data[faction]["roster"]
             ]
 
-            view = ProfileToggleView(interaction.user, profiles)
+            try:
+                steamids = ",".join(game_player_ids)
+                url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={STEAM_API_KEY}&steamids={steamids}"
 
-            with io.BytesIO() as image_binary:
-                image = await self.create_image(self, profiles=profiles, faceit_data=match)
-                image.save(image_binary, 'PNG')
-                image_binary.seek(0)
-                result = File(fp=image_binary, filename="match.png")
-                await interaction.edit_original_response(content=f"Current url: {demo_url}\nDemo info:\n```{profiles}```\nSelect Steam profiles:", attachments=[result], view=view)
+                r = requests.get(url)
+                while r.status_code == 429:
+                    sleep_time = randint(1800, 3600)
+                    await log_channel.send(
+                        content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
+                    await asyncio.sleep(sleep_time)
+                    r = requests.get(url)
+
+                r.raise_for_status()
+                steam_data = r.json()
+
+                players = steam_data["response"]["players"]
+                steam_index = {p["steamid"]: p for p in players}
+
+                profiles = []
+                for p in teams['faction1']['roster']:
+                    avatar_url = p["avatar_url"] if p["avatar_url"] else steam_index[p["steamid"]]["avatarfull"]
+                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]", "avatar_url": avatar_url})
+                for p in teams['faction2']['roster']:
+                    avatar_url = p["avatar_url"] if p["avatar_url"] else steam_index[p["steamid"]]["avatarfull"]
+                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]", "avatar_url": avatar_url})
+
+                await interaction.edit_original_response(
+                    content="💾 Downloading demo..."
+                )
+
+                # TODO
+                await asyncio.sleep(5)
+
+                await interaction.edit_original_response(
+                    content="🕵️ Analyzing demo..."
+                )
+
+                parser = DemoParser(path)
+                df = parser.parse_player_info()
+
+                # build lookup: steamid -> df_index + 2
+                index_map = {
+                    str(steamid): idx + 2
+                    for idx, steamid in df["steamid"].items()
+                }
+
+                profiles = [
+                    {
+                        "index": index_map.get(p["steam_id"]),
+                        **p
+                    }
+                    for p in profiles
+                ]
+
+                view = ProfileToggleView(interaction.user, profiles)
+
+                with io.BytesIO() as image_binary:
+                    image = await self.create_image(self, profiles=profiles, faceit_data=faceit_data)
+                    image.save(image_binary, 'PNG')
+                    image_binary.seek(0)
+                    result = File(fp=image_binary, filename="match.png")
+                    await interaction.edit_original_response(
+                        content=f"Current url: {demo_url}\nDemo info:\n```{profiles}```\n", attachments=[result],
+                        view=view)
+
+
+            except requests.exceptions.HTTPError as e:
+                await log_channel.send(content=f"Steam connection error: {e}")
+
 
 
         except requests.exceptions.HTTPError as e:
