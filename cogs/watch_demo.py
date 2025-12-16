@@ -232,14 +232,8 @@ class WatchDemoCog(commands.Cog):
                 image.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="match.png")
-                await interaction.edit_original_response(content=f"Current url: {demo_url}\nDemo info:\n```{profiles}```", attachments=[result])
+                await interaction.edit_original_response(content=f"Current url: {demo_url}\nDemo info:\n```{profiles}```\nSelect Steam profiles:", attachments=[result], view=view)
 
-            # Show profiles with checkbox buttons
-
-            await interaction.response.send_message(
-                "Select Steam profiles:",
-                view=view
-            )
 
         except requests.exceptions.HTTPError as e:
             await log_channel.send(content=f"FaceIt connection error: {e}")
