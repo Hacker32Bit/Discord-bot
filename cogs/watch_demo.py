@@ -165,7 +165,7 @@ class WatchDemoCog(commands.Cog):
 
     @commands.command(help="watch_demo", description="Analyze cs2 demo")
     @commands.has_any_role("Owner", "Admin")
-    async def watch_demo(self, interaction: discord.Interaction[], demo_url: str = ""):
+    async def watch_demo(self, interaction: discord.Interaction, demo_url: str = ""):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
         path = "/home/gektor/demo.dem"
 
