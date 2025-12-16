@@ -1,3 +1,4 @@
+from discord import app_commands
 from discord.ext import commands
 import discord
 from demoparser2 import DemoParser
@@ -163,8 +164,7 @@ class WatchDemoCog(commands.Cog):
             return image
 
 
-    @commands.command(help="watch_demo", description="Analyze cs2 demo")
-    @commands.has_any_role("Owner", "Admin")
+    @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
     async def watch_demo(self, interaction: discord.Interaction, demo_url: str = ""):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
         path = "/home/gektor/demo.dem"
