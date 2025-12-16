@@ -163,8 +163,23 @@ class WatchDemoCog(commands.Cog):
 
             # draw.text((15, 2), f"{profiles[0]['name']}", white, font=font_normal)
 
+            headers = {
+                "Authorization": f"Bearer {FACEIT_API_KEY}"
+            }
+
+            log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
+
             for p in profiles[:5]:
-                response = requests.get(p['avatar_url'])
+
+                await log_channel.send(p['avatar_url'])
+
+                response = requests.get(p['avatar_url'],
+                                        headers=headers)
+                response.raise_for_status()
+
+                await log_channel.send(response.status_code)
+                await log_channel.send(response.content)
+
                 avatar = Image.open(io.BytesIO(response.content))
                 avatar.resize((158, 158))
                 bordered_avatar = ImageOps.expand(avatar, border=1, fill=gray_transparent)
