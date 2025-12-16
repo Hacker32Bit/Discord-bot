@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from typing import Final
 import os
 import asyncio
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageDraw, ImageFont
 from PIL.ImageFont import truetype
 from PIL.ImageDraw import Draw
 import requests
@@ -123,11 +123,26 @@ class WatchDemoCog(commands.Cog):
     def cog_unload(self):
         print("[INFO] Cog \"Watch Demo\" was unloaded!")
 
+    @staticmethod
+    async def fit_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_width = 138, ellipsis = "...") -> str:
+        # If full text fits — return as is
+        if draw.textlength(text, font=font) <= max_width:
+            return text
+
+        ellipsis_width = draw.textlength(ellipsis, font=font)
+
+        # Trim text until it fits with ellipsis
+        for i in range(len(text), 0, -1):
+            candidate = text[:i]
+            if draw.textlength(candidate, font=font) + ellipsis_width <= max_width:
+                return candidate + ellipsis
+
+        return ellipsis
 
     @staticmethod
     async def create_image(self, profiles: list[dict], faceit_data):
 
-        width = 800
+        width = 798
         height = 600
 
         with Image.new(mode='RGBA', size=(width, height), color=(0, 0, 0, 0)) as image:
@@ -165,6 +180,7 @@ class WatchDemoCog(commands.Cog):
 
             log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
+            # Draw T side players avatars
             for p in profiles[:5]:
                 if p["faceit_avatar_url"]:
                     try:
@@ -181,17 +197,39 @@ class WatchDemoCog(commands.Cog):
                     except Exception as e:
                         await log_channel.send("Steam images not fetched!")
 
-                avatar = Image.open(io.BytesIO(response.content))
+                avatar = Image.open(io.BytesIO(response.content).convert("RGBA"))
                 avatar = avatar.resize((158, 158), Image.LANCZOS)
-                bordered_avatar = ImageOps.expand(avatar, border=1, fill=gray_transparent)
 
-                image.paste(bordered_avatar, (w_pos, 0))
-                w_pos = w_pos + 160
+                image.paste(avatar, (w_pos, 0), avatar)
+
+                if w_pos < 640:
+                    w_pos = w_pos + 158
+                    draw.line([(w_pos, 0), (w_pos, 158)], fill=gray_transparent, width=2)
+                    w_pos = w_pos + 2
 
             w_pos = 0
-            h_pos = 160
+            h_pos = 158
 
-            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=1)
+            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
+            h_pos = h_pos + 2
+
+            # Draw T side players nicknames
+            for p in profiles[:5]:
+                draw.rectangle([(w_pos, h_pos), (width, h_pos + 40)], fill=gray_dark_transparent)
+
+                text = p["name"]
+                fitted = self.fit_text(draw, text, font_normal)
+
+                draw.text((w_pos + 10, h_pos + 10), fitted, fill=white, font=font_normal)
+
+                if w_pos < 640:
+                    w_pos = w_pos + 158
+                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 30)], fill=gray_transparent, width=2)
+                    w_pos = w_pos + 2
+
+            h_pos = h_pos + 40
+            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
+
 
             return image
 
