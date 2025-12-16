@@ -161,9 +161,7 @@ class WatchDemoCog(commands.Cog):
 
             draw = Draw(image)
 
-            draw.rectangle([(0, h_pos), (width, new_height)], fill=gray_dark_transparent)
-            draw.text((15, 2), f"{profiles[0]['name']}", white, font=font_normal)
-
+            # draw.text((15, 2), f"{profiles[0]['name']}", white, font=font_normal)
 
             for p in profiles[:5]:
                 response = requests.get(p['avatar_url'])
@@ -194,7 +192,7 @@ class WatchDemoCog(commands.Cog):
         )
 
         try:
-            MATCH_ID = "1-e811c008-b088-45b5-929a-5f7035d2e1f7"
+            MATCH_ID = "1-be283e06-85db-462e-a73b-ef31b3b52d6d"
 
             headers = {
                 "Authorization": f"Bearer {FACEIT_API_KEY}"
