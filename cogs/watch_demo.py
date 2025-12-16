@@ -17,6 +17,7 @@ load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
 FACEIT_API_KEY: Final[str] = os.getenv("FACEIT_API_KEY")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
+GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
 
 class ProfileToggleView(discord.ui.View):
@@ -244,7 +245,5 @@ class WatchDemoCog(commands.Cog):
 
 
 
-
-
 async def setup(bot):
-    await bot.add_cog(WatchDemoCog(bot))
+    await bot.add_cog(WatchDemoCog(bot), guilds=[discord.Object(id=GUILD_ID)])
