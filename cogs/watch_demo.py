@@ -218,7 +218,7 @@ class WatchDemoCog(commands.Cog):
                 draw.rectangle([(w_pos, h_pos), (width, h_pos + 40)], fill=gray_dark_transparent)
 
                 text = p["name"]
-                fitted = self.fit_text(draw, text, font_normal)
+                fitted = await self.fit_text(draw, text, font_normal)
 
                 draw.text((w_pos + 10, h_pos + 10), fitted, fill=white, font=font_normal)
 
