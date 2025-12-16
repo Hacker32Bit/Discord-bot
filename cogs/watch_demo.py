@@ -178,7 +178,6 @@ class WatchDemoCog(commands.Cog):
                 response.raise_for_status()
 
                 await log_channel.send(response.status_code)
-                await log_channel.send(response.content)
 
                 avatar = Image.open(io.BytesIO(response.content))
                 avatar.resize((158, 158))
