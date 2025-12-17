@@ -73,6 +73,16 @@ class ProfileToggleButton(discord.ui.Button):
         await interaction.response.edit_message(view=view)
 
 
+class WatchDemoButton(discord.ui.Button):
+    def __init__(self, url: str = ""):
+        super().__init__(
+            label="Watch demo!",
+            style=discord.ButtonStyle.link,
+            emoji="<:cs2logo:1239536122141605888>",
+            url=url
+        )
+
+
 class DoneButton(discord.ui.Button):
     def __init__(self):
         super().__init__(
@@ -124,21 +134,29 @@ class DoneButton(discord.ui.Button):
             return
 
         team1, team2 = await self.tv_listen_voice_indices(sorted(selected))
-        final_command = ""
-        if team1 == -1:
-            final_command = f"✅ Selected voices:\n```tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};```"
-        else:
-            final_command = f"✅ Selected voices:\n```tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};```\nInverted voices:\n```tv_listen_voice_indices {team2}; tv_listen_voice_indices_h {team2};```"
 
-        await interaction.response.send_message(
-            "📤 Done!\n\n"
-            "✅ Selected players:\n" + "\n".join(selected_text) + f"\n{final_command}",
-            ephemeral=True
-        )
+        final_text = "✅ Selected voices:"
+
+        final_command = f"tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};"
+        final_text += f"```{final_command}```"
+
+        if not team2 == -1:
+            inverted_command = f"tv_listen_voice_indices {team2}; tv_listen_voice_indices_h {team2};"
+            final_text += f"Inverted voices:```{inverted_command}```"
+
 
         # Disable all buttons after submit
         for item in view.children:
             item.disabled = True
+
+        run_game_url = f'steam://rungameid/730/-console +"playdemo replays/demo; {final_command}"'
+
+        await interaction.response.send_message(
+            "📤 Done!\n\n"
+            f"{final_text}",
+            ephemeral=True,
+            view=WatchDemoButton(run_game_url)
+        )
 
         await interaction.message.edit(view=view)
         view.stop()
@@ -201,18 +219,12 @@ class WatchDemoCog(commands.Cog):
             white = (255, 255, 255, 255)
             # black = (0, 0, 0, 255)
 
-            gray_dark = (120, 144, 156, 255)
-            gray = (144, 164, 174, 255)
+            t_color = (251, 172, 24, 255)
+            ct_color = (40, 57, 127, 255)
 
-            t_color = (245, 127, 23, 255)
-            ct_color = (26, 35, 126, 255)
-
-            gray_dark_transparent = (120, 144, 156, 191)
             gray_transparent = (144, 164, 174, 191)
 
             draw = Draw(image)
-
-            # draw.text((15, 2), f"{profiles[0]['name']}", white, font=font_normal)
 
             log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
@@ -236,11 +248,11 @@ class WatchDemoCog(commands.Cog):
                 avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
                 avatar = avatar.resize((158, 158), Image.LANCZOS)
 
-                image.paste(avatar, (w_pos, 0), avatar)
+                image.paste(avatar, (w_pos, h_pos), avatar)
 
                 if w_pos < 640:
                     w_pos = w_pos + 158
-                    draw.line([(w_pos, 0), (w_pos, 158)], fill=gray_transparent, width=2)
+                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 158)], fill=gray_transparent, width=2)
                     w_pos = w_pos + 2
 
             w_pos = 0
@@ -342,7 +354,7 @@ class WatchDemoCog(commands.Cog):
             draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
             h_pos = h_pos + 2
 
-            # Draw T side players avatars
+            # Draw CT side players avatars
             for p in profiles[5:]:
                 if p["faceit_avatar_url"]:
                     try:
