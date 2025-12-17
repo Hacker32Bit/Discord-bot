@@ -126,9 +126,9 @@ class DoneButton(discord.ui.Button):
         team1, team2 = await self.tv_listen_voice_indices(sorted(selected))
         final_command = ""
         if team1 == -1:
-            final_command = f"tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};"
+            final_command = f"✅ Selected voices:\n```tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};```"
         else:
-            final_command = f"Your teams:\ntv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};\nEnemy team:\ntv_listen_voice_indices {team2}; tv_listen_voice_indices_h {team2};"
+            final_command = f"✅ Selected voices:\n```tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};```\nInverted voices:\n```tv_listen_voice_indices {team2}; tv_listen_voice_indices_h {team2};```"
 
         await interaction.response.send_message(
             "📤 Done!\n\n"
