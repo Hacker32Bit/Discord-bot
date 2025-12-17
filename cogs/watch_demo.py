@@ -248,10 +248,10 @@ class WatchDemoCog(commands.Cog):
             draw.text((width - 10, h_pos), fitted, fill=white, font=font_normal_large, align="right")
 
             draw.text((399, h_pos), ":", fill=white, font=font_normal_large, align="center")
-            text = faceit_data["detailed_results"][0]["factions"]["faction1"]["score"]
-            draw.text((389, h_pos), text, fill=white, font=font_normal_large, align="right")
-            text = faceit_data["detailed_results"][0]["factions"]["faction2"]["score"]
-            draw.text((409, h_pos), text, fill=white, font=font_normal_large)
+            text = faceit_data["results"]["score"]["faction1"]
+            draw.text((389, h_pos), str(text), fill=white, font=font_normal_large, align="right")
+            text = faceit_data["results"]["score"]["faction2"]
+            draw.text((409, h_pos), str(text), fill=white, font=font_normal_large)
 
 
             return image
