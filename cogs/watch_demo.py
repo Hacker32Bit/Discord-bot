@@ -329,7 +329,7 @@ class WatchDemoCog(commands.Cog):
                 avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
                 avatar = avatar.resize((158, 158), Image.LANCZOS)
 
-                image.paste(avatar, (w_pos, 0), avatar)
+                image.paste(avatar, (w_pos, h_pos), avatar)
 
                 if w_pos < 640:
                     w_pos = w_pos + 158
