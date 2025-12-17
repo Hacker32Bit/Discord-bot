@@ -157,10 +157,10 @@ class WatchDemoCog(commands.Cog):
             #                           'Rockybilly.ttf') # NOQA: spellcheck
 
             # ======== Fonts to use =============
-            font_normal_large = truetype(font_noto_sans_bold, 36, encoding='UTF-8')
+            font_normal_large = truetype(font_noto_sans_bold, 30, encoding='UTF-8')
             font_normal = truetype(font_noto_sans_bold, 18, encoding='UTF-8')
-            font_small_large = truetype(font_noto_sans_regular, 36, encoding='UTF-8')
-            font_small = truetype(font_noto_sans_regular, 24, encoding='UTF-8')
+            font_small_large = truetype(font_noto_sans_regular, 30, encoding='UTF-8')
+            font_small = truetype(font_noto_sans_regular, 18, encoding='UTF-8')
             # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
 
             h_pos = 0
@@ -222,9 +222,9 @@ class WatchDemoCog(commands.Cog):
                 draw.rectangle([(w_pos, h_pos), (width, h_pos + 26)], fill=t_color)
 
                 text = p["name"]
-                fitted = await self.fit_text(draw, text, font_normal)
+                fitted = await self.fit_text(draw, text, font_small)
 
-                draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_normal)
+                draw.text((w_pos + 9, h_pos), fitted, fill=white, font=font_small)
 
                 if w_pos < 640:
                     w_pos = w_pos + 158
@@ -241,13 +241,13 @@ class WatchDemoCog(commands.Cog):
             image.paste(background, (w_pos, h_pos), background)
 
             text = faceit_data["teams"]["faction1"]["name"]
-            fitted = await self.fit_text(draw, text, font_normal_large, max_width=320)
-            draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_normal_large)
+            fitted = await self.fit_text(draw, text, font_normal, max_width=320)
+            draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_normal)
 
             text = faceit_data["teams"]["faction2"]["name"]
-            fitted = await self.fit_text(draw, text, font_normal_large, max_width=320)
+            fitted = await self.fit_text(draw, text, font_normal, max_width=320)
 
-            bbox = draw.textbbox((0, 0), fitted, font=font_normal_large)
+            bbox = draw.textbbox((0, 0), fitted, font=font_normal)
             text_width = bbox[2] - bbox[0]
 
             right_edge = width - 10  # where text should END
@@ -261,39 +261,20 @@ class WatchDemoCog(commands.Cog):
 
             score1 = str(faceit_data["results"]["score"]["faction1"])
             score2 = str(faceit_data["results"]["score"]["faction2"])
-            bbox1 = draw.textbbox((0, 0), score1, font=font_normal_large)
-            bbox2 = draw.textbbox((0, 0), score2, font=font_normal_large)
 
-            w1 = bbox1[2] - bbox1[0]
-            w2 = bbox2[2] - bbox2[0]
+            score_text = f"{score1} : {score2}"
 
-            colon_x = 399
-            gap = 6  # spacing from colon
+            bbox = draw.textbbox((0, 0), score_text, font=font_normal_large)
+            text_width = bbox[2] - bbox[0]
 
-            # left score (right-aligned)
+            center_x = 399  # where ":" should visually be centered
+
             draw.text(
-                (colon_x - gap - w1, h_pos),
-                score1,
+                (center_x - text_width // 2, h_pos),
+                score_text,
                 fill=white,
                 font=font_normal_large
             )
-
-            # colon
-            draw.text(
-                (colon_x, h_pos),
-                ":",
-                fill=white,
-                font=font_normal_large
-            )
-
-            # right score (left-aligned)
-            draw.text(
-                (colon_x + gap, h_pos),
-                score2,
-                fill=white,
-                font=font_normal_large
-            )
-
 
 
             return image
