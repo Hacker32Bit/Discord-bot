@@ -157,7 +157,7 @@ class WatchDemoCog(commands.Cog):
             #                           'Rockybilly.ttf') # NOQA: spellcheck
 
             # ======== Fonts to use =============
-            font_normal_large = truetype(font_noto_sans_bold, 30, encoding='UTF-8')
+            font_normal_large = truetype(font_noto_sans_bold, 36, encoding='UTF-8')
             font_normal = truetype(font_noto_sans_bold, 18, encoding='UTF-8')
             font_small_large = truetype(font_noto_sans_regular, 30, encoding='UTF-8')
             font_small = truetype(font_noto_sans_regular, 18, encoding='UTF-8')
@@ -224,7 +224,7 @@ class WatchDemoCog(commands.Cog):
                 text = p["name"]
                 fitted = await self.fit_text(draw, text, font_small)
 
-                draw.text((w_pos + 9, h_pos), fitted, fill=white, font=font_small)
+                draw.text((w_pos + 7, h_pos - 1), fitted, fill=white, font=font_small)
 
                 if w_pos < 640:
                     w_pos = w_pos + 158
@@ -241,13 +241,13 @@ class WatchDemoCog(commands.Cog):
             image.paste(background, (w_pos, h_pos), background)
 
             text = faceit_data["teams"]["faction1"]["name"]
-            fitted = await self.fit_text(draw, text, font_normal, max_width=320)
-            draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_normal)
+            fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
+            draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_small_large)
 
             text = faceit_data["teams"]["faction2"]["name"]
-            fitted = await self.fit_text(draw, text, font_normal, max_width=320)
+            fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
 
-            bbox = draw.textbbox((0, 0), fitted, font=font_normal)
+            bbox = draw.textbbox((0, 0), fitted, font=font_small_large)
             text_width = bbox[2] - bbox[0]
 
             right_edge = width - 10  # where text should END
@@ -256,7 +256,7 @@ class WatchDemoCog(commands.Cog):
                 (right_edge - text_width, h_pos),
                 fitted,
                 fill=white,
-                font=font_normal_large
+                font=font_small_large
             )
 
             score1 = str(faceit_data["results"]["score"]["faction1"])
