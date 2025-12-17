@@ -14,6 +14,7 @@ import requests
 from discord import File
 import io
 
+from pygments.styles.dracula import background
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -171,6 +172,9 @@ class WatchDemoCog(commands.Cog):
             gray_dark = (120, 144, 156, 255)
             gray = (144, 164, 174, 255)
 
+            t_color = (255, 111, 0, 191)
+            ct_color = (26, 35, 126, 191)
+
             gray_dark_transparent = (120, 144, 156, 191)
             gray_transparent = (144, 164, 174, 191)
 
@@ -215,7 +219,7 @@ class WatchDemoCog(commands.Cog):
 
             # Draw T side players nicknames
             for p in profiles[:5]:
-                draw.rectangle([(w_pos, h_pos), (width, h_pos + 40)], fill=gray_dark_transparent)
+                draw.rectangle([(w_pos, h_pos), (width, h_pos + 26)], fill=t_color)
 
                 text = p["name"]
                 fitted = await self.fit_text(draw, text, font_normal)
@@ -224,11 +228,30 @@ class WatchDemoCog(commands.Cog):
 
                 if w_pos < 640:
                     w_pos = w_pos + 158
-                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 40)], fill=gray_transparent, width=2)
+                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 26)], fill=gray_transparent, width=2)
                     w_pos = w_pos + 2
 
-            h_pos = h_pos + 40
+            h_pos = h_pos + 26
             draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
+            h_pos = h_pos + 2
+
+            # Paste gradient
+            background = Image.open("assets/images/watch_demo_gradient.png").convert("RGBA")
+            image.paste(background, (w_pos, h_pos), background)
+
+            text = faceit_data["teams"]["faction1"]["name"]
+            fitted = await self.fit_text(draw, text, font_normal_large, max_width=320)
+            draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_normal_large)
+
+            text = faceit_data["teams"]["faction2"]["name"]
+            fitted = await self.fit_text(draw, text, font_normal_large, max_width=320)
+            draw.text((width - 10, h_pos), fitted, fill=white, font=font_normal_large, align="right")
+
+            draw.text((399, h_pos), ":", fill=white, font=font_normal_large, align="center")
+            text = faceit_data["detailed_results"][0]["factions"]["faction1"]["score"]
+            draw.text((389, h_pos), text, fill=white, font=font_normal_large, align="right")
+            text = faceit_data["detailed_results"][0]["factions"]["faction2"]["score"]
+            draw.text((409, h_pos), text, fill=white, font=font_normal_large)
 
 
             return image
