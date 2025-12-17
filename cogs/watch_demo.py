@@ -241,7 +241,7 @@ class WatchDemoCog(commands.Cog):
 
             text = faceit_data["teams"]["faction1"]["name"]
             fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
-            draw.text((w_pos + 10, h_pos + 7), fitted, fill=white, font=font_small_large)
+            draw.text((w_pos + 10, h_pos + 8), fitted, fill=white, font=font_small_large)
 
             text = faceit_data["teams"]["faction2"]["name"]
             fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
@@ -252,7 +252,7 @@ class WatchDemoCog(commands.Cog):
             right_edge = width - 10  # where text should END
 
             draw.text(
-                (right_edge - text_width, h_pos + 7),
+                (right_edge - text_width, h_pos + 8),
                 fitted,
                 fill=white,
                 font=font_small_large
@@ -261,20 +261,80 @@ class WatchDemoCog(commands.Cog):
             score1 = str(faceit_data["results"]["score"]["faction1"])
             score2 = str(faceit_data["results"]["score"]["faction2"])
 
-            score_text = f"{score1} : {score2}"
+            left_text = f"{score1} "
+            colon = ":"
+            right_text = f" {score2}"
 
-            bbox = draw.textbbox((0, 0), score_text, font=font_normal_large)
-            text_width = bbox[2] - bbox[0]
+            # Measure widths
+            left_bbox = draw.textbbox((0, 0), left_text, font=font_normal_large)
+            colon_bbox = draw.textbbox((0, 0), colon, font=font_normal_large)
 
-            center_x = 399  # where ":" should visually be centered
+            left_w = left_bbox[2] - left_bbox[0]
+            colon_w = colon_bbox[2] - colon_bbox[0]
 
+            center_x = width // 2  # = 399
+
+            # X where full string must start so COLON CENTER is at center_x
+            start_x = center_x - left_w - colon_w // 2
+
+            # Draw in one pass (best kerning)
             draw.text(
-                (center_x - text_width // 2, h_pos),
-                score_text,
+                (start_x, h_pos + 2),
+                f"{left_text}{colon}{right_text}",
                 fill=white,
                 font=font_normal_large
             )
 
+            w_pos = 0
+            h_pos = h_pos + 60
+            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
+            h_pos = h_pos + 2
+
+            # Draw CT side players nicknames
+            for p in profiles[5:]:
+                draw.rectangle([(w_pos, h_pos), (width, h_pos + 26)], fill=ct_color)
+
+                text = p["name"]
+                fitted = await self.fit_text(draw, text, font_small)
+
+                draw.text((w_pos + 7, h_pos - 1), fitted, fill=white, font=font_small)
+
+                if w_pos < 640:
+                    w_pos = w_pos + 158
+                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 26)], fill=gray_transparent, width=2)
+                    w_pos = w_pos + 2
+
+            w_pos = 0
+            h_pos = h_pos + 26
+            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
+            h_pos = h_pos + 2
+
+            # Draw T side players avatars
+            for p in profiles[5:]:
+                if p["faceit_avatar_url"]:
+                    try:
+                        response = requests.get(p['faceit_avatar_url'])
+                        response.raise_for_status()
+                    except Exception as e:
+                        try:
+                            response = requests.get(p['steam_avatar_url'])
+                        except Exception as e:
+                            await log_channel.send("FaceIt + Steam images not fetched!")
+                else:
+                    try:
+                        response = requests.get(p['steam_avatar_url'])
+                    except Exception as e:
+                        await log_channel.send("Steam images not fetched!")
+
+                avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+                avatar = avatar.resize((158, 158), Image.LANCZOS)
+
+                image.paste(avatar, (w_pos, 0), avatar)
+
+                if w_pos < 640:
+                    w_pos = w_pos + 158
+                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 158)], fill=gray_transparent, width=2)
+                    w_pos = w_pos + 2
 
             return image
 
