@@ -82,6 +82,11 @@ class WatchDemoButton(discord.ui.Button):
             url=url
         )
 
+class WatchDemoView(discord.ui.View):
+    def __init__(self, url: str):
+        super().__init__(timeout=None)
+        self.add_item(WatchDemoButton(url))
+
 
 class DoneButton(discord.ui.Button):
     def __init__(self):
@@ -155,7 +160,7 @@ class DoneButton(discord.ui.Button):
             "📤 Done!\n\n"
             f"{final_text}",
             ephemeral=True,
-            view=WatchDemoButton(run_game_url)
+            view=WatchDemoView(run_game_url)
         )
 
         await interaction.message.edit(view=view)
