@@ -14,7 +14,6 @@ import requests
 from discord import File
 import io
 
-from pygments.styles.dracula import background
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -157,9 +156,9 @@ class WatchDemoCog(commands.Cog):
             #                           'Rockybilly.ttf') # NOQA: spellcheck
 
             # ======== Fonts to use =============
-            font_normal_large = truetype(font_noto_sans_bold, 36, encoding='UTF-8')
+            font_normal_large = truetype(font_noto_sans_bold, 38, encoding='UTF-8')
             font_normal = truetype(font_noto_sans_bold, 18, encoding='UTF-8')
-            font_small_large = truetype(font_noto_sans_regular, 30, encoding='UTF-8')
+            font_small_large = truetype(font_noto_sans_regular, 28, encoding='UTF-8')
             font_small = truetype(font_noto_sans_regular, 18, encoding='UTF-8')
             # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
 
@@ -242,7 +241,7 @@ class WatchDemoCog(commands.Cog):
 
             text = faceit_data["teams"]["faction1"]["name"]
             fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
-            draw.text((w_pos + 10, h_pos), fitted, fill=white, font=font_small_large)
+            draw.text((w_pos + 10, h_pos + 7), fitted, fill=white, font=font_small_large)
 
             text = faceit_data["teams"]["faction2"]["name"]
             fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
@@ -253,7 +252,7 @@ class WatchDemoCog(commands.Cog):
             right_edge = width - 10  # where text should END
 
             draw.text(
-                (right_edge - text_width, h_pos),
+                (right_edge - text_width, h_pos + 7),
                 fitted,
                 fill=white,
                 font=font_small_large
