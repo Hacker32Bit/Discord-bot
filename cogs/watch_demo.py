@@ -82,10 +82,35 @@ class DoneButton(discord.ui.Button):
             row=2
         )
 
+    @staticmethod
+    async def tv_listen_voice_indices(array):
+            if len(array) == 10:
+                return -1, -1
+
+            def tv_listen_value(players):
+                """
+                Convert player indices (1-based) into decimal tv_listen_voice_indices value.
+                Example: [2, 3, 5, 8, 10] -> 662
+                """
+                return sum(1 << (p - 1) for p in players)
+
+            players1 = list(map(int, array))
+            # All numbers from 2 to 11 (inclusive), excluding players1
+            players2 = [p for p in range(2, 12) if p not in players1]
+            result1 = tv_listen_value(players1)
+            result2 = tv_listen_value(players2)
+            return result1, result2
+
     async def callback(self, interaction: discord.Interaction):
         view: ProfileToggleView = self.view  # type: ignore
 
         selected = [
+            p["index"]
+            for p in view.profiles
+            if view.state.get(p["steam_id"])
+        ]
+
+        selected_text = [
             f"{p['side']} {p['name']} — {p['steam_id']}"
             for p in view.profiles
             if view.state.get(p["steam_id"])
@@ -98,9 +123,16 @@ class DoneButton(discord.ui.Button):
             )
             return
 
+        team1, team2 = await self.tv_listen_voice_indices(sorted(selected))
+        final_command = ""
+        if team1 == -1:
+            final_command = f"tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};"
+        else:
+            final_command = f"Your teams:\ntv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};\nEnemy team:\ntv_listen_voice_indices {team2}; tv_listen_voice_indices_h {team2};"
+
         await interaction.response.send_message(
             "📤 Done!\n\n"
-            "✅ Selected players:\n" + "\n".join(selected),
+            "✅ Selected players:\n" + "\n".join(selected_text) + f"\n{final_command}",
             ephemeral=True
         )
 
@@ -139,11 +171,12 @@ class WatchDemoCog(commands.Cog):
 
         return ellipsis
 
+
     @staticmethod
     async def create_image(self, profiles: list[dict], faceit_data):
 
         width = 798
-        height = 600
+        height = 436
 
         with Image.new(mode='RGBA', size=(width, height), color=(0, 0, 0, 0)) as image:
             font_noto_sans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
@@ -241,7 +274,7 @@ class WatchDemoCog(commands.Cog):
 
             text = faceit_data["teams"]["faction1"]["name"]
             fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
-            draw.text((w_pos + 10, h_pos + 8), fitted, fill=white, font=font_small_large)
+            draw.text((w_pos + 10, h_pos + 10), fitted, fill=white, font=font_small_large)
 
             text = faceit_data["teams"]["faction2"]["name"]
             fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
@@ -252,7 +285,7 @@ class WatchDemoCog(commands.Cog):
             right_edge = width - 10  # where text should END
 
             draw.text(
-                (right_edge - text_width, h_pos + 8),
+                (right_edge - text_width, h_pos + 10),
                 fitted,
                 fill=white,
                 font=font_small_large
