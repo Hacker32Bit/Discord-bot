@@ -18,6 +18,7 @@ import io
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
 FACEIT_API_KEY: Final[str] = os.getenv("FACEIT_API_KEY")
+TINYURL_API_KEY: Final[str] = os.getenv("TINYURL_API_KEY")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 
@@ -156,16 +157,38 @@ class DoneButton(discord.ui.Button):
 
         run_game_url = f'steam://rungameid/730/-console +"playdemo replays/demo; {final_command}"'
 
-        await interaction.response.send_message(
-            "📤 Done!\n\n"
-            f"{final_text}",
-            ephemeral=True,
-            view=WatchDemoView(run_game_url)
-        )
+        headers = {
+            "Authorization": f"Bearer {TINYURL_API_KEY}"
+        }
 
-        await interaction.message.edit(view=view)
-        view.stop()
+        payload = {
+            "url": run_game_url,
+            "alias": "",
+            "description": "string"
+        }
 
+        try:
+            r = requests.post(
+                f"https://api.tinyurl.com/create",
+                headers=headers,
+                json=payload,
+            )
+            r.raise_for_status()
+            tinyurl_data = r.json()
+
+
+            await interaction.response.send_message(
+                "📤 Done!\n\n"
+                f"{final_text}",
+                ephemeral=True,
+                view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
+            )
+
+            await interaction.message.edit(view=view)
+            view.stop()
+
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e}")
 
 class WatchDemoCog(commands.Cog):
     def __init__(self, bot):
