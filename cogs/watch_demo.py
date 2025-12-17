@@ -172,8 +172,8 @@ class WatchDemoCog(commands.Cog):
             gray_dark = (120, 144, 156, 255)
             gray = (144, 164, 174, 255)
 
-            t_color = (255, 111, 0, 191)
-            ct_color = (26, 35, 126, 191)
+            t_color = (245, 127, 23, 255)
+            ct_color = (26, 35, 126, 255)
 
             gray_dark_transparent = (120, 144, 156, 191)
             gray_transparent = (144, 164, 174, 191)
@@ -231,6 +231,7 @@ class WatchDemoCog(commands.Cog):
                     draw.line([(w_pos, h_pos), (w_pos, h_pos + 26)], fill=gray_transparent, width=2)
                     w_pos = w_pos + 2
 
+            w_pos = 0
             h_pos = h_pos + 26
             draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
             h_pos = h_pos + 2
@@ -245,13 +246,54 @@ class WatchDemoCog(commands.Cog):
 
             text = faceit_data["teams"]["faction2"]["name"]
             fitted = await self.fit_text(draw, text, font_normal_large, max_width=320)
-            draw.text((width - 10, h_pos), fitted, fill=white, font=font_normal_large, align="right")
 
-            draw.text((399, h_pos), ":", fill=white, font=font_normal_large, align="center")
-            text = faceit_data["results"]["score"]["faction1"]
-            draw.text((389, h_pos), str(text), fill=white, font=font_normal_large, align="right")
-            text = faceit_data["results"]["score"]["faction2"]
-            draw.text((409, h_pos), str(text), fill=white, font=font_normal_large)
+            bbox = draw.textbbox((0, 0), fitted, font=font_normal_large)
+            text_width = bbox[2] - bbox[0]
+
+            right_edge = width - 10  # where text should END
+
+            draw.text(
+                (right_edge - text_width, h_pos),
+                fitted,
+                fill=white,
+                font=font_normal_large
+            )
+
+            score1 = str(faceit_data["results"]["score"]["faction1"])
+            score2 = str(faceit_data["results"]["score"]["faction2"])
+            bbox1 = draw.textbbox((0, 0), score1, font=font_normal_large)
+            bbox2 = draw.textbbox((0, 0), score2, font=font_normal_large)
+
+            w1 = bbox1[2] - bbox1[0]
+            w2 = bbox2[2] - bbox2[0]
+
+            colon_x = 399
+            gap = 6  # spacing from colon
+
+            # left score (right-aligned)
+            draw.text(
+                (colon_x - gap - w1, h_pos),
+                score1,
+                fill=white,
+                font=font_normal_large
+            )
+
+            # colon
+            draw.text(
+                (colon_x, h_pos),
+                ":",
+                fill=white,
+                font=font_normal_large
+            )
+
+            # right score (left-aligned)
+            draw.text(
+                (colon_x + gap, h_pos),
+                score2,
+                fill=white,
+                font=font_normal_large
+            )
+
 
 
             return image
