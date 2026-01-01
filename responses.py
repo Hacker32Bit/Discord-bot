@@ -14,7 +14,7 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
                        is_private: bool = False, bot_active: bool = False) -> str:
     lowered: str = user_input.lower().strip()
 
-    triggers = tuple("hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
+    triggers = ("hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
                    "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!")
 
