@@ -54,7 +54,8 @@ def delete_expired_messages():
 def main():
     client = Client()
 
-    messages = get_user_messages(args.uid)
+    # messages = get_user_messages(args.uid)
+    messages = list()
     messages.append({"role": "user", "content": args.text})
 
     response = client.chat.completions.create(
@@ -72,8 +73,8 @@ def main():
 
 
     if answer:
-        store_message(args.uid, "user", args.text)
-        store_message(args.uid, "assistant", answer)
+        # store_message(args.uid, "user", args.text)
+        # store_message(args.uid, "assistant", answer)
         if args.user:
             print(f"<@{args.uid}>,\n{answer}", flush=True, end="")
         else:
