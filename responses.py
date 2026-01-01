@@ -28,6 +28,8 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
             lowered = lowered.strip()
             text = user_input[len(user_input) - len(lowered)]
 
+            print("Final text for g4f:", text)
+
             # Run the subprocess asynchronously (non-blocking)
             process = await asyncio.create_subprocess_exec(
                 PROJECT_PATH + "/.venv/bin/python",
