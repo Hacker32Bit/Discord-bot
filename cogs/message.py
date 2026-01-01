@@ -33,33 +33,32 @@ class Message(commands.Cog):
         # await self.client.process_commands(message)
 
 
-def split_message(text: str, limit: int = 4000):
+def split_message(text: str, limit: int = DISCORD_LIMIT):
     chunks = []
     current = ""
 
-    for line in text.split("\n"):
-        # +1 for the newline we add back
-        if len(current) + len(line) + 1 <= limit:
-            current += line + "\n"
+    for paragraph in text.split("\n\n"):
+        if len(current) + len(paragraph) + 2 <= limit:
+            current += paragraph + "\n\n"
         else:
             if current:
                 chunks.append(current.rstrip())
                 current = ""
 
-            # line itself is longer than limit → split by spaces
-            while len(line) > limit:
-                split_at = line.rfind(" ", 0, limit)
+            while len(paragraph) > limit:
+                split_at = paragraph.rfind(" ", 0, limit)
                 if split_at == -1:
                     split_at = limit
-                chunks.append(line[:split_at])
-                line = line[split_at:].lstrip()
+                chunks.append(paragraph[:split_at])
+                paragraph = paragraph[split_at:].lstrip()
 
-            current = line + "\n"
+            current = paragraph + "\n\n"
 
     if current:
         chunks.append(current.rstrip())
 
     return chunks
+
 
 async def send_message(message, user_message: str, bot_active: bool = False) -> None:
 
@@ -83,11 +82,15 @@ async def send_message(message, user_message: str, bot_active: bool = False) -> 
         if response:
             chunks = split_message(response)
 
-            for chunk in chunks:
+            for i, chunk in enumerate(chunks):
+                content = chunk
+                if i == 0 and not is_private:
+                    content = f"<@{message.author.id}>,\n{chunk}"
+
                 if is_private:
-                    await message.author.send(chunk)
+                    await message.author.send(content)
                 else:
-                    await message.channel.send(chunk)
+                    await message.channel.send(content)
 
     except Exception as e:
         print(e)
