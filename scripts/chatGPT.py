@@ -57,9 +57,6 @@ def main():
     messages = get_user_messages(args.uid)
     messages.append({"role": "user", "content": args.text})
 
-    print("Passed argument from bot:", args.text)
-    print("Array of messages:", messages)
-
     response = client.chat.completions.create(
         model=default,
         messages=messages,

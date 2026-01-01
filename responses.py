@@ -12,21 +12,17 @@ PROJECT_PATH: Final[str] = os.getenv("PROJECT_PATH")
 
 async def get_response(user_input: str, user_id: str, selected_chat: discord.TextChannel,
                        is_private: bool = False, bot_active: bool = False) -> str:
-    lowered: str = user_input.lower()
+    lowered: str = user_input.lower().strip()
 
-    tell_to_bot = ["hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
+    triggers = tuple("hacker.", "bot.", "hacker32bit.", "хакер.", "бот.",
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
-                   "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!", ]
+                   "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!")
 
-    if (any(map(lowered.__contains__, tell_to_bot))
-            or isinstance(selected_chat, discord.channel.DMChannel)
-            or is_private):
+    if lowered.startswith(triggers):
         async with selected_chat.typing():
-            for i in tell_to_bot:
-                lowered = lowered.replace(i, "")
-
-            lowered = lowered.strip()
-            text = user_input[len(user_input) - len(lowered)]
+            for t in triggers:
+                if lowered.startswith(t):
+                    text = user_input[len(t):].lstrip()
 
             print("Final text for g4f:", text)
 
