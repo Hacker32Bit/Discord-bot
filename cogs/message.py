@@ -33,7 +33,36 @@ class Message(commands.Cog):
         # await self.client.process_commands(message)
 
 
+def split_message(text: str, limit: int = 4000):
+    chunks = []
+    current = ""
+
+    for line in text.split("\n"):
+        # +1 for the newline we add back
+        if len(current) + len(line) + 1 <= limit:
+            current += line + "\n"
+        else:
+            if current:
+                chunks.append(current.rstrip())
+                current = ""
+
+            # line itself is longer than limit → split by spaces
+            while len(line) > limit:
+                split_at = line.rfind(" ", 0, limit)
+                if split_at == -1:
+                    split_at = limit
+                chunks.append(line[:split_at])
+                line = line[split_at:].lstrip()
+
+            current = line + "\n"
+
+    if current:
+        chunks.append(current.rstrip())
+
+    return chunks
+
 async def send_message(message, user_message: str, bot_active: bool = False) -> None:
+
     if not user_message:
         print("(Message was empty because intents were not enabled probably)")
         return
@@ -43,9 +72,23 @@ async def send_message(message, user_message: str, bot_active: bool = False) -> 
 
     try:
         selected_chat = message.author if is_private else message.channel
-        response: str = await get_response(user_message, str(message.author.id), selected_chat, is_private, bot_active)
+        response: str = await get_response(
+            user_message,
+            str(message.author.id),
+            selected_chat,
+            is_private,
+            bot_active
+        )
+
         if response:
-            await message.author.send(response) if is_private else await message.channel.send(response)
+            chunks = split_message(response)
+
+            for chunk in chunks:
+                if is_private:
+                    await message.author.send(chunk)
+                else:
+                    await message.channel.send(chunk)
+
     except Exception as e:
         print(e)
 

@@ -18,13 +18,11 @@ async def get_response(user_input: str, user_id: str, selected_chat: discord.Tex
                    "hacker,", "bot,", "hacker32bit,", "хакер,", "бот,",
                    "hacker!", "bot!", "hacker32bit!", "хакер!", "бот!")
 
-    if lowered.startswith(triggers):
+    if lowered.startswith(triggers) or isinstance(selected_chat, discord.channel.DMChannel) or is_private:
         async with selected_chat.typing():
             for t in triggers:
                 if lowered.startswith(t):
                     text = user_input[len(t):].lstrip()
-
-            print("Final text for g4f:", text)
 
             # Run the subprocess asynchronously (non-blocking)
             process = await asyncio.create_subprocess_exec(
