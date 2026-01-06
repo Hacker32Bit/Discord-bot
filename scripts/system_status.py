@@ -155,11 +155,11 @@ def display_status(shutdown):
 
     output_result = ""
 
-    output_result += "===== X120x UPS Status ================"
+    output_result += "===== X120x UPS Status ==============="
     output_result += f"\nUPS Voltage: {voltage:.3f}V"
     output_result += f"\nBattery: {capacity:.3f}%"
     output_result += f"\nCharging: {charge_status}"
-    output_result += f"\n\n===== RPi5 System Stats ==============="
+    output_result += f"\n\n===== RPi5 System Stats =============="
     output_result += f"\nInput Voltage: {input_voltage:.3f}V"
     output_result += f"\nCPU Volts: {cpu_volts:.3f}V"
     output_result += f"\nCPU Amps: {cpu_amps:.3f}A"
