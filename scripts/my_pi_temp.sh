@@ -9,11 +9,11 @@ echo "$(date) @ $(hostname)"
 echo "-------------------------------------------"
 
 # GPU temperature
-echo "GPU => $(/usr/bin/vcgencmd measure_temp | grep  -o -E '[[:digit:]].*')"
+echo "GPU temp: $(/usr/bin/vcgencmd measure_temp | sed -E "s/.*=([0-9.]+)'C/\1°C/")"
 
 # CPU temperature
 com=$(echo "scale=1; ${cpu}/1000")
-echo "CPU => $(bc <<< $com)'C"
+echo "CPU temp: $(bc <<< $com)°C"
 
 # FAN speed
-echo "FAN SPEED => ${fan} RPM"
+echo "Fan RPM: ${fan}"
