@@ -108,12 +108,12 @@ class AdminCommands(commands.Cog):
         except Exception as e:
             await ctx.send(f"```{e}```")
 
-    # Command for get server battery status
-    @commands.command(help="battery_status", description="Command for get server battery status")
+    # Command for get server system status
+    @commands.command(help="system_status", description="Command for get server system status")
     @commands.has_any_role("Owner", "Admin")
-    async def battery_status(self, ctx):
+    async def system_status(self, ctx):
         try:
-            f = open("/tmp/battery_status", "r")
+            f = open("/tmp/system_status", "r")
             await ctx.send(f"```{f.read()}```")
         except FileNotFoundError as e:
             await ctx.send(f"```{e}```")
