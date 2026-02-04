@@ -23,6 +23,10 @@ FACEIT_API_KEY: Final[str] = os.getenv("FACEIT_API_KEY")
 TINYURL_API_KEY: Final[str] = os.getenv("TINYURL_API_KEY")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
+RAM_DIR = Path("/mnt/ramdisk")
+ZST_PATH = RAM_DIR / "match.dem.zst"
+DEM_PATH = RAM_DIR / "match.dem"
+LOCK_FILE = Path("/mnt/ramdisk/demo.lock")
 
 
 class ProfileToggleView(discord.ui.View):
@@ -187,6 +191,8 @@ class DoneButton(discord.ui.Button):
             )
 
             await interaction.message.edit(view=view)
+            DEM_PATH.unlink()
+            ZST_PATH.unlink()
             view.stop()
 
         except requests.exceptions.RequestException as e:
@@ -424,17 +430,8 @@ class WatchDemoCog(commands.Cog):
                         f.write(chunk)
 
     @staticmethod
-    async def wait_for_ram_async(
-            path="/mnt/ramdisk",
-            needed_gb=2.0,
-            check_every=5
-    ):
-        needed = int(needed_gb * 1024 ** 3)
-
-        while True:
-            _, _, free = shutil.disk_usage(path)
-            if free >= needed:
-                return
+    async def wait_if_demo_exists(check_every=5):
+        while LOCK_FILE.exists():
             await asyncio.sleep(check_every)
 
     @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
@@ -504,10 +501,10 @@ class WatchDemoCog(commands.Cog):
                     raise RuntimeError("Not enough RAM disk space")
 
                 await interaction.edit_original_response(
-                    content="⏳ Waiting for free RAM…"
+                    content="⏳ You are in queue..."
                 )
 
-                await self.wait_for_ram_async(needed_gb=2.5)
+                await self.wait_if_demo_exists()
 
                 await interaction.edit_original_response(
                     content="💾 Downloading demo..."
@@ -522,21 +519,18 @@ class WatchDemoCog(commands.Cog):
                 )
                 r.raise_for_status()
 
-                ram_dir = Path("/mnt/ramdisk")
-                zst_path = ram_dir / "match.dem.zst"
-
                 data = r.json()
                 resource_url = data["payload"]["download_url"]
                 await log_channel.send(content=resource_url)
 
-                await self.download_demo(resource_url, zst_path)
+                await self.download_demo(resource_url, ZST_PATH)
 
                 await interaction.edit_original_response(
                     content="💾️ Extracting demo..."
                 )
 
                 subprocess.run(
-                    ["zstd", "-d", "--rm", zst_path, "-o", ram_dir / "match.dem"],
+                    ["zstd", "-d", "--rm", ZST_PATH, "-o", RAM_DIR / "match.dem"],
                     check=True
                 )
 
@@ -544,17 +538,8 @@ class WatchDemoCog(commands.Cog):
                     content="🕵️ Analyzing demo..."
                 )
 
-                dem_path = ram_dir / "match.dem"
-
-                parser = DemoParser(dem_path.absolute().as_posix())
+                parser = DemoParser(DEM_PATH.absolute().as_posix())
                 df = parser.parse_player_info()
-
-                await interaction.edit_original_response(
-                    content="🧹 Cleaning memory..."
-                )
-
-                dem_path.unlink()
-                zst_path.unlink()
 
                 # build lookup: steamid -> df_index + 2
                 index_map = {
