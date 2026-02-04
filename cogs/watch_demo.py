@@ -412,6 +412,15 @@ class WatchDemoCog(commands.Cog):
             return image
 
 
+    @staticmethod
+    async def download_demo(url):
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open("/tmp/demos/match.dem.zst", "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        f.write(chunk)
+
     @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
     async def watch_demo(self, interaction: discord.Interaction, demo_url: str = ""):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
@@ -478,8 +487,21 @@ class WatchDemoCog(commands.Cog):
                     content="💾 Downloading demo..."
                 )
 
-                # TODO
-                await asyncio.sleep(5)
+                r = requests.post(
+                    f"https://open.faceit.com/download/v2/demos/download",
+                    headers=headers,
+                    json={
+                        "resource_url": demo_urls,
+                    },
+                )
+                r.raise_for_status()
+
+                data = r.json()
+                resource_url = data["payload"]["download_url"]
+                await log_channel.send(content=resource_url)
+
+                await self.download_demo(resource_url)
+
 
                 await interaction.edit_original_response(
                     content="🕵️ Analyzing demo..."
