@@ -14,8 +14,10 @@ import requests
 from discord import File
 import io
 from pathlib import Path
+from urllib.parse import urlparse
 import subprocess
 import shutil
+import re
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -437,6 +439,39 @@ class WatchDemoCog(commands.Cog):
     async def watch_demo(self, interaction: discord.Interaction, demo_url_or_id: str = ""):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
+        demo_id = None
+        is_faceit = False
+        is_link = False
+        demo_url = None
+
+        demo_url_or_id = demo_url_or_id.strip()
+
+        # Check if input is a URL
+        if demo_url_or_id.startswith("http://") or demo_url_or_id.startswith("https://"):
+            is_link = True
+            parsed = urlparse(demo_url_or_id)
+
+            if "faceit.com" in parsed.netloc.lower():
+                is_faceit = True
+
+            # Extract match ID from URL path
+            match = re.search(r"/room/([0-9a-fA-F\-]{36})", parsed.path)
+            if match:
+                demo_id = match.group(1)
+
+        else:
+            # Assume raw ID
+            if re.fullmatch(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+                            demo_url_or_id):
+                demo_id = demo_url_or_id
+                is_faceit = True
+            else:
+                await interaction.response.send_message("❌ Invalid URL or Faceit match ID.")
+                return
+
+        # Build full Faceit demo URL
+        if demo_id and is_faceit:
+            demo_url = f"https://www.faceit.com/en/cs2/room/{demo_id}/scoreboard"
 
 
         await interaction.response.defer()
@@ -446,14 +481,12 @@ class WatchDemoCog(commands.Cog):
         )
 
         try:
-            MATCH_ID = "1-be283e06-85db-462e-a73b-ef31b3b52d6d"
-
             headers = {
                 "Authorization": f"Bearer {FACEIT_API_KEY}"
             }
 
             r = requests.get(
-                f"https://open.faceit.com/data/v4/matches/{MATCH_ID}",
+                f"https://open.faceit.com/data/v4/matches/{demo_id}",
                 headers=headers
             )
             r.raise_for_status()
@@ -563,7 +596,7 @@ class WatchDemoCog(commands.Cog):
                     image_binary.seek(0)
                     result = File(fp=image_binary, filename="match.png")
                     await interaction.edit_original_response(
-                        content=f"Current url: {demo_url}\n", attachments=[result],
+                        content=f"Your match: {demo_url}\n", attachments=[result],
                         view=view)
 
 
