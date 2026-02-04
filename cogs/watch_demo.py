@@ -192,7 +192,6 @@ class DoneButton(discord.ui.Button):
 
             await interaction.message.edit(view=view)
             DEM_PATH.unlink()
-            ZST_PATH.unlink()
             view.stop()
 
         except requests.exceptions.RequestException as e:
@@ -435,9 +434,10 @@ class WatchDemoCog(commands.Cog):
             await asyncio.sleep(check_every)
 
     @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
-    async def watch_demo(self, interaction: discord.Interaction, demo_url: str = ""):
+    async def watch_demo(self, interaction: discord.Interaction, demo_url_or_id: str = ""):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-        path = "/home/gektor/demo.dem"
+
+
 
         await interaction.response.defer()
 

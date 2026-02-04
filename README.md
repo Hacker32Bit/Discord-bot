@@ -35,3 +35,25 @@ StandardError=append:/tmp/terminal_log.log
 [Install]
 WantedBy=multi-user.target
 ```
+6. Give space for watch_demo command into RAM
+
+Create the directory (once)
+```
+sudo mkdir -p /mnt/ramdisk
+```
+Edit fstab
+```
+sudo vim /etc/fstab
+```
+Add this line
+```
+tmpfs   /mnt/ramdisk   tmpfs   size=4G,noatime,mode=1777   0   0
+```
+Test without rebooting (important)
+```
+sudo mount -a
+```
+Verify
+```
+df -h /mnt/ramdisk
+```
