@@ -13,7 +13,9 @@ from PIL.ImageDraw import Draw
 import requests
 from discord import File
 import io
-
+from pathlib import Path
+import subprocess
+import shutil
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -421,6 +423,20 @@ class WatchDemoCog(commands.Cog):
                     if chunk:
                         f.write(chunk)
 
+    @staticmethod
+    async def wait_for_ram_async(
+            path="/mnt/ramdisk",
+            needed_gb=2.0,
+            check_every=5
+    ):
+        needed = int(needed_gb * 1024 ** 3)
+
+        while True:
+            _, _, free = shutil.disk_usage(path)
+            if free >= needed:
+                return
+            await asyncio.sleep(check_every)
+
     @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
     async def watch_demo(self, interaction: discord.Interaction, demo_url: str = ""):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
@@ -483,6 +499,16 @@ class WatchDemoCog(commands.Cog):
                     steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
                     profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]", "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
 
+                total, used, free = shutil.disk_usage("/mnt/ramdisk")
+                if free < 2 * 1024 ** 3:  # 2 GB
+                    raise RuntimeError("Not enough RAM disk space")
+
+                await interaction.edit_original_response(
+                    content="⏳ Waiting for free RAM…"
+                )
+
+                await self.wait_for_ram_async(needed_gb=2.5)
+
                 await interaction.edit_original_response(
                     content="💾 Downloading demo..."
                 )
@@ -496,22 +522,39 @@ class WatchDemoCog(commands.Cog):
                 )
                 r.raise_for_status()
 
-                output_path = "/tmp/demos/match.dem.zst"
-                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+                ram_dir = Path("/mnt/ramdisk")
+                zst_path = ram_dir / "match.dem.zst"
 
                 data = r.json()
                 resource_url = data["payload"]["download_url"]
                 await log_channel.send(content=resource_url)
 
-                await self.download_demo(resource_url, output_path)
+                await self.download_demo(resource_url, zst_path)
 
+                await interaction.edit_original_response(
+                    content="💾️ Extracting demo..."
+                )
+
+                subprocess.run(
+                    ["zstd", "-d", "--rm", zst_path, "-o", ram_dir / "match.dem"],
+                    check=True
+                )
 
                 await interaction.edit_original_response(
                     content="🕵️ Analyzing demo..."
                 )
 
-                parser = DemoParser(path)
+                dem_path = ram_dir / "match.dem"
+
+                parser = DemoParser(dem_path.absolute().as_posix())
                 df = parser.parse_player_info()
+
+                await interaction.edit_original_response(
+                    content="🧹 Cleaning memory..."
+                )
+
+                dem_path.unlink()
+                zst_path.unlink()
 
                 # build lookup: steamid -> df_index + 2
                 index_map = {
