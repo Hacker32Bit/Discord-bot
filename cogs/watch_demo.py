@@ -446,6 +446,10 @@ class WatchDemoCog(commands.Cog):
 
         demo_url_or_id = demo_url_or_id.strip()
 
+        # Regex for Faceit match ID (with optional prefix, e.g., "1-")
+        faceit_id_pattern = re.compile(
+            r"(?:\d-)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+
         # Check if input is a URL
         if demo_url_or_id.startswith("http://") or demo_url_or_id.startswith("https://"):
             is_link = True
@@ -455,14 +459,13 @@ class WatchDemoCog(commands.Cog):
                 is_faceit = True
 
             # Extract match ID from URL path
-            match = re.search(r"/room/([0-9a-fA-F\-]{36})", parsed.path)
+            match = faceit_id_pattern.search(parsed.path)
             if match:
-                demo_id = match.group(1)
+                demo_id = match.group(0)
 
         else:
             # Assume raw ID
-            if re.fullmatch(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
-                            demo_url_or_id):
+            if faceit_id_pattern.fullmatch(demo_url_or_id):
                 demo_id = demo_url_or_id
                 is_faceit = True
             else:
