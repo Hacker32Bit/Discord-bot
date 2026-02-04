@@ -413,10 +413,10 @@ class WatchDemoCog(commands.Cog):
 
 
     @staticmethod
-    async def download_demo(url):
+    async def download_demo(url, output_path):
         with requests.get(url, stream=True) as r:
             r.raise_for_status()
-            with open("/tmp/demos/match.dem.zst", "wb") as f:
+            with open(output_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024 * 1024):
                     if chunk:
                         f.write(chunk)
@@ -496,11 +496,14 @@ class WatchDemoCog(commands.Cog):
                 )
                 r.raise_for_status()
 
+                output_path = "/tmp/demos/match.dem.zst"
+                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
                 data = r.json()
                 resource_url = data["payload"]["download_url"]
                 await log_channel.send(content=resource_url)
 
-                await self.download_demo(resource_url)
+                await self.download_demo(resource_url, output_path)
 
 
                 await interaction.edit_original_response(
