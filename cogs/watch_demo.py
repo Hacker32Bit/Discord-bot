@@ -446,7 +446,7 @@ class WatchDemoCog(commands.Cog):
             r.raise_for_status()
 
             faceit_data = r.json()
-            demo_urls = faceit_data["demo_url"]  # or "demos"
+            demo_urls = faceit_data["demo_url"][0]  # or "demos"
             teams = faceit_data["teams"]
 
             game_player_ids = [
