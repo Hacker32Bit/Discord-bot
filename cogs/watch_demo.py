@@ -30,7 +30,7 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 class ProfileToggleView(discord.ui.View):
     def __init__(self, author: discord.User, profiles: list[dict]):
-        super().__init__(timeout=20)
+        super().__init__(timeout=60)
         self.author = author
         self.profiles = profiles
 
@@ -468,7 +468,7 @@ class WatchDemoCog(commands.Cog):
                 )
                 return 1
 
-            if free >= 2 * 1024 ** 3:
+            if free >= 2 * 1024 ** 3 and position < 1:
                 return 0
 
             try:
