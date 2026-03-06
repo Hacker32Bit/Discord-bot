@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from responses import get_response
 
+DISCORD_LIMIT = 2000
 
 class Message(commands.Cog):
     def __init__(self, client):
