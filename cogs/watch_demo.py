@@ -437,6 +437,7 @@ class WatchDemoCog(commands.Cog):
 
     @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
     async def watch_demo(self, interaction: discord.Interaction, demo_url_or_id: str = ""):
+        await interaction.response.defer()
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
         demo_id = None
@@ -475,9 +476,6 @@ class WatchDemoCog(commands.Cog):
         # Build full Faceit demo URL
         if demo_id and is_faceit:
             demo_url = f"https://www.faceit.com/en/cs2/room/{demo_id}/scoreboard"
-
-
-        await interaction.response.defer()
 
         await interaction.edit_original_response(
             content="🔍 Searching demo..."
@@ -557,7 +555,6 @@ class WatchDemoCog(commands.Cog):
 
                 data = r.json()
                 resource_url = data["payload"]["download_url"]
-                await log_channel.send(content=resource_url)
 
                 await self.download_demo(resource_url, ZST_PATH)
 
@@ -599,7 +596,7 @@ class WatchDemoCog(commands.Cog):
                     image_binary.seek(0)
                     result = File(fp=image_binary, filename="match.png")
                     await interaction.edit_original_response(
-                        content=f"Your match: {demo_url}\n", attachments=[result],
+                        content=f"Your match: <{demo_url}>\n", attachments=[result],
                         view=view)
 
 

@@ -212,7 +212,7 @@ class AutoTask(commands.Cog):
     #     except NotFound:
     #         print("NO MESSAGES in Activity giveaway!")
 
-    @tasks.loop(hours=1)
+    @tasks.loop(minutes=5)
     async def update_activity_giveaways_tables(self):
         channel = await self.bot.fetch_channel(ACTIVITY_GIVEAWAY_CHANNEL_ID)
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
