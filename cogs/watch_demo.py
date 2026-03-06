@@ -28,7 +28,6 @@ GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 RAM_DIR = Path("/mnt/ramdisk")
 ZST_PATH = RAM_DIR / "match.dem.zst"
 DEM_PATH = RAM_DIR / "match.dem"
-LOCK_FILE = Path("/mnt/ramdisk/demo.lock")
 
 
 class ProfileToggleView(discord.ui.View):
@@ -202,6 +201,7 @@ class DoneButton(discord.ui.Button):
 class WatchDemoCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.demoQueue_order = []
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -421,19 +421,67 @@ class WatchDemoCog(commands.Cog):
             return image
 
 
-    @staticmethod
-    async def download_demo(url, output_path):
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            with open(output_path, "wb") as f:
-                for chunk in r.iter_content(chunk_size=1024 * 1024):
-                    if chunk:
-                        f.write(chunk)
+    async def download_demo(self, url, interaction, log_channel):
+        output_path = RAM_DIR / f"{interaction.id}.dem.zst"
 
-    @staticmethod
-    async def wait_if_demo_exists(check_every=5):
-        while LOCK_FILE.exists():
+        try:
+            with requests.get(url, stream=True, timeout=300) as r:
+                r.raise_for_status()
+                with open(output_path, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+        except requests.exceptions.RequestException as e:
+            # network / HTTP errors
+            await log_channel.send(
+                content=f"requestError (network): download_demo {interaction.id} - {interaction.user.name}\n{e}"
+            )
+            return 1
+        except OSError as e:
+            # disk / file errors
+            await log_channel.send(
+                content=f"requestError (disk): download_demo {interaction.id} - {interaction.user.name}\n{e}"
+            )
+            return 1
+        finally:
+            if output_path.exists():
+                output_path.unlink()
+            if interaction.id in self.demoQueue_order:
+                self.demoQueue_order.remove(interaction.id)
+            return 0
+
+
+    async def wait_for_memory_space(self, interaction, log_channel, check_every=15):
+        position = None  # Will calculate dynamically
+
+        while True:
+            try:
+                total, used, free = shutil.disk_usage("/mnt/ramdisk")
+            except OSError as e:
+                await log_channel.send(content=f"disk_usageError: {e}")
+                return 1
+
+            try:
+                position = self.demoQueue_order.index(interaction.id) + 1
+            except ValueError:
+                await log_channel.send(
+                    content=f"ValueError: demoQueue_order {interaction.id} - {interaction.user.name}"
+                )
+                return 1
+
+            if free >= 2 * 1024 ** 3:
+                return 0
+
+            try:
+                await interaction.edit_original_response(
+                    content=f"📟 Not enough RAM disk space.\n⏳ [{position}] You are in queue... Please wait..."
+                )
+            except Exception as e:  # catch discord exceptions
+                await log_channel.send(content=f"editResponseError: {e}")
+                return 1
+
             await asyncio.sleep(check_every)
+
 
     @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
     async def watch_demo(self, interaction: discord.Interaction, demo_url_or_id: str = ""):
@@ -530,15 +578,19 @@ class WatchDemoCog(commands.Cog):
                     steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
                     profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]", "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
 
-                total, used, free = shutil.disk_usage("/mnt/ramdisk")
-                if free < 2 * 1024 ** 3:  # 2 GB
-                    raise RuntimeError("Not enough RAM disk space")
+                interaction_id = interaction.id
+
+                self.demoQueue_order.append(interaction_id)
+
+                position = self.demoQueue_order.index(interaction_id) + 1
 
                 await interaction.edit_original_response(
-                    content="⏳ You are in queue..."
+                    content=f"⏳ [{position}] You are in queue..."
                 )
 
-                await self.wait_if_demo_exists()
+                status = await self.wait_for_memory_space(interaction, log_channel)
+                if status == 1:
+                    return
 
                 await interaction.edit_original_response(
                     content="💾 Downloading demo..."
@@ -556,23 +608,44 @@ class WatchDemoCog(commands.Cog):
                 data = r.json()
                 resource_url = data["payload"]["download_url"]
 
-                await self.download_demo(resource_url, ZST_PATH)
+                status = await self.download_demo(resource_url, interaction, log_channel)
+                if status == 1:
+                    return
 
                 await interaction.edit_original_response(
                     content="💾️ Extracting demo..."
                 )
 
-                subprocess.run(
-                    ["zstd", "-d", "--rm", ZST_PATH, "-o", RAM_DIR / "match.dem"],
-                    check=True
-                )
+                zst_path = RAM_DIR / f"{interaction_id}.dem.zst"
+                dem_path = RAM_DIR / f"{interaction_id}.dem"
+
+                try:
+                    subprocess.run(
+                        ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
+                        check=True
+                    )
+                except subprocess.CalledProcessError as e:
+                    # Only remove files if they exist
+                    if zst_path.exists():
+                        zst_path.unlink()
+                    if dem_path.exists():
+                        dem_path.unlink()
+                    await log_channel.send(content=f"subprocessError: {e}")
+                    return
 
                 await interaction.edit_original_response(
                     content="🕵️ Analyzing demo..."
                 )
 
-                parser = DemoParser(DEM_PATH.absolute().as_posix())
-                df = parser.parse_player_info()
+                try:
+                    parser = DemoParser(DEM_PATH.absolute().as_posix())
+                    df = parser.parse_player_info()
+                except Exception as e:
+                    if dem_path.exists():
+                        dem_path.unlink()
+                    await log_channel.send(content=f"DemoParserError: {e}")
+                    return
+
 
                 # build lookup: steamid -> df_index + 2
                 index_map = {
