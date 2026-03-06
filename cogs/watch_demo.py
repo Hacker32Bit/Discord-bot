@@ -30,7 +30,7 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 class ProfileToggleView(discord.ui.View):
     def __init__(self, cog, author: discord.User, profiles: list[dict]):
-        super().__init__(timeout=120)
+        super().__init__(timeout=300)
         self.author = author
         self.profiles = profiles
         self.cog = cog
@@ -39,9 +39,9 @@ class ProfileToggleView(discord.ui.View):
         self.state = {p["steam_id"]: False for p in profiles}
 
         for index, profile in enumerate(profiles):
-            self.add_item(ProfileToggleButton(profile, index))
+            self.add_item(ProfileToggleButton(self.cog, profile, index))
 
-        self.add_item(DoneButton(self))
+        self.add_item(DoneButton(self.cog))
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
@@ -54,7 +54,7 @@ class ProfileToggleView(discord.ui.View):
 
 
 class ProfileToggleButton(discord.ui.Button):
-    def __init__(self, profile: dict, index: int):
+    def __init__(self, cog, profile: dict, index: int):
         super().__init__(
             label=f"{profile['side']} {profile['name']}",
             style=discord.ButtonStyle.secondary,
@@ -62,6 +62,7 @@ class ProfileToggleButton(discord.ui.Button):
             row=index // 5
         )
         self.profile = profile
+        self.cog = cog
 
     async def callback(self, interaction: discord.Interaction):
         view: ProfileToggleView = self.view  # type: ignore
