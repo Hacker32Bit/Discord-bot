@@ -30,7 +30,7 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 class ProfileToggleView(discord.ui.View):
     def __init__(self, author: discord.User, profiles: list[dict]):
-        super().__init__(timeout=300)
+        super().__init__(timeout=20)
         self.author = author
         self.profiles = profiles
 
@@ -429,35 +429,25 @@ class WatchDemoCog(commands.Cog):
     async def download_demo(self, url, interaction, log_channel):
         output_path = RAM_DIR / f"{interaction.id}.dem.zst"
 
-        try:
+        def _download():
             with requests.get(url, stream=True, timeout=300) as r:
                 r.raise_for_status()
                 with open(output_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=1024 * 1024):
                         if chunk:
                             f.write(chunk)
-        except requests.exceptions.RequestException as e:
-            # network / HTTP errors
-            await log_channel.send(
-                content=f"requestError (network): download_demo {interaction.id} - {interaction.user.name}\n{e}"
-            )
+
+        try:
+            await asyncio.to_thread(_download)
+        except Exception as e:
+            await log_channel.send(f"Download error: {e}")
             if output_path.exists():
                 output_path.unlink()
             if interaction.id in self.demoQueue_order:
                 self.demoQueue_order.remove(interaction.id)
             return 1
-        except OSError as e:
-            # disk / file errors
-            await log_channel.send(
-                content=f"requestError (disk): download_demo {interaction.id} - {interaction.user.name}\n{e}"
-            )
-            if output_path.exists():
-                output_path.unlink()
-            if interaction.id in self.demoQueue_order:
-                self.demoQueue_order.remove(interaction.id)
-            return 1
-        finally:
-            return 0
+
+        return 0
 
 
     async def wait_for_memory_space(self, interaction, log_channel, check_every=15):
@@ -478,7 +468,7 @@ class WatchDemoCog(commands.Cog):
                 )
                 return 1
 
-            if free >= 2 * 1024 ** 3 and position < 1:
+            if free >= 2 * 1024 ** 3:
                 return 0
 
             try:
@@ -591,8 +581,6 @@ class WatchDemoCog(commands.Cog):
 
                 self.demoQueue_order.append(interaction_id)
 
-                position = self.demoQueue_order.index(interaction_id)
-
                 await interaction.edit_original_response(
                     content=f"⏳ You are in queue..."
                 )
@@ -630,7 +618,8 @@ class WatchDemoCog(commands.Cog):
                 dem_path = RAM_DIR / f"{interaction_id}.dem"
 
                 try:
-                    subprocess.run(
+                    await asyncio.to_thread(
+                        subprocess.run,
                         ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
                         check=True
                     )
@@ -653,8 +642,11 @@ class WatchDemoCog(commands.Cog):
                 )
 
                 try:
-                    parser = DemoParser(dem_path.absolute().as_posix())
-                    df = parser.parse_player_info()
+                    def parse_demo():
+                        parser = DemoParser(dem_path.absolute().as_posix())
+                        return  parser.parse_player_info()
+
+                    df = await asyncio.to_thread(parse_demo)
                 except Exception as e:
                     if dem_path.exists():
                         dem_path.unlink()
