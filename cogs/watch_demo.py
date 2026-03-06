@@ -630,19 +630,22 @@ class WatchDemoCog(commands.Cog):
                 zst_path = RAM_DIR / f"{interaction_id}.dem.zst"
                 dem_path = RAM_DIR / f"{interaction_id}.dem"
 
-                try:
-                    subprocess.run(
-                        ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
-                        check=True
-                    )
-                except subprocess.CalledProcessError as e:
-                    # Only remove files if they exist
-                    if zst_path.exists():
-                        zst_path.unlink()
-                    if dem_path.exists():
-                        dem_path.unlink()
-                    await log_channel.send(content=f"subprocessError: {e}")
-                    return
+                # try:
+                subprocess.run(
+                    ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
+                    check=True
+                )
+                # except subprocess.CalledProcessError as e:
+                #     # Only remove files if they exist
+                #     if zst_path.exists():
+                #         zst_path.unlink()
+                #     if dem_path.exists():
+                #         dem_path.unlink()
+                #     await log_channel.send(content=f"subprocessError: {e}")
+                #     await interaction.edit_original_response(
+                #         content=f"⚠️️ [ERROR] Something went wrong :(. Please tell admin about it!\nInteraction ID: {interaction.id}"
+                #     )
+                #     return
 
                 await interaction.edit_original_response(
                     content="🕵️ Analyzing demo..."
