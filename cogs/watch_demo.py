@@ -225,6 +225,20 @@ class WatchDemoCog(commands.Cog):
         return ellipsis
 
 
+    @staticmethod
+    async def is_dir_empty(path):
+        """Check if directory is empty using os.scandir()."""
+        try:
+            with os.scandir(path) as scan:
+                return next(scan, None) is None
+        except FileNotFoundError:
+            # Handle the case where the directory does not exist
+            return False
+        except NotADirectoryError:
+            # Handle the case where the path is not a directory
+            return False
+
+
     async def create_image(self, profiles: list[dict], faceit_data):
 
         width = 798
@@ -478,7 +492,7 @@ class WatchDemoCog(commands.Cog):
                 )
                 return 1
 
-            if free >= 2 * 1024 ** 3:
+            if free >= 2 * 1024 ** 3 and self.is_dir_empty("/mnt/ramdisk"):
                 return 0
 
             try:
