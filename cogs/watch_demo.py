@@ -26,8 +26,6 @@ TINYURL_API_KEY: Final[str] = os.getenv("TINYURL_API_KEY")
 ADMIN_LOG_CHANNEL_ID: Final[str] = os.getenv("ADMIN_LOG_CHANNEL_ID")
 GUILD_ID: Final[str] = os.getenv("GUILD_ID")
 RAM_DIR = Path("/mnt/ramdisk")
-ZST_PATH = RAM_DIR / "match.dem.zst"
-DEM_PATH = RAM_DIR / "match.dem"
 
 
 class ProfileToggleView(discord.ui.View):
@@ -148,6 +146,11 @@ class DoneButton(discord.ui.Button):
 
         team1, team2 = await self.tv_listen_voice_indices(sorted(selected))
 
+        dem_path = RAM_DIR / f"{interaction.id}.dem"
+
+        if dem_path.exists():
+            dem_path.unlink()
+
         final_text = "✅ Selected voices:"
 
         final_command = f"tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};"
@@ -192,11 +195,12 @@ class DoneButton(discord.ui.Button):
             )
 
             await interaction.message.edit(view=view)
-            DEM_PATH.unlink()
             view.stop()
 
         except requests.exceptions.RequestException as e:
             print(f"An error occurred: {e}")
+
+
 
 class WatchDemoCog(commands.Cog):
     def __init__(self, bot):
@@ -227,7 +231,6 @@ class WatchDemoCog(commands.Cog):
         return ellipsis
 
 
-    @staticmethod
     async def create_image(self, profiles: list[dict], faceit_data):
 
         width = 798
@@ -282,7 +285,11 @@ class WatchDemoCog(commands.Cog):
                     except Exception as e:
                         await log_channel.send("Steam images not fetched!")
 
-                avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+                if response.status_code == 200:
+                    avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+                else:
+                    avatar = Image.open("assets/images/undefined_steam_avatar.jpg").convert("RGBA")
+
                 avatar = avatar.resize((158, 158), Image.LANCZOS)
 
                 image.paste(avatar, (w_pos, h_pos), avatar)
@@ -359,7 +366,7 @@ class WatchDemoCog(commands.Cog):
             # X where full string must start so COLON CENTER is at center_x
             start_x = center_x - left_w - colon_w // 2
 
-            # Draw in one pass (best kerning)
+            # Draw in one pass ( the best kerning)
             draw.text(
                 (start_x, h_pos + 2),
                 f"{left_text}{colon}{right_text}",
@@ -408,7 +415,11 @@ class WatchDemoCog(commands.Cog):
                     except Exception as e:
                         await log_channel.send("Steam images not fetched!")
 
-                avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+                if response.status_code == 200:
+                    avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+                else:
+                    avatar = Image.open("assets/images/undefined_steam_avatar.jpg").convert("RGBA")
+
                 avatar = avatar.resize((158, 158), Image.LANCZOS)
 
                 image.paste(avatar, (w_pos, h_pos), avatar)
@@ -638,7 +649,7 @@ class WatchDemoCog(commands.Cog):
                 )
 
                 try:
-                    parser = DemoParser(DEM_PATH.absolute().as_posix())
+                    parser = DemoParser(dem_path.absolute().as_posix())
                     df = parser.parse_player_info()
                 except Exception as e:
                     if dem_path.exists():
@@ -646,6 +657,7 @@ class WatchDemoCog(commands.Cog):
                     await log_channel.send(content=f"DemoParserError: {e}")
                     return
 
+                #TODO
 
                 # build lookup: steamid -> df_index + 2
                 index_map = {
@@ -664,7 +676,7 @@ class WatchDemoCog(commands.Cog):
                 view = ProfileToggleView(interaction.user, profiles)
 
                 with io.BytesIO() as image_binary:
-                    image = await self.create_image(self, profiles=profiles, faceit_data=faceit_data)
+                    image = await self.create_image(profiles=profiles, faceit_data=faceit_data)
                     image.save(image_binary, 'PNG')
                     image_binary.seek(0)
                     result = File(fp=image_binary, filename="match.png")
