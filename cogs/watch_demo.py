@@ -225,20 +225,6 @@ class WatchDemoCog(commands.Cog):
         return ellipsis
 
 
-    @staticmethod
-    async def is_dir_empty(path):
-        """Check if directory is empty using os.scandir()."""
-        try:
-            with os.scandir(path) as scan:
-                return next(scan, None) is None
-        except FileNotFoundError:
-            # Handle the case where the directory does not exist
-            return False
-        except NotADirectoryError:
-            # Handle the case where the path is not a directory
-            return False
-
-
     async def create_image(self, profiles: list[dict], faceit_data):
 
         width = 798
@@ -485,14 +471,14 @@ class WatchDemoCog(commands.Cog):
                 return 1
 
             try:
-                position = self.demoQueue_order.index(interaction.id) + 1
+                position = self.demoQueue_order.index(interaction.id)
             except ValueError:
                 await log_channel.send(
                     content=f"ValueError: demoQueue_order {interaction.id} - {interaction.user.name}"
                 )
                 return 1
 
-            if free >= 2 * 1024 ** 3 and self.is_dir_empty("/mnt/ramdisk"):
+            if free >= 2 * 1024 ** 3 and position < 1:
                 return 0
 
             try:
@@ -605,10 +591,10 @@ class WatchDemoCog(commands.Cog):
 
                 self.demoQueue_order.append(interaction_id)
 
-                position = self.demoQueue_order.index(interaction_id) + 1
+                position = self.demoQueue_order.index(interaction_id)
 
                 await interaction.edit_original_response(
-                    content=f"⏳ [{position}] You are in queue..."
+                    content=f"⏳ You are in queue..."
                 )
 
                 status = await self.wait_for_memory_space(interaction, log_channel)
