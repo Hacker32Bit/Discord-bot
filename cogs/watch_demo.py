@@ -29,10 +29,11 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 
 class ProfileToggleView(discord.ui.View):
-    def __init__(self, author: discord.User, profiles: list[dict]):
+    def __init__(self, cog, author: discord.User, profiles: list[dict]):
         super().__init__(timeout=120)
         self.author = author
         self.profiles = profiles
+        self.cog = cog
 
         # steam_id -> bool
         self.state = {p["steam_id"]: False for p in profiles}
@@ -40,7 +41,7 @@ class ProfileToggleView(discord.ui.View):
         for index, profile in enumerate(profiles):
             self.add_item(ProfileToggleButton(profile, index))
 
-        self.add_item(DoneButton())
+        self.add_item(DoneButton(self))
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
@@ -95,13 +96,14 @@ class WatchDemoView(discord.ui.View):
 
 
 class DoneButton(discord.ui.Button):
-    def __init__(self):
+    def __init__(self, cog):
         super().__init__(
             label="Done",
             style=discord.ButtonStyle.primary,
             emoji="📤",
             row=2
         )
+        self.cog = cog
 
     @staticmethod
     async def tv_listen_voice_indices(array):
@@ -150,6 +152,8 @@ class DoneButton(discord.ui.Button):
 
         if dem_path.exists():
             dem_path.unlink()
+        if interaction.id in self.cog.demoQueue_order:
+            self.cog.demoQueue_order.remove(interaction.id)
 
         final_text = "✅ Selected voices:"
 
@@ -447,18 +451,22 @@ class WatchDemoCog(commands.Cog):
             await log_channel.send(
                 content=f"requestError (network): download_demo {interaction.id} - {interaction.user.name}\n{e}"
             )
+            if output_path.exists():
+                output_path.unlink()
+            if interaction.id in self.demoQueue_order:
+                self.demoQueue_order.remove(interaction.id)
             return 1
         except OSError as e:
             # disk / file errors
             await log_channel.send(
                 content=f"requestError (disk): download_demo {interaction.id} - {interaction.user.name}\n{e}"
             )
-            return 1
-        finally:
             if output_path.exists():
                 output_path.unlink()
             if interaction.id in self.demoQueue_order:
                 self.demoQueue_order.remove(interaction.id)
+            return 1
+        finally:
             return 0
 
 
@@ -620,6 +628,7 @@ class WatchDemoCog(commands.Cog):
                 resource_url = data["payload"]["download_url"]
 
                 status = await self.download_demo(resource_url, interaction, log_channel)
+
                 if status == 1:
                     return
 
@@ -630,22 +639,22 @@ class WatchDemoCog(commands.Cog):
                 zst_path = RAM_DIR / f"{interaction_id}.dem.zst"
                 dem_path = RAM_DIR / f"{interaction_id}.dem"
 
-                # try:
-                subprocess.run(
-                    ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
-                    check=True
-                )
-                # except subprocess.CalledProcessError as e:
-                #     # Only remove files if they exist
-                #     if zst_path.exists():
-                #         zst_path.unlink()
-                #     if dem_path.exists():
-                #         dem_path.unlink()
-                #     await log_channel.send(content=f"subprocessError: {e}")
-                #     await interaction.edit_original_response(
-                #         content=f"⚠️️ [ERROR] Something went wrong :(. Please tell admin about it!\nInteraction ID: {interaction.id}"
-                #     )
-                #     return
+                try:
+                    subprocess.run(
+                        ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
+                        check=True
+                    )
+                except subprocess.CalledProcessError as e:
+                    # Only remove files if they exist
+                    if zst_path.exists():
+                        zst_path.unlink()
+                    if dem_path.exists():
+                        dem_path.unlink()
+                    await log_channel.send(content=f"subprocessError: {e}")
+                    await interaction.edit_original_response(
+                        content=f"⚠️️ [ERROR] Something went wrong :(. Please tell admin about it!\nInteraction ID: {interaction.id}"
+                    )
+                    return
 
                 await interaction.edit_original_response(
                     content="🕵️ Analyzing demo..."
@@ -676,7 +685,7 @@ class WatchDemoCog(commands.Cog):
                     for p in profiles
                 ]
 
-                view = ProfileToggleView(interaction.user, profiles)
+                view = ProfileToggleView(self, interaction.user, profiles)
 
                 with io.BytesIO() as image_binary:
                     image = await self.create_image(profiles=profiles, faceit_data=faceit_data)
