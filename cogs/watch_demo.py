@@ -53,7 +53,7 @@ class ProfileToggleView(discord.ui.View):
 
 
 class ProfileToggleButton(discord.ui.Button):
-    def __init__(self, cog, profile: dict, index: int):
+    def __init__(self, profile: dict, index: int):
         super().__init__(
             label=f"{profile['side']} {profile['name']}",
             style=discord.ButtonStyle.secondary,
@@ -61,7 +61,6 @@ class ProfileToggleButton(discord.ui.Button):
             row=index // 5
         )
         self.profile = profile
-        self.cog = cog
 
     async def callback(self, interaction: discord.Interaction):
         view: ProfileToggleView = self.view  # type: ignore
