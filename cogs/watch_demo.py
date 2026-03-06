@@ -29,19 +29,18 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 
 class ProfileToggleView(discord.ui.View):
-    def __init__(self, cog, author: discord.User, profiles: list[dict]):
+    def __init__(self, author: discord.User, profiles: list[dict]):
         super().__init__(timeout=300)
         self.author = author
         self.profiles = profiles
-        self.cog = cog
 
         # steam_id -> bool
         self.state = {p["steam_id"]: False for p in profiles}
 
         for index, profile in enumerate(profiles):
-            self.add_item(ProfileToggleButton(self.cog, profile, index))
+            self.add_item(ProfileToggleButton(profile, index))
 
-        self.add_item(DoneButton(self.cog))
+        self.add_item(DoneButton())
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
@@ -97,14 +96,13 @@ class WatchDemoView(discord.ui.View):
 
 
 class DoneButton(discord.ui.Button):
-    def __init__(self, cog):
+    def __init__(self):
         super().__init__(
             label="Done",
             style=discord.ButtonStyle.primary,
             emoji="📤",
             row=2
         )
-        self.cog = cog
 
     @staticmethod
     async def tv_listen_voice_indices(array):
@@ -149,13 +147,6 @@ class DoneButton(discord.ui.Button):
 
         team1, team2 = await self.tv_listen_voice_indices(sorted(selected))
 
-        dem_path = RAM_DIR / f"{interaction.id}.dem"
-
-        if dem_path.exists():
-            dem_path.unlink()
-        if interaction.id in self.cog.demoQueue_order:
-            self.cog.demoQueue_order.remove(interaction.id)
-
         final_text = "✅ Selected voices:"
 
         final_command = f"tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};"
@@ -190,7 +181,6 @@ class DoneButton(discord.ui.Button):
             )
             r.raise_for_status()
             tinyurl_data = r.json()
-
 
             await interaction.response.send_message(
                 "📤 Done!\n\n"
@@ -651,6 +641,8 @@ class WatchDemoCog(commands.Cog):
                         zst_path.unlink()
                     if dem_path.exists():
                         dem_path.unlink()
+                    if interaction.id in self.demoQueue_order:
+                        self.demoQueue_order.remove(interaction.id)
                     await log_channel.send(content=f"subprocessError: {e}")
                     await interaction.edit_original_response(
                         content=f"⚠️️ [ERROR] Something went wrong :(. Please tell admin about it!\nInteraction ID: {interaction.id}"
@@ -667,10 +659,15 @@ class WatchDemoCog(commands.Cog):
                 except Exception as e:
                     if dem_path.exists():
                         dem_path.unlink()
+                    if interaction.id in self.demoQueue_order:
+                        self.demoQueue_order.remove(interaction.id)
                     await log_channel.send(content=f"DemoParserError: {e}")
                     return
 
-                #TODO
+                if dem_path.exists():
+                    dem_path.unlink()
+                if interaction.id in self.demoQueue_order:
+                    self.demoQueue_order.remove(interaction.id)
 
                 # build lookup: steamid -> df_index + 2
                 index_map = {
@@ -686,7 +683,7 @@ class WatchDemoCog(commands.Cog):
                     for p in profiles
                 ]
 
-                view = ProfileToggleView(self, interaction.user, profiles)
+                view = ProfileToggleView(interaction.user, profiles)
 
                 with io.BytesIO() as image_binary:
                     image = await self.create_image(profiles=profiles, faceit_data=faceit_data)
