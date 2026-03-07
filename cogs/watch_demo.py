@@ -50,6 +50,16 @@ class ProfileToggleView(discord.ui.View):
         if interaction is not None and self.is_finished():
             return
 
+        print(self.author)
+        print(interaction.user)
+
+        if not interaction.user is self.author:
+            await interaction.response.send_message(
+                "❌ This interaction not for you!",
+                ephemeral=True
+            )
+            return
+
         selected = [
             p["index"]
             for p in self.profiles
