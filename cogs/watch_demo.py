@@ -518,12 +518,12 @@ class WatchDemoCog(commands.Cog):
             final_response = ""
 
             if free >= 2 * 1024 ** 3:
-                if position >= 1:
-                    final_response = f"⏳ [{position}] You are in queue... Please wait..."
-                else:
-                    return 0
+                # if position >= 1:
+                #     final_response = f"⏳ [{position}] You are in queue... Please wait..."
+                # else:
+                #     return 0
 
-                # return 0
+                return 0
             else:
                 final_response = f"📟 Not enough RAM disk space.\n⏳ [{position}] You are in queue... Please wait..."
 
