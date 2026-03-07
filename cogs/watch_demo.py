@@ -30,7 +30,7 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 class ProfileToggleView(discord.ui.View):
     def __init__(self, cog, author: discord.User, profiles: list[dict]):
-        super().__init__(timeout=300)
+        super().__init__(timeout=60)
         self.cog = cog
         self.author = author
         self.profiles = profiles
@@ -64,9 +64,8 @@ class ProfileToggleView(discord.ui.View):
 
         if not selected:
             if interaction:
-                await interaction.response.send_message(
+                await interaction.message.reply(
                     "❌ No players selected.",
-                    ephemeral=True
                 )
             else:
                 if self.message:
@@ -116,14 +115,13 @@ class ProfileToggleView(discord.ui.View):
             tinyurl_data = r.json()
 
             if interaction:
-                await interaction.response.send_message(
+                await interaction.message.reply(
                     "📤 Done!\n\n"
                     f"{final_text}",
-                    ephemeral=True,
                     view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
                 )
 
-                await interaction.message.edit(view=self)
+                # await interaction.message.edit(view=self)
 
             else:
                 # Timeout case
