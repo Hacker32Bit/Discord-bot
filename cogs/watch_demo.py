@@ -29,12 +29,13 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 
 class ProfileToggleView(discord.ui.View):
-    def __init__(self, cog, author: discord.User, profiles: list[dict]):
+    def __init__(self, cog, author: discord.User, profiles: list[dict], download_url: str):
         super().__init__(timeout=60)
         self.cog = cog
         self.author = author
         self.profiles = profiles
         self.message: discord.Message | None = None
+        self.download_url = download_url
 
         self.state = {p["steam_id"]: False for p in profiles}
 
@@ -140,7 +141,7 @@ class ProfileToggleView(discord.ui.View):
                     "📤 Done!\n\n"
                     f"{final_text}",
                     ephemeral=True,
-                    view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
+                    view=WatchDemoView(tinyurl_data["data"]["tiny_url"], self.download_url)
                 )
 
                 await interaction.message.edit(view=self)
@@ -198,9 +199,19 @@ class WatchDemoButton(discord.ui.Button):
             url=url
         )
 
+class DownloadDemoButton(discord.ui.Button):
+    def __init__(self, url: str = ""):
+        super().__init__(
+            label="Download demo",
+            style=discord.ButtonStyle.link,
+            emoji="<:faceit:1479851119353008339>",
+            url=url
+        )
+
 class WatchDemoView(discord.ui.View):
-    def __init__(self, url: str):
+    def __init__(self, url: str, download_url: str):
         super().__init__(timeout=None)
+        self.add_item(DownloadDemoButton(download_url))
         self.add_item(WatchDemoButton(url))
 
 
@@ -732,7 +743,7 @@ class WatchDemoCog(commands.Cog):
                     for p in profiles
                 ]
 
-                view = ProfileToggleView(self, interaction.user, profiles)
+                view = ProfileToggleView(self, interaction.user, profiles, resource_url)
                 self.active_views.add(view)
 
                 with io.BytesIO() as image_binary:
