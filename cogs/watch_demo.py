@@ -173,11 +173,18 @@ class DoneButton(discord.ui.Button):
         }
 
         try:
-            r = requests.post(
-                f"https://api.tinyurl.com/create",
+            # r = requests.post(
+            #     f"https://api.tinyurl.com/create",
+            #     headers=headers,
+            #     json=payload,
+            # )
+            r = await asyncio.to_thread(
+                requests.post,
+                "https://api.tinyurl.com/create",
                 headers=headers,
-                json=payload,
+                json=payload
             )
+
             r.raise_for_status()
             tinyurl_data = r.json()
 
@@ -266,16 +273,21 @@ class WatchDemoCog(commands.Cog):
             for p in profiles[:5]:
                 if p["faceit_avatar_url"]:
                     try:
-                        response = requests.get(p['faceit_avatar_url'])
+                        # response = requests.get(p['faceit_avatar_url'])
+                        response = await asyncio.to_thread(requests.get, p['faceit_avatar_url'])
                         response.raise_for_status()
                     except Exception as e:
                         try:
-                            response = requests.get(p['steam_avatar_url'])
+                            # response = requests.get(p['steam_avatar_url'])
+                            response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
+                            response.raise_for_status()
                         except Exception as e:
                             await log_channel.send("FaceIt + Steam images not fetched!")
                 else:
                     try:
-                        response = requests.get(p['steam_avatar_url'])
+                        # response = requests.get(p['steam_avatar_url'])
+                        response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
+                        response.raise_for_status()
                     except Exception as e:
                         await log_channel.send("Steam images not fetched!")
 
@@ -396,16 +408,21 @@ class WatchDemoCog(commands.Cog):
             for p in profiles[5:]:
                 if p["faceit_avatar_url"]:
                     try:
-                        response = requests.get(p['faceit_avatar_url'])
+                        # response = requests.get(p['faceit_avatar_url'])
+                        response = await asyncio.to_thread(requests.get, p['faceit_avatar_url'])
                         response.raise_for_status()
                     except Exception as e:
                         try:
-                            response = requests.get(p['steam_avatar_url'])
+                            # response = requests.get(p['steam_avatar_url'])
+                            response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
+                            response.raise_for_status()
                         except Exception as e:
                             await log_channel.send("FaceIt + Steam images not fetched!")
                 else:
                     try:
-                        response = requests.get(p['steam_avatar_url'])
+                        # response = requests.get(p['steam_avatar_url'])
+                        response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
+                        response.raise_for_status()
                     except Exception as e:
                         await log_channel.send("Steam images not fetched!")
 
@@ -468,12 +485,21 @@ class WatchDemoCog(commands.Cog):
                 )
                 return 1
 
-            if free >= 2 * 1024 ** 3 and position < 1:
-                return 0
+            final_response = ""
+
+            if free >= 2 * 1024 ** 3:
+                if position >= 1:
+                    final_response = f"⏳ [{position}] You are in queue... Please wait..."
+                else:
+                    return 0
+
+                # return 0
+            else:
+                final_response = f"📟 Not enough RAM disk space.\n⏳ [{position}] You are in queue... Please wait..."
 
             try:
                 await interaction.edit_original_response(
-                    content=f"📟 Not enough RAM disk space.\n⏳ [{position}] You are in queue... Please wait..."
+                    content=final_response
                 )
             except Exception as e:  # catch discord exceptions
                 await log_channel.send(content=f"editResponseError: {e}")
@@ -533,10 +559,17 @@ class WatchDemoCog(commands.Cog):
                 "Authorization": f"Bearer {FACEIT_API_KEY}"
             }
 
-            r = requests.get(
+
+            # r = requests.get(
+            #     f"https://open.faceit.com/data/v4/matches/{demo_id}",
+            #     headers=headers
+            # )
+            r = await asyncio.to_thread(
+                requests.get,
                 f"https://open.faceit.com/data/v4/matches/{demo_id}",
-                headers=headers
+                headers=headers,
             )
+
             r.raise_for_status()
 
             faceit_data = r.json()
@@ -553,13 +586,16 @@ class WatchDemoCog(commands.Cog):
                 steamids = ",".join(game_player_ids)
                 url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={STEAM_API_KEY}&steamids={steamids}"
 
-                r = requests.get(url)
+                # r = requests.get(url)
+                r = await asyncio.to_thread(requests.get, url)
+
                 while r.status_code == 429:
                     sleep_time = randint(1800, 3600)
                     await log_channel.send(
                         content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
                     await asyncio.sleep(sleep_time)
-                    r = requests.get(url)
+                    # r = requests.get(url)
+                    r = await asyncio.to_thread(requests.get, url)
 
                 r.raise_for_status()
                 steam_data = r.json()
@@ -593,7 +629,15 @@ class WatchDemoCog(commands.Cog):
                     content="💾 Downloading demo..."
                 )
 
-                r = requests.post(
+                # r = requests.post(
+                #     f"https://open.faceit.com/download/v2/demos/download",
+                #     headers=headers,
+                #     json={
+                #         "resource_url": demo_urls,
+                #     },
+                # )
+                r = await asyncio.to_thread(
+                    requests.post,
                     f"https://open.faceit.com/download/v2/demos/download",
                     headers=headers,
                     json={

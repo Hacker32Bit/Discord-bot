@@ -138,7 +138,9 @@ class AdminCommands(commands.Cog):
             result = "```"
             scan = check_output(["/bin/nmcli", "device", "wifi", "rescan"]).strip().decode("utf-8")
             result += check_output(["/bin/nmcli", "device", "wifi", "list"]).strip().decode("utf-8")
-            result += "\n" + 89 * "-" + "\n"
+            result += "```"
+            await ctx.send(result)
+            result = "```"
             result += check_output(["/bin/nmcli", "connection", "show"]).strip().decode("utf-8")
             result += "```"
             await ctx.send(result)
