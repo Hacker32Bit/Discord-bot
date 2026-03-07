@@ -64,9 +64,12 @@ class ProfileToggleView(discord.ui.View):
 
         if not selected:
             if interaction:
-                await interaction.message.reply(
+                await interaction.response.send_message(
                     "❌ No players selected.",
+                    ephemeral=True
                 )
+
+                await interaction.message.edit(view=self)
             else:
                 if self.message:
                     await self.message.delete()
@@ -115,13 +118,14 @@ class ProfileToggleView(discord.ui.View):
             tinyurl_data = r.json()
 
             if interaction:
-                await interaction.message.reply(
+                await interaction.response.send_message(
                     "📤 Done!\n\n"
                     f"{final_text}",
+                    ephemeral=True,
                     view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
                 )
 
-                # await interaction.message.edit(view=self)
+                await interaction.message.edit(view=self)
 
             else:
                 # Timeout case
