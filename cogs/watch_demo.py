@@ -30,11 +30,11 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 class ProfileToggleView(discord.ui.View):
     def __init__(self, author: discord.User, profiles: list[dict]):
-        super().__init__(timeout=60)
+        super().__init__(timeout=300)
         self.author = author
         self.profiles = profiles
+        self.message: discord.Message | None = None
 
-        # steam_id -> bool
         self.state = {p["steam_id"]: False for p in profiles}
 
         for index, profile in enumerate(profiles):
@@ -42,14 +42,91 @@ class ProfileToggleView(discord.ui.View):
 
         self.add_item(DoneButton())
 
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if interaction.user.id != self.author.id:
-            await interaction.response.send_message(
-                "❌ This interaction is not for you.",
-                ephemeral=True
+    async def on_timeout(self):
+        await self.process_done(None)
+
+    async def process_done(self, interaction: discord.Interaction | None):
+        selected = [
+            p["index"]
+            for p in self.profiles
+            if self.state.get(p["steam_id"])
+        ]
+
+        selected_text = [
+            f"{p['side']} {p['name']} — {p['steam_id']}"
+            for p in self.profiles
+            if self.state.get(p["steam_id"])
+        ]
+
+        if not selected:
+            if interaction:
+                await interaction.response.send_message(
+                    "❌ No players selected.",
+                    ephemeral=True
+                )
+            return
+
+        team1, team2 = await DoneButton.tv_listen_voice_indices(sorted(selected))
+
+        final_text = "✅ Selected voices:"
+        final_command = f"tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};"
+
+        final_text += f"```{final_command}```"
+
+        if team2 != -1:
+            inverted_command = f"tv_listen_voice_indices {team2}; tv_listen_voice_indices_h {team2};"
+            final_text += f"Inverted voices:```{inverted_command}```"
+
+        for item in self.children:
+            item.disabled = True
+
+        run_game_url = f'steam://rungameid/730/-console +"playdemo replays/demo; {final_command}"'
+
+        headers = {
+            "Authorization": f"Bearer {TINYURL_API_KEY}"
+        }
+
+        payload = {
+            "url": run_game_url,
+            "alias": "",
+            "description": "string"
+        }
+
+        try:
+            r = await asyncio.to_thread(
+                requests.post,
+                "https://api.tinyurl.com/create",
+                headers=headers,
+                json=payload
             )
-            return False
-        return True
+
+            r.raise_for_status()
+            tinyurl_data = r.json()
+
+            if interaction:
+                await interaction.response.send_message(
+                    "📤 Done!\n\n"
+                    f"{final_text}",
+                    ephemeral=True,
+                    view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
+                )
+
+                await interaction.message.edit(view=self)
+
+            else:
+                # Timeout case
+                await self.message.reply(
+                    "⏱ Time expired — auto submitting.\n\n"
+                    f"{final_text}",
+                    view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
+                )
+
+                await self.message.edit(view=self)
+
+            self.stop()
+
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e}")
 
 
 class ProfileToggleButton(discord.ui.Button):
@@ -123,83 +200,8 @@ class DoneButton(discord.ui.Button):
             return result1, result2
 
     async def callback(self, interaction: discord.Interaction):
-        view: ProfileToggleView = self.view  # type: ignore
-
-        selected = [
-            p["index"]
-            for p in view.profiles
-            if view.state.get(p["steam_id"])
-        ]
-
-        selected_text = [
-            f"{p['side']} {p['name']} — {p['steam_id']}"
-            for p in view.profiles
-            if view.state.get(p["steam_id"])
-        ]
-
-        if not selected:
-            await interaction.response.send_message(
-                "❌ No players selected.",
-                ephemeral=True
-            )
-            return
-
-        team1, team2 = await self.tv_listen_voice_indices(sorted(selected))
-
-        final_text = "✅ Selected voices:"
-
-        final_command = f"tv_listen_voice_indices {team1}; tv_listen_voice_indices_h {team1};"
-        final_text += f"```{final_command}```"
-
-        if not team2 == -1:
-            inverted_command = f"tv_listen_voice_indices {team2}; tv_listen_voice_indices_h {team2};"
-            final_text += f"Inverted voices:```{inverted_command}```"
-
-
-        # Disable all buttons after submit
-        for item in view.children:
-            item.disabled = True
-
-        run_game_url = f'steam://rungameid/730/-console +"playdemo replays/demo; {final_command}"'
-
-        headers = {
-            "Authorization": f"Bearer {TINYURL_API_KEY}"
-        }
-
-        payload = {
-            "url": run_game_url,
-            "alias": "",
-            "description": "string"
-        }
-
-        try:
-            # r = requests.post(
-            #     f"https://api.tinyurl.com/create",
-            #     headers=headers,
-            #     json=payload,
-            # )
-            r = await asyncio.to_thread(
-                requests.post,
-                "https://api.tinyurl.com/create",
-                headers=headers,
-                json=payload
-            )
-
-            r.raise_for_status()
-            tinyurl_data = r.json()
-
-            await interaction.response.send_message(
-                "📤 Done!\n\n"
-                f"{final_text}",
-                ephemeral=True,
-                view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
-            )
-
-            await interaction.message.edit(view=view)
-            view.stop()
-
-        except requests.exceptions.RequestException as e:
-            print(f"An error occurred: {e}")
+        view: ProfileToggleView = self.view
+        await view.process_done(interaction)
 
 
 
@@ -725,9 +727,13 @@ class WatchDemoCog(commands.Cog):
                     image.save(image_binary, 'PNG')
                     image_binary.seek(0)
                     result = File(fp=image_binary, filename="match.png")
-                    await interaction.edit_original_response(
-                        content=f"Your match: <{demo_url}>\n", attachments=[result],
-                        view=view)
+                    msg = await interaction.edit_original_response(
+                        content=f"Your match: <{demo_url}>\n",
+                        attachments=[result],
+                        view=view
+                    )
+
+                    view.message = msg
 
 
             except requests.exceptions.HTTPError as e:
