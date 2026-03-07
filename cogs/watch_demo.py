@@ -139,7 +139,7 @@ class ProfileToggleView(discord.ui.View):
             if interaction:
                 await interaction.response.send_message(
                     "📤 Done!\n\n"
-                    f"{final_text}\n",
+                    f"{final_text}\n\n",
                     ephemeral=True,
                     view=WatchDemoView(tinyurl_data["data"]["tiny_url"], self.download_url)
                 )
