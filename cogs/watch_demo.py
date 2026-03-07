@@ -46,18 +46,26 @@ class ProfileToggleView(discord.ui.View):
     async def on_timeout(self):
         await self.process_done(None)
 
-    async def process_done(self, interaction: discord.Interaction | None):
-        if interaction is not None and self.is_finished():
-            return
-
-        print(self.author)
-        print(interaction.user)
-
-        if not interaction.user is self.author:
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author.id:
             await interaction.response.send_message(
-                "❌ This interaction not for you!",
+                "❌ This interaction is not for you.",
                 ephemeral=True
             )
+            return False
+        return True
+
+    async def process_done(self, interaction: discord.Interaction | None):
+        if interaction is not None and self.is_finished():
+            self.stop()
+            if hasattr(self, "cog"):
+                self.cog.active_views.discard(self)
+            return
+
+        if not await self.interaction_check(interaction):
+            self.stop()
+            if hasattr(self, "cog"):
+                self.cog.active_views.discard(self)
             return
 
         selected = [
