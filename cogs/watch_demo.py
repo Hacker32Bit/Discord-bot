@@ -29,8 +29,9 @@ RAM_DIR = Path("/mnt/ramdisk")
 
 
 class ProfileToggleView(discord.ui.View):
-    def __init__(self, author: discord.User, profiles: list[dict]):
+    def __init__(self, cog, author: discord.User, profiles: list[dict]):
         super().__init__(timeout=300)
+        self.cog = cog
         self.author = author
         self.profiles = profiles
         self.message: discord.Message | None = None
@@ -43,6 +44,7 @@ class ProfileToggleView(discord.ui.View):
         self.add_item(DoneButton())
 
     async def on_timeout(self):
+        print("VIEW TIMEOUT")
         await self.process_done(None)
 
     async def process_done(self, interaction: discord.Interaction | None):
@@ -116,17 +118,19 @@ class ProfileToggleView(discord.ui.View):
             else:
                 # Timeout case
                 await self.message.reply(
-                    "⏱ Time expired — auto submitting.\n\n"
+                    "⏱️ Time expired — auto submitting.\n\n"
                     f"{final_text}",
                     view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
                 )
 
                 await self.message.edit(view=self)
 
-            self.stop()
-
         except requests.exceptions.RequestException as e:
             print(f"An error occurred: {e}")
+
+        self.stop()
+        if hasattr(self, "cog"):
+            self.cog.active_views.discard(self)
 
 
 class ProfileToggleButton(discord.ui.Button):
@@ -209,6 +213,7 @@ class WatchDemoCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.demoQueue_order = []
+        self.active_views = set()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -275,19 +280,16 @@ class WatchDemoCog(commands.Cog):
             for p in profiles[:5]:
                 if p["faceit_avatar_url"]:
                     try:
-                        # response = requests.get(p['faceit_avatar_url'])
                         response = await asyncio.to_thread(requests.get, p['faceit_avatar_url'])
                         response.raise_for_status()
                     except Exception as e:
                         try:
-                            # response = requests.get(p['steam_avatar_url'])
                             response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
                             response.raise_for_status()
                         except Exception as e:
                             await log_channel.send("FaceIt + Steam images not fetched!")
                 else:
                     try:
-                        # response = requests.get(p['steam_avatar_url'])
                         response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
                         response.raise_for_status()
                     except Exception as e:
@@ -410,19 +412,16 @@ class WatchDemoCog(commands.Cog):
             for p in profiles[5:]:
                 if p["faceit_avatar_url"]:
                     try:
-                        # response = requests.get(p['faceit_avatar_url'])
                         response = await asyncio.to_thread(requests.get, p['faceit_avatar_url'])
                         response.raise_for_status()
                     except Exception as e:
                         try:
-                            # response = requests.get(p['steam_avatar_url'])
                             response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
                             response.raise_for_status()
                         except Exception as e:
                             await log_channel.send("FaceIt + Steam images not fetched!")
                 else:
                     try:
-                        # response = requests.get(p['steam_avatar_url'])
                         response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
                         response.raise_for_status()
                     except Exception as e:
@@ -561,11 +560,6 @@ class WatchDemoCog(commands.Cog):
                 "Authorization": f"Bearer {FACEIT_API_KEY}"
             }
 
-
-            # r = requests.get(
-            #     f"https://open.faceit.com/data/v4/matches/{demo_id}",
-            #     headers=headers
-            # )
             r = await asyncio.to_thread(
                 requests.get,
                 f"https://open.faceit.com/data/v4/matches/{demo_id}",
@@ -588,7 +582,6 @@ class WatchDemoCog(commands.Cog):
                 steamids = ",".join(game_player_ids)
                 url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={STEAM_API_KEY}&steamids={steamids}"
 
-                # r = requests.get(url)
                 r = await asyncio.to_thread(requests.get, url)
 
                 while r.status_code == 429:
@@ -596,7 +589,6 @@ class WatchDemoCog(commands.Cog):
                     await log_channel.send(
                         content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
                     await asyncio.sleep(sleep_time)
-                    # r = requests.get(url)
                     r = await asyncio.to_thread(requests.get, url)
 
                 r.raise_for_status()
@@ -631,13 +623,6 @@ class WatchDemoCog(commands.Cog):
                     content="💾 Downloading demo..."
                 )
 
-                # r = requests.post(
-                #     f"https://open.faceit.com/download/v2/demos/download",
-                #     headers=headers,
-                #     json={
-                #         "resource_url": demo_urls,
-                #     },
-                # )
                 r = await asyncio.to_thread(
                     requests.post,
                     f"https://open.faceit.com/download/v2/demos/download",
@@ -720,7 +705,8 @@ class WatchDemoCog(commands.Cog):
                     for p in profiles
                 ]
 
-                view = ProfileToggleView(interaction.user, profiles)
+                view = ProfileToggleView(self, interaction.user, profiles)
+                self.active_views.add(view)
 
                 with io.BytesIO() as image_binary:
                     image = await self.create_image(profiles=profiles, faceit_data=faceit_data)
