@@ -48,9 +48,9 @@ class ProfileToggleView(discord.ui.View):
         await self.process_done(None)
 
     async def process_done(self, interaction: discord.Interaction | None):
-        print("PROCESS DONE CALLED BEFORE IS_FINISHED")
-        print("interaction:", interaction)
-        if self.is_finished():
+        print("PROCESS DONE CALLED")
+
+        if interaction is not None and self.is_finished():
             return
 
         selected = [
