@@ -64,15 +64,10 @@ class ProfileToggleView(discord.ui.View):
 
         if not selected:
             if interaction:
-                if self.message:
-                    await self.message.reply(
-                        "❌ No players selected."
-                    )
-                else:
-                    await interaction.response.send_message(
-                        "❌ No players selected.",
-                        ephemeral=True
-                    )
+                await interaction.response.send_message(
+                    "❌ No players selected.",
+                    ephemeral=True
+                )
             else:
                 if self.message:
                     await self.message.reply(
@@ -123,21 +118,14 @@ class ProfileToggleView(discord.ui.View):
             tinyurl_data = r.json()
 
             if interaction:
-                if self.message:
-                    await self.message.reply(
-                        "📤 Done!\n\n"
-                        f"{final_text}",
-                        view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
-                    )
-                else:
-                    await interaction.response.send_message(
-                        "📤 Done!\n\n"
-                        f"{final_text}",
-                        ephemeral=True,
-                        view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
-                    )
+                await interaction.response.send_message(
+                    "📤 Done!\n\n"
+                    f"{final_text}",
+                    ephemeral=True,
+                    view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
+                )
 
-                    await interaction.message.edit(view=self)
+                await interaction.message.edit(view=self)
 
             else:
                 # Timeout case
