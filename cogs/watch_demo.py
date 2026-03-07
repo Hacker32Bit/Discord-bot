@@ -48,6 +48,9 @@ class ProfileToggleView(discord.ui.View):
         await self.process_done(None)
 
     async def process_done(self, interaction: discord.Interaction | None):
+        if self.is_finished():
+            return
+
         selected = [
             p["index"]
             for p in self.profiles
@@ -65,6 +68,10 @@ class ProfileToggleView(discord.ui.View):
                 await interaction.response.send_message(
                     "❌ No players selected.",
                     ephemeral=True
+                )
+            else:
+                await self.message.reply(
+                    "⏱️ Time expired — no players selected."
                 )
             return
 
@@ -117,6 +124,9 @@ class ProfileToggleView(discord.ui.View):
 
             else:
                 # Timeout case
+                if not self.message:
+                    return
+
                 await self.message.reply(
                     "⏱️ Time expired — auto submitting.\n\n"
                     f"{final_text}",
@@ -721,10 +731,8 @@ class WatchDemoCog(commands.Cog):
 
                     view.message = msg
 
-
             except requests.exceptions.HTTPError as e:
                 await log_channel.send(content=f"Steam connection error: {e}")
-
 
 
         except requests.exceptions.HTTPError as e:
