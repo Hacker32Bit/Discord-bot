@@ -63,6 +63,10 @@ class ProfileToggleView(discord.ui.View):
             if self.state.get(p["steam_id"])
         ]
 
+        print("PROCESS DONE CALLED")
+        print("interaction:", interaction)
+        print("selected:", selected)
+
         if not selected:
             if interaction:
                 await interaction.response.send_message(
@@ -70,9 +74,15 @@ class ProfileToggleView(discord.ui.View):
                     ephemeral=True
                 )
             else:
-                await self.message.reply(
-                    "⏱️ Time expired — no players selected."
-                )
+                if self.message:
+                    await self.message.reply(
+                        "⏱️ Time expired — no players selected."
+                    )
+
+            self.stop()
+            if hasattr(self, "cog"):
+                self.cog.active_views.discard(self)
+
             return
 
         team1, team2 = await DoneButton.tv_listen_voice_indices(sorted(selected))
