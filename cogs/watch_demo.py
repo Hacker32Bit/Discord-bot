@@ -44,12 +44,9 @@ class ProfileToggleView(discord.ui.View):
         self.add_item(DoneButton())
 
     async def on_timeout(self):
-        print("VIEW TIMEOUT")
         await self.process_done(None)
 
     async def process_done(self, interaction: discord.Interaction | None):
-        print("PROCESS DONE CALLED")
-
         if interaction is not None and self.is_finished():
             return
 
@@ -65,16 +62,17 @@ class ProfileToggleView(discord.ui.View):
             if self.state.get(p["steam_id"])
         ]
 
-        print("PROCESS DONE CALLED")
-        print("interaction:", interaction)
-        print("selected:", selected)
-
         if not selected:
             if interaction:
-                await interaction.response.send_message(
-                    "❌ No players selected.",
-                    ephemeral=True
-                )
+                if self.message:
+                    await self.message.reply(
+                        "❌ No players selected."
+                    )
+                else:
+                    await interaction.response.send_message(
+                        "❌ No players selected.",
+                        ephemeral=True
+                    )
             else:
                 if self.message:
                     await self.message.reply(
@@ -125,14 +123,21 @@ class ProfileToggleView(discord.ui.View):
             tinyurl_data = r.json()
 
             if interaction:
-                await interaction.response.send_message(
-                    "📤 Done!\n\n"
-                    f"{final_text}",
-                    ephemeral=True,
-                    view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
-                )
+                if self.message:
+                    await self.message.reply(
+                        "📤 Done!\n\n"
+                        f"{final_text}",
+                        view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
+                    )
+                else:
+                    await interaction.response.send_message(
+                        "📤 Done!\n\n"
+                        f"{final_text}",
+                        ephemeral=True,
+                        view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
+                    )
 
-                await interaction.message.edit(view=self)
+                    await interaction.message.edit(view=self)
 
             else:
                 # Timeout case
