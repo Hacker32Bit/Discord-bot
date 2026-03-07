@@ -518,7 +518,6 @@ class WatchDemoCog(commands.Cog):
             final_response = ""
 
             if free >= 2 * 1024 ** 3:
-                return 0
                 if position < 1:
                     return 0
                 else:
