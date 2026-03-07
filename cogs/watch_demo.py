@@ -62,7 +62,7 @@ class ProfileToggleView(discord.ui.View):
                 self.cog.active_views.discard(self)
             return
 
-        if not await self.interaction_check(interaction):
+        if interaction is not None and not await self.interaction_check(interaction):
             self.stop()
             if hasattr(self, "cog"):
                 self.cog.active_views.discard(self)
