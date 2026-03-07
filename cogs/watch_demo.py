@@ -70,9 +70,7 @@ class ProfileToggleView(discord.ui.View):
                 )
             else:
                 if self.message:
-                    await self.message.reply(
-                        "⏱️ Time expired — no players selected."
-                    )
+                    await self.message.delete()
 
             self.stop()
             if hasattr(self, "cog"):
@@ -132,13 +130,9 @@ class ProfileToggleView(discord.ui.View):
                 if not self.message:
                     return
 
-                await self.message.reply(
-                    "⏱️ Time expired — auto submitting.\n\n"
-                    f"{final_text}",
-                    view=WatchDemoView(tinyurl_data["data"]["tiny_url"])
-                )
+                await self.message.delete()
 
-                await self.message.edit(view=self)
+                # await self.message.edit(view=self)
 
         except requests.exceptions.RequestException as e:
             print(f"An error occurred: {e}")
