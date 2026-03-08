@@ -18,6 +18,8 @@ from urllib.parse import urlparse
 import subprocess
 import shutil
 import re
+import cloudscraper
+
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -261,6 +263,81 @@ class WatchDemoCog(commands.Cog):
 
     def cog_unload(self):
         print("[INFO] Cog \"Watch Demo\" was unloaded!")
+
+    # Command for test new version of /watch_demo
+    @commands.command(help="watch_demo", description="Command for test new version of /watch_demo")
+    @commands.has_any_role("Owner", "Admin")
+    async def watch_demo(self, ctx):
+        MATCH_ID = "1-66cd0f2a-8991-4555-b824-1c5bd047d011"
+
+        headers = {
+            "Authorization": f"Bearer {FACEIT_API_KEY}"
+        }
+
+        r = requests.get(
+            f"https://open.faceit.com/data/v4/matches/{MATCH_ID}",
+            headers=headers
+        )
+        r.raise_for_status()
+        match = r.json()
+        # print(match)
+
+        scraper = cloudscraper.create_scraper()
+        r = scraper.get(f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}")
+        match2 = r.json()
+        # print(match2)
+
+        r = scraper.get(f"https://www.faceit.com/api/stats/v3/matches/{MATCH_ID}")
+        stats = r.json()
+        # print(stats)
+
+        with io.BytesIO() as image_binary:
+            image = await self.create_image_new()
+            image.save(image_binary, 'PNG')
+            image_binary.seek(0)
+            result = File(fp=image_binary, filename="match.png")
+            ctx.send(file=result)
+
+    async def create_image_new(self, players_data: list[dict] = None):
+        width = 800
+        height = 600
+
+        with Image.new(mode='RGBA', size=(width, height), color=(0, 0, 0, 0)) as image:
+            font_noto_sans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
+                                               'assets',
+                                               'NotoSans-Bold.ttf')
+            font_noto_sans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
+                                                  'assets',
+                                                  'NotoSans-Regular.ttf')
+            # font_rockybilly= os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets', # NOQA: spellcheck
+            #                           'Rockybilly.ttf') # NOQA: spellcheck
+
+            # ======== Fonts to use =============
+            font_normal_large = truetype(font_noto_sans_bold, 38, encoding='UTF-8')
+            font_normal = truetype(font_noto_sans_bold, 18, encoding='UTF-8')
+            font_small_large = truetype(font_noto_sans_regular, 28, encoding='UTF-8')
+            font_small = truetype(font_noto_sans_regular, 18, encoding='UTF-8')
+            # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
+
+            h_pos = 0
+            w_pos = 0
+
+            white = (255, 255, 255, 255)
+            # black = (0, 0, 0, 255)
+
+            t_color = (251, 172, 24, 255)
+            ct_color = (40, 57, 127, 255)
+
+            draw = Draw(image)
+
+            draw.text(
+                (w_pos + 10, h_pos + 10),
+                "test",
+                fill=white,
+                font=font_small_large
+            )
+
+            return image
 
     @staticmethod
     async def fit_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_width = 138, ellipsis = "...") -> str:
