@@ -296,7 +296,8 @@ class WatchDemoCog(commands.Cog):
                 "browser": "chrome",
                 "platform": "windows",
                 "desktop": True
-            }
+            },
+            delay=10,
         )
         r = scraper.get(
             f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}",
