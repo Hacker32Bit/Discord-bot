@@ -20,7 +20,6 @@ import shutil
 import re
 import cloudscraper
 
-
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
 FACEIT_API_KEY: Final[str] = os.getenv("FACEIT_API_KEY")
@@ -201,6 +200,7 @@ class WatchDemoButton(discord.ui.Button):
             url=url
         )
 
+
 class DownloadDemoButton(discord.ui.Button):
     def __init__(self, url: str = ""):
         super().__init__(
@@ -209,6 +209,7 @@ class DownloadDemoButton(discord.ui.Button):
             emoji="<:faceit:1479851119353008339>",
             url=url
         )
+
 
 class WatchDemoView(discord.ui.View):
     def __init__(self, url: str, download_url: str):
@@ -228,27 +229,26 @@ class DoneButton(discord.ui.Button):
 
     @staticmethod
     async def tv_listen_voice_indices(array):
-            if len(array) == 10:
-                return -1, -1
+        if len(array) == 10:
+            return -1, -1
 
-            def tv_listen_value(players):
-                """
-                Convert player indices (1-based) into decimal tv_listen_voice_indices value.
-                Example: [2, 3, 5, 8, 10] -> 662
-                """
-                return sum(1 << (p - 1) for p in players)
+        def tv_listen_value(players):
+            """
+            Convert player indices (1-based) into decimal tv_listen_voice_indices value.
+            Example: [2, 3, 5, 8, 10] -> 662
+            """
+            return sum(1 << (p - 1) for p in players)
 
-            players1 = list(map(int, array))
-            # All numbers from 2 to 11 (inclusive), excluding players1
-            players2 = [p for p in range(2, 12) if p not in players1]
-            result1 = tv_listen_value(players1)
-            result2 = tv_listen_value(players2)
-            return result1, result2
+        players1 = list(map(int, array))
+        # All numbers from 2 to 11 (inclusive), excluding players1
+        players2 = [p for p in range(2, 12) if p not in players1]
+        result1 = tv_listen_value(players1)
+        result2 = tv_listen_value(players2)
+        return result1, result2
 
     async def callback(self, interaction: discord.Interaction):
         view: ProfileToggleView = self.view
         await view.process_done(interaction)
-
 
 
 class WatchDemoCog(commands.Cog):
@@ -282,12 +282,30 @@ class WatchDemoCog(commands.Cog):
         match = r.json()
         # print(match)
 
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
+
         scraper = cloudscraper.create_scraper()
-        r = scraper.get(f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}")
-        match2 = r.json()
+        r = scraper.get(
+            f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}",
+            headers=headers
+        )
+        if r.status_code != 200:
+            raise Exception(f"Request failed: {r.status_code}")
+
+        try:
+            match2 = r.json()
+        except ValueError:
+            print("Invalid JSON response:")
+            print(r.text[:500])
+            return
         # print(match2)
 
-        r = scraper.get(f"https://www.faceit.com/api/stats/v3/matches/{MATCH_ID}")
+        r = scraper.get(
+            f"https://www.faceit.com/api/stats/v3/matches/{MATCH_ID}",
+            headers=headers
+        )
         stats = r.json()
         # print(stats)
 
@@ -340,7 +358,8 @@ class WatchDemoCog(commands.Cog):
             return image
 
     @staticmethod
-    async def fit_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_width = 138, ellipsis = "...") -> str:
+    async def fit_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_width=138,
+                       ellipsis="...") -> str:
         # If full text fits — return as is
         if draw.textlength(text, font=font) <= max_width:
             return text
@@ -354,7 +373,6 @@ class WatchDemoCog(commands.Cog):
                 return candidate + ellipsis
 
         return ellipsis
-
 
     async def create_image(self, profiles: list[dict], faceit_data):
 
@@ -560,7 +578,6 @@ class WatchDemoCog(commands.Cog):
 
             return image
 
-
     async def download_demo(self, url, interaction, log_channel):
         output_path = RAM_DIR / f"{interaction.id}.dem.zst"
 
@@ -583,7 +600,6 @@ class WatchDemoCog(commands.Cog):
             return 1
 
         return 0
-
 
     async def wait_for_memory_space(self, interaction, log_channel, check_every=15):
         position = None  # Will calculate dynamically
@@ -622,7 +638,6 @@ class WatchDemoCog(commands.Cog):
                 return 1
 
             await asyncio.sleep(check_every)
-
 
     @app_commands.command(name="watch_demo", description="Analyze cs2 demo")
     async def watch_demo(self, interaction: discord.Interaction, demo_url_or_id: str = ""):
@@ -716,11 +731,13 @@ class WatchDemoCog(commands.Cog):
                 for p in teams['faction1']['roster']:
                     faceit_avatar_url = p["avatar"]
                     steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
-                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]", "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
+                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]",
+                                     "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
                 for p in teams['faction2']['roster']:
                     faceit_avatar_url = p["avatar"]
                     steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
-                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]", "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
+                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]",
+                                     "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
 
                 interaction_id = interaction.id
 
@@ -790,7 +807,7 @@ class WatchDemoCog(commands.Cog):
                 try:
                     def parse_demo():
                         parser = DemoParser(dem_path.absolute().as_posix())
-                        return  parser.parse_player_info()
+                        return parser.parse_player_info()
 
                     df = await asyncio.to_thread(parse_demo)
                 except Exception as e:
@@ -842,7 +859,6 @@ class WatchDemoCog(commands.Cog):
 
         except requests.exceptions.HTTPError as e:
             await log_channel.send(content=f"FaceIt connection error: {e}")
-
 
 
 async def setup(bot):
