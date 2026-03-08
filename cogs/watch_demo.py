@@ -289,7 +289,14 @@ class WatchDemoCog(commands.Cog):
             "Origin": "https://www.faceit.com"
         }
 
-        scraper = cloudscraper.create_scraper()
+        scraper = cloudscraper.create_scraper(
+            browser={
+                "browser": "chrome",
+                "platform": "windows",
+                "desktop": True
+            },
+            delay=10
+        )
         r = scraper.get(
             f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}",
             headers=headers
