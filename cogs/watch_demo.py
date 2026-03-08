@@ -283,19 +283,20 @@ class WatchDemoCog(commands.Cog):
         # print(match)
 
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
             "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.9",
             "Referer": "https://www.faceit.com/",
             "Origin": "https://www.faceit.com"
         }
 
         scraper = cloudscraper.create_scraper(
+            interpreter="js2py",
             browser={
                 "browser": "chrome",
                 "platform": "windows",
                 "desktop": True
-            },
-            delay=10
+            }
         )
         r = scraper.get(
             f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}",
