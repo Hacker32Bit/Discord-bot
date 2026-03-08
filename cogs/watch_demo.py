@@ -265,9 +265,9 @@ class WatchDemoCog(commands.Cog):
         print("[INFO] Cog \"Watch Demo\" was unloaded!")
 
     # Command for test new version of /watch_demo
-    @commands.command(help="watch_demo", description="Command for test new version of /watch_demo")
+    @commands.command(help="watch_demo2", description="Command for test new version of /watch_demo")
     @commands.has_any_role("Owner", "Admin")
-    async def watch_demo(self, ctx):
+    async def watch_demo2(self, ctx):
         MATCH_ID = "1-66cd0f2a-8991-4555-b824-1c5bd047d011"
 
         headers = {
