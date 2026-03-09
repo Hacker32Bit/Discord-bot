@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 import subprocess
 import shutil
 import re
-import cloudscraper
+from curl_cffi import requests as crequests
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -290,18 +290,9 @@ class WatchDemoCog(commands.Cog):
             "Origin": "https://www.faceit.com"
         }
 
-        scraper = cloudscraper.create_scraper(
-            interpreter="js2py",
-            browser={
-                "browser": "chrome",
-                "platform": "windows",
-                "desktop": True
-            },
-            delay=10,
-        )
-        r = scraper.get(
+        r = crequests.get(
             f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}",
-            headers=headers
+            impersonate="chrome"
         )
         if r.status_code != 200:
             raise Exception(f"Request failed: {r.status_code}")
@@ -314,9 +305,9 @@ class WatchDemoCog(commands.Cog):
             return
         # print(match2)
 
-        r = scraper.get(
+        r = crequests.get(
             f"https://www.faceit.com/api/stats/v3/matches/{MATCH_ID}",
-            headers=headers
+            impersonate="chrome"
         )
         stats = r.json()
         # print(stats)

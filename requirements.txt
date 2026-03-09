@@ -12,4 +12,3 @@ pytest
 pillow
 demoparser2
 typing_extensions
-cloudscraper
