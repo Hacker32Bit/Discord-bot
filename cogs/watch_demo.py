@@ -317,7 +317,7 @@ class WatchDemoCog(commands.Cog):
             image.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="match.png")
-            ctx.send(file=result)
+            await ctx.send(file=result)
 
     async def create_image_new(self, players_data: list[dict] = None):
         width = 800
