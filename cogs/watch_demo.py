@@ -526,23 +526,19 @@ class WatchDemoCog(commands.Cog):
             font_small = truetype(font_noto_sans_regular, 13, encoding='UTF-8')
             # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
 
-            h_pos = 0
-            w_pos = 0
+
+            # Draw main information
+            h_pos = 300
+            w_pos = 25
 
             white = (255, 255, 255, 255)
+            faceit_color = (255, 85, 0, 255)
             # black = (0, 0, 0, 255)
-
-            t_color = (251, 172, 24, 255)
-            ct_color = (40, 57, 127, 255)
 
             draw = Draw(image)
 
-            draw.text(
-                (w_pos + 10, h_pos + 10),
-                "test",
-                fill=white,
-                font=font_small_large
-            )
+            draw.text((w_pos, h_pos), data["faction1"]["score"], fill=(faceit_color if data["winner"] == "faction1" else white), font=font_normal_large, anchor="mm", align="center")
+
 
             return image
 
