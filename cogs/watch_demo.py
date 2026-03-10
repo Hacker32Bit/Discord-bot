@@ -1,3 +1,4 @@
+from collections import defaultdict
 from random import randint
 from discord import app_commands
 from discord.ext import commands
@@ -18,7 +19,7 @@ from urllib.parse import urlparse
 import subprocess
 import shutil
 import re
-from curl_cffi import requests as crequests
+from curl_cffi import requests as curl_requests
 
 load_dotenv()
 STEAM_API_KEY: Final[str] = os.getenv("STEAM_API_KEY")
@@ -264,6 +265,106 @@ class WatchDemoCog(commands.Cog):
     def cog_unload(self):
         print("[INFO] Cog \"Watch Demo\" was unloaded!")
 
+    @staticmethod
+    async def get_half_score(data, team_id, attr):
+        for team in data:
+            if team.get("team_id") == team_id:
+                value = team["team_stats"].get(attr)
+                return int(value) if value is not None else None
+        return None
+
+    async def extract_team_stats_with_parties(self, match_data, party_data, stats_data):
+        result = dict()
+
+        result["winner"] = match_data.get("detailed_results")[0]["winner"]
+        result["location"] = match_data.get("voting")["location"]["pick"][0]
+        result["map"] = match_data.get("voting")["map"]["pick"][0]
+        result["map_name"] = next(
+            m["name"] for m in match_data.get("voting")["map"]["entities"] if m["class_name"] == result["map"])
+
+        teams = match_data['teams']
+        for team in teams:
+            team_info = dict()
+
+            team_info["id"] = teams.get(team)["faction_id"]
+            team_info["leader"] = teams.get(team)["leader"]
+            team_info["name"] = teams.get(team)["name"]
+            team_info["avatar"] = teams.get(team)["avatar"]
+            team_info["average_lvl"] = teams.get(team)["stats"]["skillLevel"]["average"]
+            team_info["team_elo"] = teams.get(team)["stats"]["rating"]
+            team_info["score"] = match_data["results"]["score"].get(team)
+            team_info["firstHalfScore"] = self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
+                                                         "First Half Score")
+            team_info["secondHalfScore"] = self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
+                                                          "Second Half Score")
+
+            result[team] = team_info
+
+        # playerId -> partyId
+        player_party = {}
+        for party in party_data["payload"]["parties"]:
+            for user in party["users"]:
+                player_party[user] = party["partyId"]
+
+        team_to_faction = {
+            result["faction1"]["id"]: "faction1",
+            result["faction2"]["id"]: "faction2"
+        }
+
+        # create parties structure
+        for faction in ["faction1", "faction2"]:
+            result[faction]["parties"] = defaultdict(list)
+
+        for team in stats_data["rounds"][0]["teams"]:
+            team_id = team["team_id"]
+
+            if team_id not in team_to_faction:
+                continue
+
+            faction = team_to_faction[team_id]
+
+            for player in team["players"]:
+                pid = player["player_id"]
+                party_id = player_party.get(pid, pid)  # solo fallback
+                elo = next(p["elo"] for p in party_data["payload"]["teams"].get(faction)["roster"] if p["id"] == pid)
+
+                result[faction]["parties"][party_id].append({
+                    "playerId": pid,
+                    "nickname": player.get("nickname"),
+                    "elo": elo,
+                    "kills": player["player_stats"].get("Kills"),
+                    "deaths": player["player_stats"].get("Deaths"),
+                    "assists": player["player_stats"].get("Assists"),
+                    "adr": player["player_stats"].get("ADR"),
+                    "kd": player["player_stats"].get("K/D Ratio"),
+                    "kr": player["player_stats"].get("K/R Ratio"),
+                    "headshots": player["player_stats"].get("Headshots"),  # hs% = hs / kills * 100
+                    "5k": player["player_stats"].get("Penta Kills"),
+                    "4k": player["player_stats"].get("Quadro Kills"),
+                    "3k": player["player_stats"].get("Triple Kills"),
+                    "2k": player["player_stats"].get("Double Kills"),
+                    "mvps": player["player_stats"].get("MVPs"),
+                })
+
+        # convert to sorted list
+        for faction in ["faction1", "faction2"]:
+            parties = []
+
+            for party_id, players in result[faction]["parties"].items():
+                parties.append({
+                    "partyId": party_id,
+                    "size": len(players),
+                    "players": players
+                })
+
+            # sort by party size (largest first)
+            parties.sort(key=lambda p: p["size"], reverse=True)
+
+            result[faction]["parties"] = parties
+
+        return result
+
+
     # Command for test new version of /watch_demo
     @commands.command(help="watch_demo2", description="Command for test new version of /watch_demo")
     @commands.has_any_role("Owner", "Admin")
@@ -273,57 +374,48 @@ class WatchDemoCog(commands.Cog):
         headers = {
             "Authorization": f"Bearer {FACEIT_API_KEY}"
         }
-
-        r = requests.get(
+        r = await asyncio.to_thread(
+            requests.get,
             f"https://open.faceit.com/data/v4/matches/{MATCH_ID}",
             headers=headers
         )
         r.raise_for_status()
-        match = r.json()
-        # print(match)
+        match_data = r.json()
+        # print(match_data)
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Referer": "https://www.faceit.com/",
-            "Origin": "https://www.faceit.com"
-        }
+        r = await asyncio.to_thread(
+            requests.get,
+            f"https://open.faceit.com/data/v4/matches/{MATCH_ID}/stats",
+            headers=headers
+        )
+        r.raise_for_status()
+        stats_data = r.json()
+        # print(stats_data)
 
-        r = crequests.get(
+        r = await asyncio.to_thread(
+            curl_requests.get,
             f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}",
             impersonate="chrome"
         )
-        if r.status_code != 200:
-            raise Exception(f"Request failed: {r.status_code}")
+        party_data = r.json()
+        # print(party_data)
 
-        try:
-            match2 = r.json()
-        except ValueError:
-            print("Invalid JSON response:")
-            print(r.text[:500])
-            return
-        # print(match2)
-
-        r = crequests.get(
-            f"https://www.faceit.com/api/stats/v3/matches/{MATCH_ID}",
-            impersonate="chrome"
-        )
-        stats = r.json()
-        # print(stats)
+        data = await self.extract_team_stats_with_parties(match_data, party_data, stats_data)
 
         with io.BytesIO() as image_binary:
-            image = await self.create_image_new()
+            image = await self.create_image_new(data=data)
             image.save(image_binary, 'PNG')
             image_binary.seek(0)
             result = File(fp=image_binary, filename="match.png")
             await ctx.send(file=result)
 
-    async def create_image_new(self, players_data: list[dict] = None):
+    async def create_image_new(self, data):
         width = 800
         height = 600
 
-        with Image.new(mode='RGBA', size=(width, height), color=(0, 0, 0, 0)) as image:
+
+
+        with Image.open(f"assets/images/cs2maps/{data.get('map')}_template.png").convert("RGBA") as image:
             font_noto_sans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
                                                'assets',
                                                'NotoSans-Bold.ttf')
@@ -334,10 +426,10 @@ class WatchDemoCog(commands.Cog):
             #                           'Rockybilly.ttf') # NOQA: spellcheck
 
             # ======== Fonts to use =============
-            font_normal_large = truetype(font_noto_sans_bold, 38, encoding='UTF-8')
-            font_normal = truetype(font_noto_sans_bold, 18, encoding='UTF-8')
-            font_small_large = truetype(font_noto_sans_regular, 28, encoding='UTF-8')
-            font_small = truetype(font_noto_sans_regular, 18, encoding='UTF-8')
+            font_normal_large = truetype(font_noto_sans_bold, 24, encoding='UTF-8')
+            font_normal = truetype(font_noto_sans_bold, 14, encoding='UTF-8')
+            font_small_large = truetype(font_noto_sans_regular, 14, encoding='UTF-8')
+            font_small = truetype(font_noto_sans_regular, 13, encoding='UTF-8')
             # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
 
             h_pos = 0
