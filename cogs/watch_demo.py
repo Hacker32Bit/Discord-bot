@@ -327,11 +327,15 @@ class WatchDemoCog(commands.Cog):
                 pid = player["player_id"]
                 party_id = player_party.get(pid, pid)  # solo fallback
                 elo = next(p["elo"] for p in party_data["payload"]["teams"].get(faction)["roster"] if p["id"] == pid)
+                gameSkillLevel = next(
+                    p["gameSkillLevel"] for p in party_data["payload"]["teams"].get(faction)["roster"] if
+                    p["id"] == pid)
 
                 result[faction]["parties"][party_id].append({
                     "playerId": pid,
                     "nickname": player.get("nickname"),
                     "elo": elo,
+                    "gameSkillLevel": gameSkillLevel,
                     "kills": player["player_stats"].get("Kills"),
                     "deaths": player["player_stats"].get("Deaths"),
                     "assists": player["player_stats"].get("Assists"),
@@ -365,10 +369,46 @@ class WatchDemoCog(commands.Cog):
         return result
 
 
+    async def update_player(self, player):
+        headers = {
+            "Authorization": f"Bearer {FACEIT_API_KEY}"
+        }
+
+        player_id = player["playerId"]
+
+        r = requests.get(
+            f"https://open.faceit.com/data/v4/players/{player_id}",
+            headers=headers
+        )
+        r.raise_for_status()
+        p = r.json()
+
+        # add new fields
+        player["avatar"] = p.get("avatar")
+        if player["avatar"] != '':
+            player["avatar_platform"] = "faceit"
+        else:
+            player["avatar_platform"] = "steam"
+
+        player["country"] = p.get("country")
+        player["cover_image"] = p.get("cover_image")
+
+        player["steam_id_64"] = p.get("steam_id_64")
+        player["memberships"] = p.get("memberships", [])
+        player["membership_type"] = p.get("membership_type")
+        player["cover_featured_image"] = p.get("cover_featured_image")
+        player["verified"] = p.get("verified")
+
+        # game stats
+        cs2 = p.get("games", {}).get("cs2", {})
+        player["actual_skill_level"] = cs2.get("skill_level")
+        player["actual_faceit_elo"] = cs2.get("faceit_elo")
+
     # Command for test new version of /watch_demo
     @commands.command(help="watch_demo2", description="Command for test new version of /watch_demo")
     @commands.has_any_role("Owner", "Admin")
     async def watch_demo2(self, ctx):
+        log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
         MATCH_ID = "1-66cd0f2a-8991-4555-b824-1c5bd047d011"
 
         headers = {
@@ -402,6 +442,62 @@ class WatchDemoCog(commands.Cog):
 
         data = await self.extract_team_stats_with_parties(match_data, party_data, stats_data)
 
+        # iterate factions
+        for faction in ["faction1", "faction2"]:
+            for party in data[faction]["parties"]:
+                for player in party["players"]:
+                    await self.update_player(player)
+
+        players = []
+        steam_ids = []
+
+        for faction in ["faction1", "faction2"]:
+            for party in data[faction]["parties"]:
+                for player in party["players"]:
+                    players.append(player)
+
+                    sid = player.get("steam_id_64")
+                    if sid:
+                        steam_ids.append(sid)
+
+        steam_ids = list(set(steam_ids))
+
+        try:
+            steamids = ",".join(steam_ids)
+            url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={STEAM_API_KEY}&steamids={steamids}"
+
+            r = await asyncio.to_thread(requests.get, url)
+
+            while r.status_code == 429:
+                sleep_time = randint(1800, 3600)
+                await log_channel.send(
+                    content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
+                await asyncio.sleep(sleep_time)
+                r = await asyncio.to_thread(requests.get, url)
+
+            r.raise_for_status()
+            steam_data = r.json()
+
+            steam_lookup = {}
+
+            for p in steam_data["response"]["players"]:
+                avatar = (
+                        p.get("avatarfull")
+                        or p.get("avatarmedium")
+                        or p.get("avatar")
+                        or None
+                )
+
+                steam_lookup[p["steamid"]] = avatar
+
+            for faction in ["faction1", "faction2"]:
+                for party in data[faction]["parties"]:
+                    for player in party["players"]:
+                        sid = player.get("steam_id_64")
+                        player["steam_avatar"] = steam_lookup.get(sid)
+        except Exception as e:
+            print(e)
+
         with io.BytesIO() as image_binary:
             image = await self.create_image_new(data=data)
             image.save(image_binary, 'PNG')
@@ -412,8 +508,6 @@ class WatchDemoCog(commands.Cog):
     async def create_image_new(self, data):
         width = 800
         height = 600
-
-
 
         with Image.open(f"assets/images/cs2maps/{data.get('map')}_template.png").convert("RGBA") as image:
             font_noto_sans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
