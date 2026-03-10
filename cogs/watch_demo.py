@@ -537,7 +537,7 @@ class WatchDemoCog(commands.Cog):
 
             draw = Draw(image)
 
-            draw.text((w_pos, h_pos), data["faction1"]["score"], fill=(faceit_color if data["winner"] == "faction1" else white), font=font_normal_large, anchor="mm", align="center")
+            draw.text((w_pos, h_pos), str(data["faction1"]["score"]), fill=(faceit_color if data["winner"] == "faction1" else white), font=font_normal_large, anchor="mm", align="center")
 
 
             return image
