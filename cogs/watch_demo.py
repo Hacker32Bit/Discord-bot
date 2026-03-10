@@ -293,9 +293,9 @@ class WatchDemoCog(commands.Cog):
             team_info["average_lvl"] = teams.get(team)["stats"]["skillLevel"]["average"]
             team_info["team_elo"] = teams.get(team)["stats"]["rating"]
             team_info["score"] = match_data["results"]["score"].get(team)
-            team_info["firstHalfScore"] = self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
+            team_info["firstHalfScore"] = await self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
                                                          "First Half Score")
-            team_info["secondHalfScore"] = self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
+            team_info["secondHalfScore"] = await self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
                                                           "Second Half Score")
 
             result[team] = team_info
