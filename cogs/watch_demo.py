@@ -410,7 +410,7 @@ class WatchDemoCog(commands.Cog):
     @commands.has_any_role("Owner", "Admin")
     async def watch_demo2(self, ctx):
         log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-        MATCH_ID = "1-66cd0f2a-8991-4555-b824-1c5bd047d011"
+        MATCH_ID = "1-d4e171f4-2f25-4581-9ab2-829c99481e10"
 
         headers = {
             "Authorization": f"Bearer {FACEIT_API_KEY}"
