@@ -293,10 +293,12 @@ class WatchDemoCog(commands.Cog):
             team_info["average_lvl"] = teams.get(team)["stats"]["skillLevel"]["average"]
             team_info["team_elo"] = teams.get(team)["stats"]["rating"]
             team_info["score"] = match_data["results"]["score"].get(team)
-            team_info["firstHalfScore"] = await self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
-                                                         "First Half Score")
-            team_info["secondHalfScore"] = await self.get_half_score(stats_data["rounds"][0]["teams"], team_info.get("id"),
-                                                          "Second Half Score")
+            team_info["firstHalfScore"] = await self.get_half_score(stats_data["rounds"][0]["teams"],
+                                                                    team_info.get("id"),
+                                                                    "First Half Score")
+            team_info["secondHalfScore"] = await self.get_half_score(stats_data["rounds"][0]["teams"],
+                                                                     team_info.get("id"),
+                                                                     "Second Half Score")
 
             result[team] = team_info
 
@@ -367,7 +369,6 @@ class WatchDemoCog(commands.Cog):
             result[faction]["parties"] = parties
 
         return result
-
 
     async def update_player(self, player):
         headers = {
@@ -510,7 +511,7 @@ class WatchDemoCog(commands.Cog):
         INPUT_SIZE = 120
         FINAL_SIZE = 40
         SCALE = 3
-        PADDING = 2
+        PADDING = 1
 
         avatar = avatar.convert("RGBA").resize((INPUT_SIZE, INPUT_SIZE), Image.LANCZOS)
 
@@ -554,8 +555,9 @@ class WatchDemoCog(commands.Cog):
             font_small = truetype(font_noto_sans_regular, 13, encoding='UTF-8')
             # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
 
-
-            # Draw main information
+            #####################################
+            ### Draw main information
+            #####################################
             h_pos = 300
             w_pos = 25
 
@@ -566,14 +568,20 @@ class WatchDemoCog(commands.Cog):
             draw = Draw(image)
 
             # Draw faction1 score
-            draw.text((w_pos, h_pos), str(data["faction1"]["score"]), fill=(faceit_color if data["winner"] == "faction1" else white), font=font_normal_large, anchor="mm", align="center")
-            draw.text((width - w_pos, h_pos), str(data["faction2"]["score"]), fill=(faceit_color if data["winner"] == "faction2" else white), font=font_normal_large, anchor="mm", align="center")
+            draw.text((w_pos, h_pos), str(data["faction1"]["score"]),
+                      fill=(faceit_color if data["winner"] == "faction1" else white), font=font_normal_large,
+                      anchor="mm", align="center")
+            draw.text((width - w_pos, h_pos), str(data["faction2"]["score"]),
+                      fill=(faceit_color if data["winner"] == "faction2" else white), font=font_normal_large,
+                      anchor="mm", align="center")
 
             # Draw map name
             w_pos = 400
             draw.text((w_pos, h_pos), data["map_name"], fill=white, font=font_normal_large, anchor="mm", align="center")
 
-            # Draw teams images
+            #####################################
+            ### Draw teams images
+            #####################################
             # Draw faction1 avatar
             # Fetch images
             w_pos = 48
@@ -593,7 +601,7 @@ class WatchDemoCog(commands.Cog):
             circle_avatar = self.create_avatar(avatar)
             image.paste(circle_avatar, (w_pos, h_pos), circle_avatar)
 
-            # For faction2
+            ### For faction2
             if data["faction2"]["avatar"]:
                 try:
                     response = await asyncio.to_thread(requests.get, data["faction2"]["avatar"])
@@ -608,6 +616,32 @@ class WatchDemoCog(commands.Cog):
 
             circle_avatar = self.create_avatar(avatar)
             image.paste(circle_avatar, (width - w_pos - 40, h_pos), circle_avatar)
+
+            #####################################
+            ### Draw teams names, avg elo, and elo icon
+            #####################################
+            # For faction1
+            w_pos = 95
+            h_pos = 295
+            draw.text((w_pos, h_pos), data["faction1"]["name"], fill=white, font=font_normal, anchor="ls", align="left")
+            draw.text((w_pos + 25, h_pos + 25), data["faction1"]["name"], fill=white, font=font_small, anchor="ls",
+                      align="left")
+
+            faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction1']['average_lvl']}.svg").convert(
+                "RGBA")
+            faceit_lvl = faceit_lvl.resize((20, 20), Image.LANCZOS)
+            image.paste(faceit_lvl, (w_pos, h_pos + 7), faceit_lvl)
+
+            # For faction2
+            draw.text((width - w_pos, h_pos), data["faction2"]["name"], fill=white, font=font_normal, anchor="rs",
+                      align="right")
+            draw.text((width - w_pos - 25, h_pos + 25), data["faction2"]["name"], fill=white, font=font_small, anchor="rs",
+                      align="right")
+
+            faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction2']['average_lvl']}.svg").convert(
+                "RGBA")
+            faceit_lvl = faceit_lvl.resize((20, 20), Image.LANCZOS)
+            image.paste(faceit_lvl, (width - w_pos - 20, h_pos + 7), faceit_lvl)
 
             return image
 
