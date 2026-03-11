@@ -723,7 +723,7 @@ class WatchDemoCog(commands.Cog):
 
                     #####################
                     ### Draw stats
-                    draw.text((w_pos + 62, h_pos - 10), player["nickname"], fill=white, font=font_normal, anchor="ls",
+                    draw.text((w_pos + 62, h_pos - 7), player["nickname"], fill=white, font=font_normal, anchor="ls",
                               align="left")
 
                     faceit_lvl = Image.open(
@@ -732,39 +732,39 @@ class WatchDemoCog(commands.Cog):
                     faceit_lvl = faceit_lvl.resize((30, 30), Image.LANCZOS)
                     image.paste(faceit_lvl, (232, h_pos - 16), faceit_lvl)
 
-                    draw.text((265, h_pos + 3), "{:,}".format(player["elo"]), fill=white, font=font_small, anchor="ls",
+                    draw.text((265, h_pos + 2), "{:,}".format(player["elo"]), fill=white, font=font_small, anchor="ls",
                               align="left")
 
-                    draw.text((312, h_pos + 3), str(player['kills']), fill=white, font=font_small, anchor="ls",
+                    draw.text((312, h_pos + 2), str(player['kills']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((342, h_pos + 3), str(player['deaths']), fill=white, font=font_small, anchor="ls",
+                    draw.text((342, h_pos + 2), str(player['deaths']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((372, h_pos + 3), str(player['assists']), fill=white, font=font_small, anchor="ls",
+                    draw.text((372, h_pos + 2), str(player['assists']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((402, h_pos + 3), str(player['adr']), fill=white, font=font_small, anchor="ls",
+                    draw.text((402, h_pos + 2), str(player['adr']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((442, h_pos + 3), str(player['kd']), fill=white, font=font_small, anchor="ls",
+                    draw.text((442, h_pos + 2), str(player['kd']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((482, h_pos + 3), str(player['kr']), fill=white, font=font_small, anchor="ls",
+                    draw.text((482, h_pos + 2), str(player['kr']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((522, h_pos + 3), str(player['headshots']), fill=white, font=font_small, anchor="ls",
+                    draw.text((522, h_pos + 2), str(player['headshots']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    hs_in_percent = f"{int(player['headshots']) / int(player['kills']) * 100}%"
-                    draw.text((552, h_pos + 3), hs_in_percent, fill=white, font=font_small, anchor="ls",
+                    hs_in_percent = f"{int(player['headshots']) / int(player['kills']) * 100:.1f}%"
+                    draw.text((552, h_pos + 2), hs_in_percent, fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((607, h_pos + 3), str(player['5k']), fill=white, font=font_small, anchor="ls",
+                    draw.text((607, h_pos + 2), str(player['5k']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((637, h_pos + 3), str(player['4k']), fill=white, font=font_small, anchor="ls",
+                    draw.text((637, h_pos + 2), str(player['4k']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((667, h_pos + 3), str(player['3k']), fill=white, font=font_small, anchor="ls",
+                    draw.text((667, h_pos + 2), str(player['3k']), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((697, h_pos + 3), str(player['2k']), fill=white, font=font_small, anchor="ls",
+                    draw.text((697, h_pos + 2), str(player['2k']), fill=white, font=font_small, anchor="ls",
                               align="left")
                     single_kills = int(player["kills"]) - int(player["5k"]) * 5 - int(player["4k"]) * 4 - int(
                         player["3k"]) * 3 - int(player["2k"]) * 2
-                    draw.text((727, h_pos + 3), str(single_kills), fill=white, font=font_small, anchor="ls",
+                    draw.text((727, h_pos + 2), str(single_kills), fill=white, font=font_small, anchor="ls",
                               align="left")
-                    draw.text((757, h_pos + 3), str(player['mvps']), fill=white, font=font_small, anchor="ls",
+                    draw.text((757, h_pos + 2), str(player['mvps']), fill=white, font=font_small, anchor="ls",
                               align="left")
 
                     h_pos += 50
