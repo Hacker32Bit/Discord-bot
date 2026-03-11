@@ -548,10 +548,9 @@ class WatchDemoCog(commands.Cog):
             # vertical line down
             draw.line((x, y + radius, x, y + length_v), fill=color, width=width)
             # horizontal line right
-            draw.line((x, y, x + length_h - radius, y), fill=color, width=width)
+            draw.line((x + radius, y, x + length_h, y), fill=color, width=width)
             # corner
-            draw.arc((x + length_h - 2 * radius, y, x + length_h, y + 2 * radius), start=270, end=360, fill=color,
-                     width=width)
+            draw.arc((x, y + radius, x + radius, y), start=180, end=270, fill=color, width=width)
 
         elif kind == "middle_right":
             # simple vertical then horizontal (no arc)
@@ -562,10 +561,9 @@ class WatchDemoCog(commands.Cog):
             # vertical line down
             draw.line((x, y - length_v, x, y - radius), fill=color, width=width)
             # horizontal line right
-            draw.line((x + radius, y + radius, x + length_h, y + radius), fill=color, width=width)
+            draw.line((x + radius, y, x + length_h, y), fill=color, width=width)
             # corner
-            draw.arc((x, y - length_v + 2 * radius, x + 2 * radius, y + length_v), start=180, end=270, fill=color,
-                     width=width)
+            draw.arc((x + radius, y, x, y - radius), start=90, end=180, fill=color, width=width)
 
     async def create_image_new(self, data):
         width = 800
@@ -657,7 +655,8 @@ class WatchDemoCog(commands.Cog):
             w_pos = 95
             h_pos = 295
             draw.text((w_pos, h_pos), data["faction1"]["name"], fill=white, font=font_normal, anchor="ls", align="left")
-            draw.text((w_pos + 25, h_pos + 20), "{:,}".format(data["faction1"]["team_elo"]), fill=white, font=font_small, anchor="ls",
+            draw.text((w_pos + 25, h_pos + 20), "{:,}".format(data["faction1"]["team_elo"]), fill=white,
+                      font=font_small, anchor="ls",
                       align="left")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction1']['average_lvl']}.png").convert(
@@ -668,7 +667,8 @@ class WatchDemoCog(commands.Cog):
             # For faction2
             draw.text((width - w_pos, h_pos), data["faction2"]["name"], fill=white, font=font_normal, anchor="rs",
                       align="right")
-            draw.text((width - w_pos - 25, h_pos + 20), "{:,}".format(data["faction2"]["team_elo"]), fill=white, font=font_small, anchor="rs",
+            draw.text((width - w_pos - 25, h_pos + 20), "{:,}".format(data["faction2"]["team_elo"]), fill=white,
+                      font=font_small, anchor="rs",
                       align="right")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction2']['average_lvl']}.png").convert(
@@ -696,8 +696,6 @@ class WatchDemoCog(commands.Cog):
                         self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="down_right")
                     h_pos += 50
                     # Draw stats
-
-
 
             return image
 
