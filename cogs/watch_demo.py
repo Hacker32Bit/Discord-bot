@@ -535,7 +535,7 @@ class WatchDemoCog(commands.Cog):
         return avatar_final
 
     @staticmethod
-    def draw_smooth_corner(draw, x, y, color, length_v=20, length_h=40, radius=4, width=1, kind="up_right"):
+    def draw_smooth_corner(draw, x, y, color, length_v=25, length_h=9, radius=3, width=1, kind="up_right"):
         """
         Draw a smooth corner.
 
@@ -546,7 +546,7 @@ class WatchDemoCog(commands.Cog):
         """
         if kind == "up_right":
             # vertical line down
-            draw.line((x, y + radius, x + length_v, y + length_v), fill=color, width=width)
+            draw.line((x, y + radius, x, y + length_v), fill=color, width=width)
             # horizontal line right
             draw.line((x, y, x + length_h - radius, y), fill=color, width=width)
             # corner
@@ -555,16 +555,16 @@ class WatchDemoCog(commands.Cog):
 
         elif kind == "middle_right":
             # simple vertical then horizontal (no arc)
-            draw.line((x, y, x, y + length_v), fill=color, width=width)
-            draw.line((x, y + length_v, x + length_h, y + length_v), fill=color, width=width)
+            draw.line((x, y - length_v, x, y + length_v), fill=color, width=width)
+            draw.line((x, y, x + length_h, y), fill=color, width=width)
 
         elif kind == "down_right":
             # vertical line down
-            draw.line((x, y, x, y + length_v - radius), fill=color, width=width)
+            draw.line((x, y - length_v, x, y - radius), fill=color, width=width)
             # horizontal line right
-            draw.line((x + radius, y + length_v, x + length_h, y + length_v), fill=color, width=width)
+            draw.line((x + radius, y + radius, x + length_h, y + radius), fill=color, width=width)
             # corner
-            draw.arc((x, y + length_v - 2 * radius, x + 2 * radius, y + length_v), start=180, end=270, fill=color,
+            draw.arc((x, y - length_v + 2 * radius, x + 2 * radius, y + length_v), start=180, end=270, fill=color,
                      width=width)
 
     async def create_image_new(self, data):
@@ -689,11 +689,11 @@ class WatchDemoCog(commands.Cog):
                 for index, player in enumerate(party["players"]):
                     # Draw teammates lines
                     if party["size"] > 1 and index == 0:
-                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, length_v=25, length_h=9, kind="up_right")
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="up_right")
                     elif party["size"] > 1 and index != party["size"] - 1:
-                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, length_v=50, length_h=9, kind="middle_right")
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="middle_right")
                     elif party["size"] > 1 and index == party["size"] - 1:
-                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, length_v=25, length_h=9, kind="down_right")
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="down_right")
                     h_pos += 50
                     # Draw stats
 
