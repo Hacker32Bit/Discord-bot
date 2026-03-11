@@ -535,7 +535,7 @@ class WatchDemoCog(commands.Cog):
         return avatar_final
 
     @staticmethod
-    def draw_smooth_corner(draw, x, y, color, length_v=25, length_h=9, radius=8, width=2, kind="up_right"):
+    def draw_smooth_corner(draw, x, y, color, length_v=25, length_h=9, radius=6, width=2, kind="up_right"):
         """
         Draw a smooth corner.
 
@@ -563,7 +563,7 @@ class WatchDemoCog(commands.Cog):
             # horizontal line right
             draw.line((x + radius - width - 1, y, x + length_h, y), fill=color, width=width)
             # corner
-            draw.arc((x, y - radius, x + radius, y), start=90, end=180, fill=color, width=width)
+            draw.arc((x, y, x + radius, y + radius), start=90, end=180, fill=color, width=width)
 
     async def create_image_new(self, data):
         width = 800
