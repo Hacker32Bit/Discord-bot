@@ -505,6 +505,34 @@ class WatchDemoCog(commands.Cog):
             result = File(fp=image_binary, filename="match.png")
             await ctx.send(file=result)
 
+    @staticmethod
+    def create_avatar(avatar: Image.Image) -> Image.Image:
+        INPUT_SIZE = 120
+        FINAL_SIZE = 40
+        SCALE = 3
+        PADDING = 2
+
+        avatar = avatar.convert("RGBA").resize((INPUT_SIZE, INPUT_SIZE), Image.LANCZOS)
+
+        canvas_size = INPUT_SIZE + PADDING * 2
+
+        canvas = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
+        canvas.paste(avatar, (PADDING, PADDING))
+
+        # smooth circle mask
+        mask = Image.new("L", (canvas_size * SCALE, canvas_size * SCALE), 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((0, 0, canvas_size * SCALE, canvas_size * SCALE), fill=255)
+
+        mask = mask.resize((canvas_size, canvas_size), Image.LANCZOS)
+
+        canvas.putalpha(mask)
+
+        # downscale to final avatar
+        avatar_final = canvas.resize((FINAL_SIZE, FINAL_SIZE), Image.LANCZOS)
+
+        return avatar_final
+
     async def create_image_new(self, data):
         width = 800
         height = 600
@@ -562,26 +590,8 @@ class WatchDemoCog(commands.Cog):
             else:
                 avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
-            size = 40
-            scale = 3  # higher = smoother edges
-
-            # Resize avatar
-            avatar = avatar.resize((size, size), Image.LANCZOS)
-
-            # Create high-res mask
-            mask = Image.new("L", (size * scale, size * scale), 0)
-            draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, size * scale, size * scale), fill=255)
-
-            # Downscale mask for anti-aliasing
-            mask = mask.resize((size, size), Image.LANCZOS)
-
-            # Apply mask
-            avatar.putalpha(mask)
-
-            # Paste on image
-            image.paste(avatar, (w_pos, h_pos), avatar)
-
+            circle_avatar = self.create_avatar(avatar)
+            image.paste(circle_avatar, (w_pos, h_pos), circle_avatar)
 
             # For faction2
             if data["faction2"]["avatar"]:
@@ -596,22 +606,8 @@ class WatchDemoCog(commands.Cog):
             else:
                 avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
-            # Resize avatar
-            avatar = avatar.resize((size, size), Image.LANCZOS)
-
-            # Create high-res mask
-            mask = Image.new("L", (size * scale, size * scale), 0)
-            draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, size * scale, size * scale), fill=255)
-
-            # Downscale mask for anti-aliasing
-            mask = mask.resize((size, size), Image.LANCZOS)
-
-            # Apply mask
-            avatar.putalpha(mask)
-
-            # Paste on image
-            image.paste(avatar, (width - w_pos - 40, h_pos), avatar)
+            circle_avatar = self.create_avatar(avatar)
+            image.paste(circle_avatar, (width - w_pos - 40, h_pos), circle_avatar)
 
             return image
 
