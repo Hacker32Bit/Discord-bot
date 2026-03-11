@@ -543,7 +543,7 @@ class WatchDemoCog(commands.Cog):
 
             # Draw map name
             w_pos = 400
-            draw.text((width, h_pos), data["map_name"], fill=white, font=font_normal_large, anchor="mm", align="center")
+            draw.text((w_pos, h_pos), data["map_name"], fill=white, font=font_normal_large, anchor="mm", align="center")
 
             # Draw teams images
             # Draw faction1 avatar
@@ -562,18 +562,56 @@ class WatchDemoCog(commands.Cog):
             else:
                 avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
-            avatar_size = 40
-            avatar = avatar.resize((avatar_size, avatar_size), Image.LANCZOS)
+            size = 120
+            scale = 3  # higher = smoother edges
 
-            # Create circular mask
-            mask = Image.new("L", (avatar_size, avatar_size), 0)
+            # Resize avatar
+            avatar = avatar.resize((size, size), Image.LANCZOS)
+
+            # Create high-res mask
+            mask = Image.new("L", (size * scale, size * scale), 0)
             draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, avatar_size, avatar_size), fill=255)
+            draw.ellipse((0, 0, size * scale, size * scale), fill=255)
 
-            # Apply mask to avatar
+            # Downscale mask for anti-aliasing
+            mask = mask.resize((size, size), Image.LANCZOS)
+
+            # Apply mask
             avatar.putalpha(mask)
 
+            # Paste on image
             image.paste(avatar, (w_pos, h_pos), avatar)
+
+
+            # For faction2
+            if data["faction2"]["avatar"]:
+                try:
+                    response = await asyncio.to_thread(requests.get, data["faction2"]["avatar"])
+                    response.raise_for_status()
+                except Exception as e:
+                    avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
+
+                if response.status_code == 200:
+                    avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+            else:
+                avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
+
+            # Resize avatar
+            avatar = avatar.resize((size, size), Image.LANCZOS)
+
+            # Create high-res mask
+            mask = Image.new("L", (size * scale, size * scale), 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0, size * scale, size * scale), fill=255)
+
+            # Downscale mask for anti-aliasing
+            mask = mask.resize((size, size), Image.LANCZOS)
+
+            # Apply mask
+            avatar.putalpha(mask)
+
+            # Paste on image
+            image.paste(avatar, (width - w_pos - 40, h_pos), avatar)
 
             return image
 
