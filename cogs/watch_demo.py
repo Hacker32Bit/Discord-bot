@@ -624,7 +624,7 @@ class WatchDemoCog(commands.Cog):
             w_pos = 95
             h_pos = 295
             draw.text((w_pos, h_pos), data["faction1"]["name"], fill=white, font=font_normal, anchor="ls", align="left")
-            draw.text((w_pos + 25, h_pos + 15), data["faction1"]["team_elo"], fill=white, font=font_small, anchor="ls",
+            draw.text((w_pos + 25, h_pos + 15), str(data["faction1"]["team_elo"]), fill=white, font=font_small, anchor="ls",
                       align="left")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction1']['average_lvl']}.png").convert(
@@ -635,7 +635,7 @@ class WatchDemoCog(commands.Cog):
             # For faction2
             draw.text((width - w_pos, h_pos), data["faction2"]["name"], fill=white, font=font_normal, anchor="rs",
                       align="right")
-            draw.text((width - w_pos - 25, h_pos + 15), data["faction2"]["team_elo"], fill=white, font=font_small, anchor="rs",
+            draw.text((width - w_pos - 25, h_pos + 15), str(data["faction2"]["team_elo"]), fill=white, font=font_small, anchor="rs",
                       align="right")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction2']['average_lvl']}.png").convert(
