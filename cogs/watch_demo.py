@@ -550,7 +550,7 @@ class WatchDemoCog(commands.Cog):
             # horizontal line right
             draw.line((x + radius, y, x + length_h, y), fill=color, width=width)
             # corner
-            draw.arc((x, y + radius, x + radius, y), start=180, end=270, fill=color, width=width)
+            draw.arc((x, y, x + radius, y + radius), start=180, end=270, fill=color, width=width)
 
         elif kind == "middle_right":
             # simple vertical then horizontal (no arc)
@@ -563,7 +563,7 @@ class WatchDemoCog(commands.Cog):
             # horizontal line right
             draw.line((x + radius, y, x + length_h, y), fill=color, width=width)
             # corner
-            draw.arc((x + radius, y, x, y - radius), start=90, end=180, fill=color, width=width)
+            draw.arc((x, y - radius, x + radius, y), start=90, end=180, fill=color, width=width)
 
     async def create_image_new(self, data):
         width = 800
