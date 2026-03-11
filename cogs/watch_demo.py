@@ -624,24 +624,24 @@ class WatchDemoCog(commands.Cog):
             w_pos = 95
             h_pos = 295
             draw.text((w_pos, h_pos), data["faction1"]["name"], fill=white, font=font_normal, anchor="ls", align="left")
-            draw.text((w_pos + 25, h_pos + 25), data["faction1"]["name"], fill=white, font=font_small, anchor="ls",
+            draw.text((w_pos + 25, h_pos + 15), data["faction1"]["team_elo"], fill=white, font=font_small, anchor="ls",
                       align="left")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction1']['average_lvl']}.png").convert(
                 "RGBA")
             faceit_lvl = faceit_lvl.resize((20, 20), Image.LANCZOS)
-            image.paste(faceit_lvl, (w_pos, h_pos + 7), faceit_lvl)
+            image.paste(faceit_lvl, (w_pos, h_pos + 5), faceit_lvl)
 
             # For faction2
             draw.text((width - w_pos, h_pos), data["faction2"]["name"], fill=white, font=font_normal, anchor="rs",
                       align="right")
-            draw.text((width - w_pos - 25, h_pos + 25), data["faction2"]["name"], fill=white, font=font_small, anchor="rs",
+            draw.text((width - w_pos - 25, h_pos + 15), data["faction2"]["team_elo"], fill=white, font=font_small, anchor="rs",
                       align="right")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction2']['average_lvl']}.png").convert(
                 "RGBA")
             faceit_lvl = faceit_lvl.resize((20, 20), Image.LANCZOS)
-            image.paste(faceit_lvl, (width - w_pos - 20, h_pos + 7), faceit_lvl)
+            image.paste(faceit_lvl, (width - w_pos - 20, h_pos + 5), faceit_lvl)
 
             return image
 
