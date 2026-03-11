@@ -563,7 +563,7 @@ class WatchDemoCog(commands.Cog):
             # horizontal line right
             draw.line((x + radius - width - 1, y, x + length_h, y), fill=color, width=width)
             # corner
-            draw.arc((x - radius, y, x, y + radius), start=90, end=180, fill=color, width=width)
+            draw.arc((x, y - radius, x + radius, y), start=90, end=180, fill=color, width=width)
 
     async def create_image_new(self, data):
         width = 800
