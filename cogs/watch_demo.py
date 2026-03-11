@@ -561,7 +561,7 @@ class WatchDemoCog(commands.Cog):
             # vertical line down
             draw.line((x, y - length_v, x, y - radius + width + 1), fill=color, width=width)
             # horizontal line right
-            draw.line((x - radius + width + 1, y, x + length_h, y), fill=color, width=width)
+            draw.line((x + radius - width - 1, y, x + length_h, y), fill=color, width=width)
             # corner
             draw.arc((x, y - radius, x + radius, y), start=90, end=180, fill=color, width=width)
 
