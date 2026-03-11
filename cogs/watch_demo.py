@@ -537,8 +537,43 @@ class WatchDemoCog(commands.Cog):
 
             draw = Draw(image)
 
+            # Draw faction1 score
             draw.text((w_pos, h_pos), str(data["faction1"]["score"]), fill=(faceit_color if data["winner"] == "faction1" else white), font=font_normal_large, anchor="mm", align="center")
+            draw.text((width - w_pos, h_pos), str(data["faction2"]["score"]), fill=(faceit_color if data["winner"] == "faction2" else white), font=font_normal_large, anchor="mm", align="center")
 
+            # Draw map name
+            w_pos = 400
+            draw.text((width, h_pos), data["map_name"], fill=white, font=font_normal_large, anchor="mm", align="center")
+
+            # Draw teams images
+            # Draw faction1 avatar
+            # Fetch images
+            w_pos = 48
+            h_pos = 280
+            if data["faction1"]["avatar"]:
+                try:
+                    response = await asyncio.to_thread(requests.get, data["faction1"]["avatar"])
+                    response.raise_for_status()
+                except Exception as e:
+                    avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
+
+                if response.status_code == 200:
+                    avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+            else:
+                avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
+
+            avatar_size = 40
+            avatar = avatar.resize((avatar_size, avatar_size), Image.LANCZOS)
+
+            # Create circular mask
+            mask = Image.new("L", (avatar_size, avatar_size), 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0, avatar_size, avatar_size), fill=255)
+
+            # Apply mask to avatar
+            avatar.putalpha(mask)
+
+            image.paste(avatar, (w_pos, h_pos), avatar)
 
             return image
 
