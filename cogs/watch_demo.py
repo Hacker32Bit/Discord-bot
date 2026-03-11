@@ -534,6 +534,39 @@ class WatchDemoCog(commands.Cog):
 
         return avatar_final
 
+    @staticmethod
+    def draw_smooth_corner(draw, x, y, color, length_v=20, length_h=40, radius=4, width=2, kind="up_right"):
+        """
+        Draw a smooth corner.
+
+        kind options:
+            - "up_right"   ┌
+            - "middle_right"  |-
+            - "down_right" └
+        """
+        if kind == "up_right":
+            # vertical line down
+            draw.line((x, y + radius, x + length_v, y + length_v), fill=color, width=width)
+            # horizontal line right
+            draw.line((x, y, x + length_h - radius, y), fill=color, width=width)
+            # corner
+            draw.arc((x + length_h - 2 * radius, y, x + length_h, y + 2 * radius), start=270, end=360, fill=color,
+                     width=width)
+
+        elif kind == "middle_right":
+            # simple vertical then horizontal (no arc)
+            draw.line((x, y, x, y + length_v), fill=color, width=width)
+            draw.line((x, y + length_v, x + length_h, y + length_v), fill=color, width=width)
+
+        elif kind == "down_right":
+            # vertical line down
+            draw.line((x, y, x, y + length_v - radius), fill=color, width=width)
+            # horizontal line right
+            draw.line((x + radius, y + length_v, x + length_h, y + length_v), fill=color, width=width)
+            # corner
+            draw.arc((x, y + length_v - 2 * radius, x + 2 * radius, y + length_v), start=180, end=270, fill=color,
+                     width=width)
+
     async def create_image_new(self, data):
         width = 800
         height = 600
@@ -624,7 +657,7 @@ class WatchDemoCog(commands.Cog):
             w_pos = 95
             h_pos = 295
             draw.text((w_pos, h_pos), data["faction1"]["name"], fill=white, font=font_normal, anchor="ls", align="left")
-            draw.text((w_pos + 25, h_pos + 15), str(data["faction1"]["team_elo"]), fill=white, font=font_small, anchor="ls",
+            draw.text((w_pos + 25, h_pos + 20), "{:,}".format(data["faction1"]["team_elo"]), fill=white, font=font_small, anchor="ls",
                       align="left")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction1']['average_lvl']}.png").convert(
@@ -635,13 +668,36 @@ class WatchDemoCog(commands.Cog):
             # For faction2
             draw.text((width - w_pos, h_pos), data["faction2"]["name"], fill=white, font=font_normal, anchor="rs",
                       align="right")
-            draw.text((width - w_pos - 25, h_pos + 15), str(data["faction2"]["team_elo"]), fill=white, font=font_small, anchor="rs",
+            draw.text((width - w_pos - 25, h_pos + 20), "{:,}".format(data["faction2"]["team_elo"]), fill=white, font=font_small, anchor="rs",
                       align="right")
 
             faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction2']['average_lvl']}.png").convert(
                 "RGBA")
             faceit_lvl = faceit_lvl.resize((20, 20), Image.LANCZOS)
             image.paste(faceit_lvl, (width - w_pos - 20, h_pos + 5), faceit_lvl)
+
+            #####################################
+            ### Draw players stats
+            #####################################
+            # For faction1
+            w_pos = 11
+            h_pos = 50
+            for party in data["faction1"]["parties"]:
+                if party["size"] == 1:
+                    draw.rectangle([(w_pos - 2, h_pos - 2), (w_pos + 2, h_pos + 2)], fill=faceit_color)
+
+                for index, player in enumerate(party["players"]):
+                    # Draw teammates lines
+                    if party["size"] > 1 and index == 0:
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="up_right")
+                    elif party["size"] > 1 and index != party["size"] - 1:
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="middle_right")
+                    elif party["size"] > 1 and index == party["size"] - 1:
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="down_right")
+
+                    # Draw stats
+
+
 
             return image
 
