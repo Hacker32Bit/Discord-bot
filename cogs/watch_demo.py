@@ -535,7 +535,7 @@ class WatchDemoCog(commands.Cog):
         return avatar_final
 
     @staticmethod
-    def draw_smooth_corner(draw, x, y, color, length_v=25, length_h=9, radius=3, width=1, kind="up_right"):
+    def draw_smooth_corner(draw, x, y, color, length_v=25, length_h=9, radius=4, width=2, kind="up_right"):
         """
         Draw a smooth corner.
 
