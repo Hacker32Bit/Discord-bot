@@ -548,20 +548,20 @@ class WatchDemoCog(commands.Cog):
             # vertical line down
             draw.line((x, y + radius - width - 1, x, y + length_v), fill=color, width=width)
             # horizontal line right
-            draw.line((x + radius - width - 1, y, x + length_h, y), fill=color, width=width)
+            draw.line((x + radius - width - 1, y - 1, x + length_h, y - 1), fill=color, width=width)
             # corner
-            draw.arc((x, y, x + radius, y + radius), start=180, end=270, fill=color, width=width)
+            draw.arc((x, y - 1, x + radius, y + radius - 1), start=180, end=270, fill=color, width=width)
 
         elif kind == "middle_right":
             # simple vertical then horizontal (no arc)
             draw.line((x, y - length_v, x, y + length_v), fill=color, width=width)
-            draw.line((x, y, x + length_h, y), fill=color, width=width)
+            draw.line((x, y - 1, x + length_h, y - 1), fill=color, width=width)
 
         elif kind == "down_right":
             # vertical line down
             draw.line((x, y - length_v, x, y - radius + width + 1), fill=color, width=width)
             # horizontal line right
-            draw.line((x + radius - width - 1, y, x + length_h, y), fill=color, width=width)
+            draw.line((x + radius - width - 1, y - 1, x + length_h, y - 1), fill=color, width=width)
             # corner
             draw.arc((x, y - radius, x + radius, y), start=90, end=180, fill=color, width=width)
 
