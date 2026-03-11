@@ -627,7 +627,7 @@ class WatchDemoCog(commands.Cog):
             draw.text((w_pos + 25, h_pos + 25), data["faction1"]["name"], fill=white, font=font_small, anchor="ls",
                       align="left")
 
-            faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction1']['average_lvl']}.svg").convert(
+            faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction1']['average_lvl']}.png").convert(
                 "RGBA")
             faceit_lvl = faceit_lvl.resize((20, 20), Image.LANCZOS)
             image.paste(faceit_lvl, (w_pos, h_pos + 7), faceit_lvl)
@@ -638,7 +638,7 @@ class WatchDemoCog(commands.Cog):
             draw.text((width - w_pos - 25, h_pos + 25), data["faction2"]["name"], fill=white, font=font_small, anchor="rs",
                       align="right")
 
-            faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction2']['average_lvl']}.svg").convert(
+            faceit_lvl = Image.open(f"assets/images/faceitlvls/lvl{data['faction2']['average_lvl']}.png").convert(
                 "RGBA")
             faceit_lvl = faceit_lvl.resize((20, 20), Image.LANCZOS)
             image.paste(faceit_lvl, (width - w_pos - 20, h_pos + 7), faceit_lvl)
