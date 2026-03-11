@@ -771,7 +771,7 @@ class WatchDemoCog(commands.Cog):
 
             # For faction2
             w_pos = 10
-            h_pos = 400
+            h_pos = 375
             for party in data["faction2"]["parties"]:
                 if party["size"] == 1:
                     draw.rectangle([(w_pos - 2, h_pos - 2), (w_pos + 2, h_pos + 2)], fill=faceit_color)
