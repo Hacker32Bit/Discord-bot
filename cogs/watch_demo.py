@@ -535,7 +535,7 @@ class WatchDemoCog(commands.Cog):
         return avatar_final
 
     @staticmethod
-    def draw_smooth_corner(draw, x, y, color, length_v=20, length_h=40, radius=4, width=2, kind="up_right"):
+    def draw_smooth_corner(draw, x, y, color, length_v=20, length_h=40, radius=4, width=1, kind="up_right"):
         """
         Draw a smooth corner.
 
@@ -689,12 +689,12 @@ class WatchDemoCog(commands.Cog):
                 for index, player in enumerate(party["players"]):
                     # Draw teammates lines
                     if party["size"] > 1 and index == 0:
-                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="up_right")
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, length_v=25, length_h=9, kind="up_right")
                     elif party["size"] > 1 and index != party["size"] - 1:
-                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="middle_right")
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, length_v=50, length_h=9, kind="middle_right")
                     elif party["size"] > 1 and index == party["size"] - 1:
-                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="down_right")
-
+                        self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, length_v=25, length_h=9, kind="down_right")
+                    h_pos += 50
                     # Draw stats
 
 
