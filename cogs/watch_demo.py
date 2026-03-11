@@ -535,7 +535,7 @@ class WatchDemoCog(commands.Cog):
         return avatar_final
 
     @staticmethod
-    def draw_smooth_corner(draw, x, y, color, length_v=25, length_h=9, radius=4, width=2, kind="up_right"):
+    def draw_smooth_corner(draw, x, y, color, length_v=25, length_h=9, radius=6, width=2, kind="up_right"):
         """
         Draw a smooth corner.
 
@@ -546,9 +546,9 @@ class WatchDemoCog(commands.Cog):
         """
         if kind == "up_right":
             # vertical line down
-            draw.line((x, y + radius, x, y + length_v), fill=color, width=width)
+            draw.line((x, y + radius - width, x, y + length_v), fill=color, width=width)
             # horizontal line right
-            draw.line((x + radius, y, x + length_h, y), fill=color, width=width)
+            draw.line((x + radius - width, y, x + length_h, y), fill=color, width=width)
             # corner
             draw.arc((x, y, x + radius, y + radius), start=180, end=270, fill=color, width=width)
 
@@ -559,9 +559,9 @@ class WatchDemoCog(commands.Cog):
 
         elif kind == "down_right":
             # vertical line down
-            draw.line((x, y - length_v, x, y - radius), fill=color, width=width)
+            draw.line((x, y - length_v, x, y - radius + width), fill=color, width=width)
             # horizontal line right
-            draw.line((x + radius, y, x + length_h, y), fill=color, width=width)
+            draw.line((x + radius - width, y, x + length_h, y), fill=color, width=width)
             # corner
             draw.arc((x, y - radius, x + radius, y), start=90, end=180, fill=color, width=width)
 
@@ -680,7 +680,7 @@ class WatchDemoCog(commands.Cog):
             ### Draw players stats
             #####################################
             # For faction1
-            w_pos = 11
+            w_pos = 10
             h_pos = 50
             for party in data["faction1"]["parties"]:
                 if party["size"] == 1:
