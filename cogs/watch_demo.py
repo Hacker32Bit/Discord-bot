@@ -562,7 +562,7 @@ class WatchDemoCog(commands.Cog):
             else:
                 avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
-            size = 120
+            size = 40
             scale = 3  # higher = smoother edges
 
             # Resize avatar
