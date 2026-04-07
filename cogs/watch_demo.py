@@ -1196,27 +1196,58 @@ class WatchDemoCog(commands.Cog):
             headers = {
                 "Authorization": f"Bearer {FACEIT_API_KEY}"
             }
-
             r = await asyncio.to_thread(
                 requests.get,
                 f"https://open.faceit.com/data/v4/matches/{demo_id}",
-                headers=headers,
+                headers=headers
             )
-
             r.raise_for_status()
+            match_data = r.json()
+            # print(match_data)
 
-            faceit_data = r.json()
-            demo_urls = faceit_data["demo_url"][0]  # or "demos"
-            teams = faceit_data["teams"]
+            demo_urls = match_data["demo_url"][0]  # or "demos"
 
-            game_player_ids = [
-                player["game_player_id"]
-                for faction in ("faction1", "faction2")
-                for player in teams[faction]["roster"]
-            ]
+            r = await asyncio.to_thread(
+                requests.get,
+                f"https://open.faceit.com/data/v4/matches/{demo_id}/stats",
+                headers=headers
+            )
+            r.raise_for_status()
+            stats_data = r.json()
+            # print(stats_data)
+
+            r = await asyncio.to_thread(
+                curl_requests.get,
+                f"https://www.faceit.com/api/match/v2/match/{demo_id}",
+                impersonate="chrome"
+            )
+            party_data = r.json()
+            # print(party_data)
+
+            data = await self.extract_team_stats_with_parties(match_data, party_data, stats_data)
+
+            # iterate factions
+            for faction in ["faction1", "faction2"]:
+                for party in data[faction]["parties"]:
+                    for player in party["players"]:
+                        await self.update_player(player)
+
+            players = []
+            steam_ids = []
+
+            for faction in ["faction1", "faction2"]:
+                for party in data[faction]["parties"]:
+                    for player in party["players"]:
+                        players.append(player)
+
+                        sid = player.get("steam_id_64")
+                        if sid:
+                            steam_ids.append(sid)
+
+            steam_ids = list(set(steam_ids))
 
             try:
-                steamids = ",".join(game_player_ids)
+                steamids = ",".join(steam_ids)
                 url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={STEAM_API_KEY}&steamids={steamids}"
 
                 r = await asyncio.to_thread(requests.get, url)
@@ -1231,138 +1262,142 @@ class WatchDemoCog(commands.Cog):
                 r.raise_for_status()
                 steam_data = r.json()
 
-                players = steam_data["response"]["players"]
-                steam_index = {p["steamid"]: p for p in players}
+                steam_lookup = {}
 
-                profiles = []
-                for p in teams['faction1']['roster']:
-                    faceit_avatar_url = p["avatar"]
-                    steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
-                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[T]",
-                                     "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
-                for p in teams['faction2']['roster']:
-                    faceit_avatar_url = p["avatar"]
-                    steam_avatar_url = steam_index[p["game_player_id"]]["avatarfull"]
-                    profiles.append({"name": p["nickname"], "steam_id": p["game_player_id"], "side": "[CT]",
-                                     "faceit_avatar_url": faceit_avatar_url, "steam_avatar_url": steam_avatar_url})
-
-                interaction_id = interaction.id
-
-                self.demoQueue_order.append(interaction_id)
-
-                await interaction.edit_original_response(
-                    content=f"⏳ You are in queue..."
-                )
-
-                status = await self.wait_for_memory_space(interaction, log_channel)
-                if status == 1:
-                    return
-
-                await interaction.edit_original_response(
-                    content="💾 Downloading demo..."
-                )
-
-                r = await asyncio.to_thread(
-                    requests.post,
-                    f"https://open.faceit.com/download/v2/demos/download",
-                    headers=headers,
-                    json={
-                        "resource_url": demo_urls,
-                    },
-                )
-                r.raise_for_status()
-
-                data = r.json()
-                resource_url = data["payload"]["download_url"]
-
-                status = await self.download_demo(resource_url, interaction, log_channel)
-
-                if status == 1:
-                    return
-
-                await interaction.edit_original_response(
-                    content="💾️ Extracting demo..."
-                )
-
-                zst_path = RAM_DIR / f"{interaction_id}.dem.zst"
-                dem_path = RAM_DIR / f"{interaction_id}.dem"
-
-                try:
-                    await asyncio.to_thread(
-                        subprocess.run,
-                        ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
-                        check=True
+                for p in steam_data["response"]["players"]:
+                    avatar = (
+                            p.get("avatarfull")
+                            or p.get("avatarmedium")
+                            or p.get("avatar")
+                            or None
                     )
-                except subprocess.CalledProcessError as e:
-                    # Only remove files if they exist
-                    if zst_path.exists():
-                        zst_path.unlink()
-                    if dem_path.exists():
-                        dem_path.unlink()
-                    if interaction.id in self.demoQueue_order:
-                        self.demoQueue_order.remove(interaction.id)
-                    await log_channel.send(content=f"subprocessError: {e}")
-                    await interaction.edit_original_response(
-                        content=f"⚠️️ [ERROR] Something went wrong :(. Please tell admin about it!\nInteraction ID: {interaction.id}"
-                    )
-                    return
 
-                await interaction.edit_original_response(
-                    content="🕵️ Analyzing demo..."
+                    steam_lookup[p["steamid"]] = avatar
+
+                for faction in ["faction1", "faction2"]:
+                    for party in data[faction]["parties"]:
+                        for player in party["players"]:
+                            sid = player.get("steam_id_64")
+                            player["steam_avatar"] = steam_lookup.get(sid)
+            except Exception as e:
+                print(e)
+
+            interaction_id = interaction.id
+
+            self.demoQueue_order.append(interaction_id)
+
+            await interaction.edit_original_response(
+                content=f"⏳ You are in queue..."
+            )
+
+            status = await self.wait_for_memory_space(interaction, log_channel)
+            if status == 1:
+                return
+
+            await interaction.edit_original_response(
+                content="💾 Downloading demo..."
+            )
+
+            r = await asyncio.to_thread(
+                requests.post,
+                f"https://open.faceit.com/download/v2/demos/download",
+                headers=headers,
+                json={
+                    "resource_url": demo_urls,
+                },
+            )
+            r.raise_for_status()
+
+            demo_data = r.json()
+            resource_url = demo_data["payload"]["download_url"]
+
+            status = await self.download_demo(resource_url, interaction, log_channel)
+
+            if status == 1:
+                return
+
+            await interaction.edit_original_response(
+                content="💾️ Extracting demo..."
+            )
+
+            zst_path = RAM_DIR / f"{interaction_id}.dem.zst"
+            dem_path = RAM_DIR / f"{interaction_id}.dem"
+
+            try:
+                await asyncio.to_thread(
+                    subprocess.run,
+                    ["zstd", "-d", "--rm", zst_path, "-o", dem_path],
+                    check=True
                 )
-
-                try:
-                    def parse_demo():
-                        parser = DemoParser(dem_path.absolute().as_posix())
-                        return parser.parse_player_info()
-
-                    df = await asyncio.to_thread(parse_demo)
-                except Exception as e:
-                    if dem_path.exists():
-                        dem_path.unlink()
-                    if interaction.id in self.demoQueue_order:
-                        self.demoQueue_order.remove(interaction.id)
-                    await log_channel.send(content=f"DemoParserError: {e}")
-                    return
-
+            except subprocess.CalledProcessError as e:
+                # Only remove files if they exist
+                if zst_path.exists():
+                    zst_path.unlink()
                 if dem_path.exists():
                     dem_path.unlink()
                 if interaction.id in self.demoQueue_order:
                     self.demoQueue_order.remove(interaction.id)
+                await log_channel.send(content=f"subprocessError: {e}")
+                await interaction.edit_original_response(
+                    content=f"⚠️️ [ERROR] Something went wrong :(. Please tell admin about it!\nInteraction ID: {interaction.id}"
+                )
+                return
 
-                # build lookup: steamid -> df_index + 2
-                index_map = {
-                    str(steamid): idx + 2
-                    for idx, steamid in df["steamid"].items()
+            await interaction.edit_original_response(
+                content="🕵️ Analyzing demo..."
+            )
+
+            try:
+                def parse_demo():
+                    parser = DemoParser(dem_path.absolute().as_posix())
+                    return parser.parse_player_info()
+
+                df = await asyncio.to_thread(parse_demo)
+            except Exception as e:
+                if dem_path.exists():
+                    dem_path.unlink()
+                if interaction.id in self.demoQueue_order:
+                    self.demoQueue_order.remove(interaction.id)
+                await log_channel.send(content=f"DemoParserError: {e}")
+                return
+
+            if dem_path.exists():
+                dem_path.unlink()
+            if interaction.id in self.demoQueue_order:
+                self.demoQueue_order.remove(interaction.id)
+
+            # build lookup: steamid -> df_index + 2
+            index_map = {
+                str(steamid): idx + 2
+                for idx, steamid in df["steamid"].items()
+            }
+
+            profiles = [
+                {
+                    "index": index_map.get(p["steam_id_64"]),
+                    "steam_id": p["steam_id_64"],
+                    "nickname": p["nickname"]
                 }
+                for faction in ["faction1", "faction2"]
+                for party in data[faction]["parties"]
+                for p in party["players"]
+            ]
 
-                profiles = [
-                    {
-                        "index": index_map.get(p["steam_id"]),
-                        **p
-                    }
-                    for p in profiles
-                ]
+            view = ProfileToggleView(self, interaction.user, profiles, resource_url)
+            self.active_views.add(view)
 
-                view = ProfileToggleView(self, interaction.user, profiles, resource_url)
-                self.active_views.add(view)
+            with io.BytesIO() as image_binary:
+                image = await self.create_image_new(data=data)
+                image.save(image_binary, 'PNG')
+                image_binary.seek(0)
+                result = File(fp=image_binary, filename="match.png")
+                msg = await interaction.edit_original_response(
+                    content=f"Your match: <{demo_url}>\n",
+                    attachments=[result],
+                    view=view
+                )
 
-                with io.BytesIO() as image_binary:
-                    image = await self.create_image(profiles=profiles, faceit_data=faceit_data)
-                    image.save(image_binary, 'PNG')
-                    image_binary.seek(0)
-                    result = File(fp=image_binary, filename="match.png")
-                    msg = await interaction.edit_original_response(
-                        content=f"Your match: <{demo_url}>\n",
-                        attachments=[result],
-                        view=view
-                    )
-
-                    view.message = msg
-
-            except requests.exceptions.HTTPError as e:
-                await log_channel.send(content=f"Steam connection error: {e}")
-
+                view.message = msg
 
         except requests.exceptions.HTTPError as e:
             await log_channel.send(content=f"FaceIt connection error: {e}")
