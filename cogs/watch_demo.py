@@ -168,7 +168,7 @@ class ProfileToggleView(discord.ui.View):
 class ProfileToggleButton(discord.ui.Button):
     def __init__(self, profile: dict, index: int):
         super().__init__(
-            label=f"{profile['name']}",
+            label=f"{profile['nickname']}",
             style=discord.ButtonStyle.secondary,
             emoji="🔇",
             row=index // 5
@@ -183,10 +183,14 @@ class ProfileToggleButton(discord.ui.Button):
 
         enabled = view.state[steam_id]
 
-        self.style = (
-            discord.ButtonStyle.success if enabled
-            else discord.ButtonStyle.secondary
-        )
+        if enabled:
+            if self.profile["steam_id"]["faction"] == "faction1":
+                self.style = discord.ButtonStyle.primary
+            else:
+                self.style = discord.ButtonStyle.success
+        else:
+            self.style = discord.ButtonStyle.secondary
+
         self.emoji = "🔊" if enabled else "🔇"
 
         await interaction.response.edit_message(view=view)
