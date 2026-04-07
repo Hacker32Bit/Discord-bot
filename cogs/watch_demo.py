@@ -374,7 +374,8 @@ class WatchDemoCog(commands.Cog):
 
         return result
 
-    async def update_player(self, player):
+    @staticmethod
+    async def update_player(player):
         headers = {
             "Authorization": f"Bearer {FACEIT_API_KEY}"
         }
@@ -408,107 +409,6 @@ class WatchDemoCog(commands.Cog):
         cs2 = p.get("games", {}).get("cs2", {})
         player["actual_skill_level"] = cs2.get("skill_level")
         player["actual_faceit_elo"] = cs2.get("faceit_elo")
-
-    # Command for test new version of /watch_demo
-    @commands.command(help="watch_demo2", description="Command for test new version of /watch_demo")
-    @commands.has_any_role("Owner", "Admin")
-    async def watch_demo2(self, ctx):
-        log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-        MATCH_ID = "1-d4e171f4-2f25-4581-9ab2-829c99481e10"
-
-        headers = {
-            "Authorization": f"Bearer {FACEIT_API_KEY}"
-        }
-        r = await asyncio.to_thread(
-            requests.get,
-            f"https://open.faceit.com/data/v4/matches/{MATCH_ID}",
-            headers=headers
-        )
-        r.raise_for_status()
-        match_data = r.json()
-        # print(match_data)
-
-        r = await asyncio.to_thread(
-            requests.get,
-            f"https://open.faceit.com/data/v4/matches/{MATCH_ID}/stats",
-            headers=headers
-        )
-        r.raise_for_status()
-        stats_data = r.json()
-        # print(stats_data)
-
-        r = await asyncio.to_thread(
-            curl_requests.get,
-            f"https://www.faceit.com/api/match/v2/match/{MATCH_ID}",
-            impersonate="chrome"
-        )
-        party_data = r.json()
-        # print(party_data)
-
-        data = await self.extract_team_stats_with_parties(match_data, party_data, stats_data)
-
-        # iterate factions
-        for faction in ["faction1", "faction2"]:
-            for party in data[faction]["parties"]:
-                for player in party["players"]:
-                    await self.update_player(player)
-
-        players = []
-        steam_ids = []
-
-        for faction in ["faction1", "faction2"]:
-            for party in data[faction]["parties"]:
-                for player in party["players"]:
-                    players.append(player)
-
-                    sid = player.get("steam_id_64")
-                    if sid:
-                        steam_ids.append(sid)
-
-        steam_ids = list(set(steam_ids))
-
-        try:
-            steamids = ",".join(steam_ids)
-            url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={STEAM_API_KEY}&steamids={steamids}"
-
-            r = await asyncio.to_thread(requests.get, url)
-
-            while r.status_code == 429:
-                sleep_time = randint(1800, 3600)
-                await log_channel.send(
-                    content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
-                await asyncio.sleep(sleep_time)
-                r = await asyncio.to_thread(requests.get, url)
-
-            r.raise_for_status()
-            steam_data = r.json()
-
-            steam_lookup = {}
-
-            for p in steam_data["response"]["players"]:
-                avatar = (
-                        p.get("avatarfull")
-                        or p.get("avatarmedium")
-                        or p.get("avatar")
-                        or None
-                )
-
-                steam_lookup[p["steamid"]] = avatar
-
-            for faction in ["faction1", "faction2"]:
-                for party in data[faction]["parties"]:
-                    for player in party["players"]:
-                        sid = player.get("steam_id_64")
-                        player["steam_avatar"] = steam_lookup.get(sid)
-        except Exception as e:
-            print(e)
-
-        with io.BytesIO() as image_binary:
-            image = await self.create_image_new(data=data)
-            image.save(image_binary, 'PNG')
-            image_binary.seek(0)
-            result = File(fp=image_binary, filename="match.png")
-            await ctx.send(file=result)
 
     @staticmethod
     def create_avatar(avatar: Image.Image) -> Image.Image:
@@ -569,7 +469,7 @@ class WatchDemoCog(commands.Cog):
             # corner
             draw.arc((x, y - radius, x + radius, y), start=90, end=180, fill=color, width=width)
 
-    async def create_image_new(self, data):
+    async def create_image(self, data):
         width = 800
         height = 600
 
@@ -700,25 +600,31 @@ class WatchDemoCog(commands.Cog):
                         self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="down_right")
 
                     # Draw avatar
+                    avatar = None
                     if player["avatar_platform"] == "faceit":
                         try:
                             response = await asyncio.to_thread(requests.get, player["avatar"])
                             response.raise_for_status()
-                        except Exception as e:
+                            avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+
+                        except Exception:
                             try:
                                 response = await asyncio.to_thread(requests.get, player["steam_avatar"])
                                 response.raise_for_status()
-                            except Exception as e:
+                                avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+
+                            except Exception:
                                 avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
-                        if response.status_code == 200:
-                            avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
                     elif player["avatar_platform"] == "steam":
                         try:
                             response = await asyncio.to_thread(requests.get, player["steam_avatar"])
                             response.raise_for_status()
-                        except Exception as e:
+                            avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+
+                        except Exception:
                             avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
+
                     else:
                         avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
@@ -790,25 +696,31 @@ class WatchDemoCog(commands.Cog):
                         self.draw_smooth_corner(draw, w_pos, h_pos, faceit_color, kind="down_right")
 
                     # Draw avatar
+                    avatar = None
                     if player["avatar_platform"] == "faceit":
                         try:
                             response = await asyncio.to_thread(requests.get, player["avatar"])
                             response.raise_for_status()
-                        except Exception as e:
+                            avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+
+                        except Exception:
                             try:
                                 response = await asyncio.to_thread(requests.get, player["steam_avatar"])
                                 response.raise_for_status()
-                            except Exception as e:
+                                avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+
+                            except Exception:
                                 avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
-                        if response.status_code == 200:
-                            avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
                     elif player["avatar_platform"] == "steam":
                         try:
                             response = await asyncio.to_thread(requests.get, player["steam_avatar"])
                             response.raise_for_status()
-                        except Exception as e:
+                            avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
+
+                        except Exception:
                             avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
+
                     else:
                         avatar = Image.open("assets/images/undefined_faceit_avatar.png").convert("RGBA")
 
@@ -884,210 +796,6 @@ class WatchDemoCog(commands.Cog):
                 return candidate + ellipsis
 
         return ellipsis
-
-    async def create_image(self, profiles: list[dict], faceit_data):
-
-        width = 798
-        height = 436
-
-        with Image.new(mode='RGBA', size=(width, height), color=(0, 0, 0, 0)) as image:
-            font_noto_sans_bold = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
-                                               'assets',
-                                               'NotoSans-Bold.ttf')
-            font_noto_sans_regular = os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank',
-                                                  'assets',
-                                                  'NotoSans-Regular.ttf')
-            # font_rockybilly= os.path.join(os.path.dirname(__file__), os.pardir, 'files_for_copy', 'disrank', 'assets', # NOQA: spellcheck
-            #                           'Rockybilly.ttf') # NOQA: spellcheck
-
-            # ======== Fonts to use =============
-            font_normal_large = truetype(font_noto_sans_bold, 38, encoding='UTF-8')
-            font_normal = truetype(font_noto_sans_bold, 18, encoding='UTF-8')
-            font_small_large = truetype(font_noto_sans_regular, 28, encoding='UTF-8')
-            font_small = truetype(font_noto_sans_regular, 18, encoding='UTF-8')
-            # font_signa = truetype(font_rockybilly, 25, encoding='UTF-8') # NOQA: spellcheck
-
-            h_pos = 0
-            w_pos = 0
-
-            white = (255, 255, 255, 255)
-            # black = (0, 0, 0, 255)
-
-            t_color = (251, 172, 24, 255)
-            ct_color = (40, 57, 127, 255)
-
-            gray_transparent = (144, 164, 174, 191)
-
-            draw = Draw(image)
-
-            log_channel = await self.bot.fetch_channel(ADMIN_LOG_CHANNEL_ID)
-
-            # Draw T side players avatars
-            for p in profiles[:5]:
-                if p["faceit_avatar_url"]:
-                    try:
-                        response = await asyncio.to_thread(requests.get, p['faceit_avatar_url'])
-                        response.raise_for_status()
-                    except Exception as e:
-                        try:
-                            response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
-                            response.raise_for_status()
-                        except Exception as e:
-                            await log_channel.send("FaceIt + Steam images not fetched!")
-                else:
-                    try:
-                        response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
-                        response.raise_for_status()
-                    except Exception as e:
-                        await log_channel.send("Steam images not fetched!")
-
-                if response.status_code == 200:
-                    avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
-                else:
-                    avatar = Image.open("assets/images/undefined_steam_avatar.jpg").convert("RGBA")
-
-                avatar = avatar.resize((158, 158), Image.LANCZOS)
-
-                image.paste(avatar, (w_pos, h_pos), avatar)
-
-                if w_pos < 640:
-                    w_pos = w_pos + 158
-                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 158)], fill=gray_transparent, width=2)
-                    w_pos = w_pos + 2
-
-            w_pos = 0
-            h_pos = 158
-
-            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
-            h_pos = h_pos + 2
-
-            # Draw T side players nicknames
-            for p in profiles[:5]:
-                draw.rectangle([(w_pos, h_pos), (width, h_pos + 26)], fill=t_color)
-
-                text = p["name"]
-                fitted = await self.fit_text(draw, text, font_small)
-
-                draw.text((w_pos + 7, h_pos - 1), fitted, fill=white, font=font_small)
-
-                if w_pos < 640:
-                    w_pos = w_pos + 158
-                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 26)], fill=gray_transparent, width=2)
-                    w_pos = w_pos + 2
-
-            w_pos = 0
-            h_pos = h_pos + 26
-            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
-            h_pos = h_pos + 2
-
-            # Paste gradient
-            background = Image.open("assets/images/watch_demo_gradient.png").convert("RGBA")
-            image.paste(background, (w_pos, h_pos), background)
-
-            text = faceit_data["teams"]["faction1"]["name"]
-            fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
-            draw.text((w_pos + 10, h_pos + 10), fitted, fill=white, font=font_small_large)
-
-            text = faceit_data["teams"]["faction2"]["name"]
-            fitted = await self.fit_text(draw, text, font_small_large, max_width=320)
-
-            bbox = draw.textbbox((0, 0), fitted, font=font_small_large)
-            text_width = bbox[2] - bbox[0]
-
-            right_edge = width - 10  # where text should END
-
-            draw.text(
-                (right_edge - text_width, h_pos + 10),
-                fitted,
-                fill=white,
-                font=font_small_large
-            )
-
-            score1 = str(faceit_data["results"]["score"]["faction1"])
-            score2 = str(faceit_data["results"]["score"]["faction2"])
-
-            left_text = f"{score1} "
-            colon = ":"
-            right_text = f" {score2}"
-
-            # Measure widths
-            left_bbox = draw.textbbox((0, 0), left_text, font=font_normal_large)
-            colon_bbox = draw.textbbox((0, 0), colon, font=font_normal_large)
-
-            left_w = left_bbox[2] - left_bbox[0]
-            colon_w = colon_bbox[2] - colon_bbox[0]
-
-            center_x = width // 2  # = 399
-
-            # X where full string must start so COLON CENTER is at center_x
-            start_x = center_x - left_w - colon_w // 2
-
-            # Draw in one pass ( the best kerning)
-            draw.text(
-                (start_x, h_pos + 2),
-                f"{left_text}{colon}{right_text}",
-                fill=white,
-                font=font_normal_large
-            )
-
-            w_pos = 0
-            h_pos = h_pos + 60
-            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
-            h_pos = h_pos + 2
-
-            # Draw CT side players nicknames
-            for p in profiles[5:]:
-                draw.rectangle([(w_pos, h_pos), (width, h_pos + 26)], fill=ct_color)
-
-                text = p["name"]
-                fitted = await self.fit_text(draw, text, font_small)
-
-                draw.text((w_pos + 7, h_pos - 1), fitted, fill=white, font=font_small)
-
-                if w_pos < 640:
-                    w_pos = w_pos + 158
-                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 26)], fill=gray_transparent, width=2)
-                    w_pos = w_pos + 2
-
-            w_pos = 0
-            h_pos = h_pos + 26
-            draw.line([(0, h_pos), (width, h_pos)], fill=gray_transparent, width=2)
-            h_pos = h_pos + 2
-
-            # Draw CT side players avatars
-            for p in profiles[5:]:
-                if p["faceit_avatar_url"]:
-                    try:
-                        response = await asyncio.to_thread(requests.get, p['faceit_avatar_url'])
-                        response.raise_for_status()
-                    except Exception as e:
-                        try:
-                            response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
-                            response.raise_for_status()
-                        except Exception as e:
-                            await log_channel.send("FaceIt + Steam images not fetched!")
-                else:
-                    try:
-                        response = await asyncio.to_thread(requests.get, p['steam_avatar_url'])
-                        response.raise_for_status()
-                    except Exception as e:
-                        await log_channel.send("Steam images not fetched!")
-
-                if response.status_code == 200:
-                    avatar = Image.open(io.BytesIO(response.content)).convert("RGBA")
-                else:
-                    avatar = Image.open("assets/images/undefined_steam_avatar.jpg").convert("RGBA")
-
-                avatar = avatar.resize((158, 158), Image.LANCZOS)
-
-                image.paste(avatar, (w_pos, h_pos), avatar)
-
-                if w_pos < 640:
-                    w_pos = w_pos + 158
-                    draw.line([(w_pos, h_pos), (w_pos, h_pos + 158)], fill=gray_transparent, width=2)
-                    w_pos = w_pos + 2
-
-            return image
 
     async def download_demo(self, url, interaction, log_channel):
         output_path = RAM_DIR / f"{interaction.id}.dem.zst"
@@ -1392,7 +1100,7 @@ class WatchDemoCog(commands.Cog):
             self.active_views.add(view)
 
             with io.BytesIO() as image_binary:
-                image = await self.create_image_new(data=data)
+                image = await self.create_image(data=data)
                 image.save(image_binary, 'PNG')
                 image_binary.seek(0)
                 result = File(fp=image_binary, filename="match.png")
