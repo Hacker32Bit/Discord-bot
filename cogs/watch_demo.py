@@ -78,7 +78,7 @@ class ProfileToggleView(discord.ui.View):
         ]
 
         selected_text = [
-            f"{p['side']} {p['name']} — {p['steam_id']}"
+            f"{p['faction']} {p['nickname']} — {p['steam_id']}"
             for p in self.profiles
             if self.state.get(p["steam_id"])
         ]
