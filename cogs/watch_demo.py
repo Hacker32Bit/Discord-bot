@@ -168,7 +168,7 @@ class ProfileToggleView(discord.ui.View):
 class ProfileToggleButton(discord.ui.Button):
     def __init__(self, profile: dict, index: int):
         super().__init__(
-            label=f"{profile['side']} {profile['name']}",
+            label=f"{profile['name']}",
             style=discord.ButtonStyle.secondary,
             emoji="🔇",
             row=index // 5
