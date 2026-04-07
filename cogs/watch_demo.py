@@ -184,7 +184,7 @@ class ProfileToggleButton(discord.ui.Button):
         enabled = view.state[steam_id]
 
         if enabled:
-            if self.profile["steam_id"]["faction"] == "faction1":
+            if self.profile["faction"] == "faction1":
                 self.style = discord.ButtonStyle.primary
             else:
                 self.style = discord.ButtonStyle.success
