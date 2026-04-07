@@ -1380,7 +1380,8 @@ class WatchDemoCog(commands.Cog):
                 {
                     "index": index_map.get(p["steam_id_64"]),
                     "steam_id": p["steam_id_64"],
-                    "nickname": p["nickname"]
+                    "nickname": p["nickname"],
+                    "faction": faction,
                 }
                 for faction in ["faction1", "faction2"]
                 for party in data[faction]["parties"]
