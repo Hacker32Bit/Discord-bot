@@ -228,7 +228,7 @@ class DoneButton(discord.ui.Button):
         super().__init__(
             label="Done",
             style=discord.ButtonStyle.danger,
-            emoji="📤",
+            emoji="✔️",
             row=2
         )
 
