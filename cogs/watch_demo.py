@@ -245,7 +245,7 @@ class DoneButton(discord.ui.Button):
             return sum(1 << (p - 1) for p in players)
 
         players1 = list(map(int, array))
-        # All numbers from 2 to 11 (inclusive), excluding players1
+        # All numbers from 1 to 10 (inclusive), excluding players1
         players2 = [p for p in range(1, 11) if p not in players1]
         result1 = tv_listen_value(players1)
         result2 = tv_listen_value(players2)
@@ -1080,7 +1080,7 @@ class WatchDemoCog(commands.Cog):
 
             # build lookup: steamid -> df_index + 2
             index_map = {
-                str(steamid): idx + 2
+                str(steamid): idx + 1
                 for idx, steamid in df["steamid"].items()
             }
 
