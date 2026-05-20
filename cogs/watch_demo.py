@@ -246,7 +246,7 @@ class DoneButton(discord.ui.Button):
 
         players1 = list(map(int, array))
         # All numbers from 2 to 11 (inclusive), excluding players1
-        players2 = [p for p in range(2, 12) if p not in players1]
+        players2 = [p for p in range(1, 11) if p not in players1]
         result1 = tv_listen_value(players1)
         result2 = tv_listen_value(players2)
         return result1, result2
