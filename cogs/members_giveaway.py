@@ -15,6 +15,8 @@ import io
 from discord import File
 from discord.errors import NotFound
 import re
+from bs4 import BeautifulSoup
+
 
 load_dotenv()
 GIVEAWAYS_CHANNEL_ID: Final[str] = os.getenv("GIVEAWAYS_CHANNEL_ID")
@@ -134,56 +136,43 @@ class MembersGiveaway(commands.Cog):
         log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
         try:
-            r = requests.get(drop_url + '?l=english')
+            r = requests.get(drop_url + '&l=english')
             while r.status_code == 429:
                 sleep_time = randint(1800, 3600)
                 await log_channel.send(content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
                 await asyncio.sleep(sleep_time)
-                r = requests.get(drop_url + '?l=english')
+                r = requests.get(drop_url + '&l=english')
 
-            pattern = r"var\s+g_rgAssets\s*=\s*(\{.*?\});"
+            soup = BeautifulSoup(r.text, "html.parser")
 
-            match = re.search(pattern, r.text, flags=re.DOTALL)
+            name = soup.select_one("h2 > span:nth-child(1)").text
 
-            if not match:
-                await log_channel.send(content="g_rgAssets not found")
+            quality = soup.select_one("span:-soup-contains('Exterior:')").text.split("Exterior: ")[1]
 
-            json_string = match.group(1)
+            rarity = soup.select_one("span:-soup-contains('Quality:')").text.split("Quality: ")[1]
 
-            data = json.loads(json_string)
-            try:
-                for _ in range(3):
-                    data = data[next(iter(data))]
-            except Exception as err:
-                await log_channel.send(content=f"```{err}```")
-                try:
-                    data = data[0][0]
-                except Exception as err2:
-                    await log_channel.send(content=f"```{err2}```")
+            image_url = soup.select_one('[property="og:image"]')["content"]
 
-            name = data["name"]
-            quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
-            rarity = data["type"]
-            image_url = "https://community.fastly.steamstatic.com/economy/image/" + data["icon_url"]
-            is_stattrak = "StatTrak" in rarity
-            rarity = rarity.lower()
-            if any(text.lower() in rarity for text in ["knife", "gloves", "extraordinary", "contraband", "★"]):
+            is_stattrak = "StatTrak" in name
+
+            rarity_lower = rarity.lower()
+
+            if any(x in rarity_lower for x in ["knife", "gloves", "extraordinary", "contraband", "★"]):
                 rarity = "contraband"
-            elif "covert" in rarity:
+            elif "covert" in rarity_lower:
                 rarity = "covert"
-            elif "classified" in rarity:
+            elif "classified" in rarity_lower:
                 rarity = "classified"
-            elif "restricted" in rarity:
+            elif "restricted" in rarity_lower:
                 rarity = "restricted"
-            elif "mil-spec" in rarity:
+            elif "mil-spec" in rarity_lower:
                 rarity = "mil_spec"
-            elif "industrial grade" in rarity:
+            elif "industrial grade" in rarity_lower:
                 rarity = "industrial_grade"
-            elif "consumer grade" in rarity:
+            elif "consumer grade" in rarity_lower:
                 rarity = "consumer_grade"
             else:
-                await log_channel.send(content="RARITY detection error!")
-                return
+                raise ValueError(f"Unknown rarity: {rarity}")
 
         except Exception as err:
             await log_channel.send(content=f"```{err}```")

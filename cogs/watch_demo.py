@@ -1078,7 +1078,7 @@ class WatchDemoCog(commands.Cog):
             if interaction.id in self.demoQueue_order:
                 self.demoQueue_order.remove(interaction.id)
 
-            # build lookup: steamid -> df_index + 2
+            # build lookup: steamid -> df_index + 1
             index_map = {
                 str(steamid): idx + 1
                 for idx, steamid in df["steamid"].items()
