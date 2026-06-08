@@ -4,6 +4,7 @@ import discord
 from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
+from bs4 import BeautifulSoup
 from discord.ext import commands
 from dotenv import load_dotenv
 from typing import Final
@@ -86,41 +87,28 @@ class CaseOpening(commands.Cog):
         log_channel = await self.client.fetch_channel(ADMIN_LOG_CHANNEL_ID)
 
         try:
-            r = requests.get(drop_url + '?l=english')
+            r = requests.get(drop_url + '&l=english')
             while r.status_code == 429:
                 sleep_time = randint(1800, 3600)
                 await log_channel.send(content=f"Steam error 429. Too many request. Sleeping {sleep_time // 60} minutes before retrying.")
                 await asyncio.sleep(sleep_time)
-                r = requests.get(drop_url + '?l=english')
+                r = requests.get(drop_url + '&l=english')
 
-            pattern = r"var\s+g_rgAssets\s*=\s*(\{.*?\});"
+            soup = BeautifulSoup(r.text, "html.parser")
 
-            match = re.search(pattern, r.text, flags=re.DOTALL)
+            name = soup.select_one("h2 > span:nth-child(1)").text
 
-            if not match:
-                await log_channel.send(content="g_rgAssets not found")
+            quality = soup.select_one("span:-soup-contains('Exterior:')").text.split("Exterior: ")[1]
 
-            json_string = match.group(1)
+            rarity = soup.select_one("span:-soup-contains('Quality:')").text.split("Quality: ")[1]
 
-            data = json.loads(json_string)
-            try:
-                for _ in range(3):
-                    data = data[next(iter(data))]
-            except Exception as err:
-                await log_channel.send(content=f"```{err}```")
+            image_url = soup.select_one('[property="og:image"]')["content"]
 
-                try:
-                    data = data[0][0]
-                except Exception as err2:
-                    await log_channel.send(content=f"```{err2}```")
+            is_stattrak = "StatTrak" in name
 
-            name = data["name"]
-            quality = data["descriptions"][0]["value"].split("Exterior:")[1].strip()
-            rarity = data["type"]
-            image_url = "https://community.fastly.steamstatic.com/economy/image/" + data["icon_url"]
-            is_stattrak = "StatTrak" in rarity
             ansi_color = '[2;34m'
             rarity = rarity.lower()
+
             if any(text.lower() in rarity for text in ["knife", "gloves", "extraordinary", "contraband", "★"]):
                 ansi_color = '[2;33m'
                 rarity = "contraband"

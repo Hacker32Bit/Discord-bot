@@ -9,12 +9,10 @@ import requests
 from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
-import json
 import asyncio
 import io
 from discord import File
 from discord.errors import NotFound
-import re
 from bs4 import BeautifulSoup
 
 
