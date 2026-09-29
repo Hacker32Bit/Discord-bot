@@ -115,7 +115,7 @@ class ProfileToggleView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
-        run_game_url = f'steam://rungameid/730/-console +"playdemo replays/demo; {final_command}"'
+        run_game_url = f'steam://rungameid/730/-console +"playdemo replays/{self.download_url.split("/cs2/")[1].split(".dem.")[0]}; {final_command}"'
 
         headers = {
             "Authorization": f"Bearer {TINYURL_API_KEY}"
