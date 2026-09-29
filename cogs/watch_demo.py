@@ -283,7 +283,7 @@ class WatchDemoCog(commands.Cog):
         result["winner"] = match_data.get("detailed_results")[0]["winner"]
         try:
             result["location"] = party_data.get("payload")["voting"]["location"]["pick"][0]
-        except TypeError:
+        except KeyError:
             result["location"] = party_data.get("payload")["locations"][0]["guid"]
         result["map"] = match_data.get("voting")["map"]["pick"][0]
         result["map_name"] = next(
