@@ -281,10 +281,14 @@ class WatchDemoCog(commands.Cog):
         result = dict()
 
         result["winner"] = match_data.get("detailed_results")[0]["winner"]
-        result["location"] = match_data.get("voting")["location"]["pick"][0]
+        try:
+            result["location"] = party_data.get("payload")["voting"]["location"]["pick"][0]
+        except TypeError:
+            result["location"] = party_data.get("payload")["locations"][0]["guid"]
         result["map"] = match_data.get("voting")["map"]["pick"][0]
         result["map_name"] = next(
-            m["name"] for m in match_data.get("voting")["map"]["entities"] if m["class_name"] == result["map"])
+            m["name"] for m in match_data.get("voting")["map"]["entities"] if m["class_name"] == result["map"]
+        )
 
         teams = match_data['teams']
         for team in teams:
